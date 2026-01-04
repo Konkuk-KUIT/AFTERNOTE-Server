@@ -53,14 +53,8 @@ services:
       SPRING_PROFILES_ACTIVE: dev
 
       # 도커 내부 통신용 주소 (localhost 대신 서비스명 사용)
-      DB_HOST: ${DB_HOST}
-      DB_PORT: 3306
-      DB_NAME: ${DB_NAME}
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
-
-      REDIS_HOST: ${REDIS_HOST}
-      REDIS_PORT: 6379
+    env_file:
+      - .env
 
   afternote-nginx:
     image: nginx:alpine
