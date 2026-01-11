@@ -51,3 +51,6 @@ out/
 *.db
 *.sqlite
 db_data/
+
+### certbot (인증서 폴더)
+data/

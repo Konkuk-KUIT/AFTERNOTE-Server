@@ -1,0 +1,62 @@
+name: Deploy to EC2 with Docker
+
+on:
+  push:
+    branches: ["release"] # main 또는 master 브랜치에 푸시하면 실행
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. 코드 가져오기
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      # 2. 자바 설치 (Java 17)
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+
+      # 3. Gradle 권한 부여
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      # 4. 스프링 부트 빌드 (테스트 생략)
+      - name: Build with Gradle
+        run: ./gradlew clean build -x test
+
+      # 5. 도커 허브 로그인
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # 6. 도커 이미지 빌드 & 푸시
+      - name: Build and Push Docker Image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/afternote-server .
+          docker push ${{ secrets.DOCKER_USERNAME }}/afternote-server
+
+      # 7. EC2에 접속해서 배포 (SSH)
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            cd ~/deploy
+            # 1. 최신 이미지 받기
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/afternote-server
+
+            # 2. 서버 재시작 (이미지 교체)
+            sudo docker-compose up -d --build afternote-server
+
+            # 3. 안 쓰는 옛날 이미지 정리 (용량 확보)
+            sudo docker image prune -f

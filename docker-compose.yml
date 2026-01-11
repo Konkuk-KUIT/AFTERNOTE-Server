@@ -21,7 +21,7 @@ services:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
     healthcheck:
-      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -39,10 +39,8 @@ services:
   # 3. Spring Boot (내 서버)
   # =========================================
   afternote-server:
-    build: .  # 현재 폴더의 Dockerfile을 보고 직접 빌드해라!
+    build: . # 현재 폴더의 Dockerfile을 보고 직접 빌드해라!
     container_name: afternote-server
-#    ports:
-#      - "8080:8080"
     depends_on:
       afternote-db:
         condition: service_healthy # ⭐ [추가 2] DB가 '건강함' 상태가 될 때까지 대기
@@ -63,5 +61,14 @@ services:
       - "80:80" # 외부(80) -> Nginx(80) -> Spring(8080)
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf # 아까 만든 설정 파일 적용
+      - ./data/certbot/conf:/etc/letsencrypt # 인증서 저장 경로 공유
+      - ./data/certbot/www:/var/www/certbot # 인증서 발급용 챌린지 경로 공유
     depends_on:
       - afternote-server # 서버가 켜져야 Nginx도 의미가 있음
+
+  afternote-certbot:
+    image: certbot/certbot
+    container_name: afternote-certbot
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
