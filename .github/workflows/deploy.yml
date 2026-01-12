@@ -52,14 +52,12 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           script: |
             cd ~/deploy
-            # 1. 최신 이미지 받기
+
+            # 1. 최신 Docker 이미지 받기
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/afternote-server
 
-            # 2. 프로덕션 환경으로 서버 재시작
-            sudo docker-compose -f docker-compose.prod.yml up -d --build afternote-server
+            # 2. Spring Boot 서버만 재시작 (기존 docker-compose.yml 사용)
+            sudo docker-compose up -d --force-recreate afternote-server
 
-            # 3. nginx도 재시작 (설정 변경 반영)
-            sudo docker-compose -f docker-compose.prod.yml up -d --force-recreate afternote-nginx
-
-            # 4. 안 쓰는 옛날 이미지 정리 (용량 확보)
+            # 3. 안 쓰는 이미지 정리
             sudo docker image prune -f

@@ -60,7 +60,7 @@ services:
     ports:
       - "80:80" # 외부(80) -> Nginx(80) -> Spring(8080)
     volumes:
-      - ./nginx/nginx.local.conf:/etc/nginx/nginx.conf # 로컬 개발용 설정
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf # 로컬 개발용 설정
     depends_on:
       - afternote-server # 서버가 켜져야 Nginx도 의미가 있음
 
