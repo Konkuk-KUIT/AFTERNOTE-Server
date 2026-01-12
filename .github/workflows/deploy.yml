@@ -53,11 +53,22 @@ jobs:
           script: |
             cd ~/deploy
 
-            # 1. 최신 Docker 이미지 받기
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/afternote-server
+            # 1. 기존 서버 중지
+            sudo docker-compose down afternote-server || true
 
-            # 2. Spring Boot 서버만 재시작 (기존 docker-compose.yml 사용)
-            sudo docker-compose up -d --force-recreate afternote-server
+            # 2. 최신 Docker 이미지 받기
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/afternote-server:latest
 
-            # 3. 안 쓰는 이미지 정리
+            # 3. 이미지를 사용하도록 docker-compose.yml 수정
+            sudo sed -i 's|build: .*|image: ${{ secrets.DOCKER_USERNAME }}/afternote-server:latest|g' docker-compose.yml
+            sudo sed -i 's|SPRING_PROFILES_ACTIVE: dev|SPRING_PROFILES_ACTIVE: prod|g' docker-compose.yml
+
+            # 4. 서버 시작 (DB가 준비될 때까지 대기)
+            sudo docker-compose up -d afternote-server
+
+            # 5. 서버 로그 확인 (시작 대기)
+            sleep 10
+            sudo docker-compose logs afternote-server --tail=20
+
+            # 6. 안 쓰는 이미지 정리
             sudo docker image prune -f
