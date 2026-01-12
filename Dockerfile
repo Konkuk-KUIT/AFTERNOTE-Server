@@ -1,6 +1,6 @@
 # ========== [1단계: 요리하는 곳 (Builder)] ==========
 # 여기서는 JDK(개발 도구)가 필요합니다.
-FROM amazoncorretto:17-alpine-jdk AS builder
+FROM --platform=linux/amd64 amazoncorretto:17-alpine-jdk AS builder
 
 WORKDIR /build
 
@@ -13,7 +13,7 @@ COPY src src
 RUN chmod +x ./gradlew
 RUN ./gradlew bootJar
 
-FROM amazoncorretto:17-alpine-jdk
+FROM --platform=linux/amd64 amazoncorretto:17-alpine-jdk
 
 WORKDIR /app
 
