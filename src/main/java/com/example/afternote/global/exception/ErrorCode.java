@@ -46,7 +46,12 @@ public enum ErrorCode {
     REFRESH_TOKEN_TYPE_MISMATCH(HttpStatus.BAD_REQUEST, 408, "리프레시 토큰 타입 미일치"),
 
     // 사용이 제한된 리프레시 토큰
-    RESTRICTED_REFRESH_TOKEN(HttpStatus.BAD_REQUEST, 409, "사용이 제한된 리프레시 토큰");
+    RESTRICTED_REFRESH_TOKEN(HttpStatus.BAD_REQUEST, 409, "사용이 제한된 리프레시 토큰"),
+
+    // ======================================
+    // 3. 사용자 관련 오류 (code: 410 ~)
+    // ======================================
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, 410, "존재하지 않는 사용자입니다.");
 
     private final HttpStatus httpStatus;
     private final int code;
