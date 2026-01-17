@@ -60,17 +60,31 @@ public class AuthService {
     @Transactional
     public ReissueResponse reissue(ReissueRequest request) {
         String refreshToken = request.getRefreshToken();
-        Long userId = tokenService.getUserId(request.getRefreshToken());
-        if (!jwtTokenProvider.validateToken(refreshToken)||userId == null) {
+        
+        // 1. JWT 자체의 유효성 먼저 검증 (서명, 만료시간)
+        if (!jwtTokenProvider.validateToken(refreshToken)) {
             throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
+        
+        // 2. JWT에서 userId 추출
+        Long userId = jwtTokenProvider.getUserId(refreshToken);
+        
+        // 3. Redis에 저장된 userId와 비교 (토큰이 탈취되지 않았는지 확인)
+        Long storedUserId = tokenService.getUserId(refreshToken);
+        if (storedUserId == null || !storedUserId.equals(userId)) {
+            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
+        }
+        
+        // 4. 기존 토큰 삭제 후 신규 발급 (RTR 전략)
         tokenService.deleteToken(refreshToken);
         String newAccessToken = jwtTokenProvider.generateAccessToken(userId);
         String newRefreshToken = jwtTokenProvider.generateRefreshToken(userId);
         tokenService.saveToken(newRefreshToken, userId);
 
-        return ReissueResponse.builder().accessToken(newAccessToken).refreshToken(newRefreshToken).build();
-
+        return ReissueResponse.builder()
+                .accessToken(newAccessToken)
+                .refreshToken(newRefreshToken)
+                .build();
     }
 
     @Transactional
@@ -84,5 +98,19 @@ public class AuthService {
             throw new CustomException(ErrorCode.PASSWORD_MISMATCH); // 현재 비번 틀림 예외
         }
         user.updatePassword(passwordEncoder.encode(request.getNewPassword()));
+    }
+
+    @Transactional
+    public void logout(Long userId, LogoutRequest request) {
+        String refreshToken = request.getRefreshToken();
+        
+        // Redis에서 조회한 userId와 JWT의 userId가 일치하는지 확인
+        Long storedUserId = tokenService.getUserId(refreshToken);
+        if (storedUserId == null || !storedUserId.equals(userId)) {
+            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
+        }
+        
+        // Refresh Token 삭제 (이후 재발급 불가)
+        tokenService.deleteToken(refreshToken);
     }
 }

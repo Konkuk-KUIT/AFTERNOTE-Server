@@ -56,4 +56,16 @@ public class AuthController {
         return ApiResponse.success(null);
     }
 
+    @Operation(summary = "로그아웃 API", description = "리프레쉬 토큰을 입력합니다.")
+    @PostMapping("/logout")
+    public ApiResponse<Object> logout(
+            @Parameter(hidden = true) @UserId Long userId,
+            @Valid @RequestBody  LogoutRequest logoutRequest
+    ) {
+        authService.logout(userId, logoutRequest);
+        return ApiResponse.success(null);
+    }
+
+
+
 }
