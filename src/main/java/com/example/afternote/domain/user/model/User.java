@@ -46,6 +46,10 @@ public class User {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
+    public void updatePassword(String encryptedPassword) {
+        this.password = encryptedPassword;
+    }
+
     @Builder
     public User(String email, String password, String name, UserStatus status, AuthProvider provider) {
         this.email = email;

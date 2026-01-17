@@ -68,7 +68,10 @@ public enum ErrorCode {
     DUPLICATE_NAME(HttpStatus.CONFLICT, 414, "이미 사용 중인 이름입니다."),
 
     // 계정 비활성화
-    ACCOUNT_DISABLED(HttpStatus.FORBIDDEN, 415, "비활성화된 계정입니다.");
+    ACCOUNT_DISABLED(HttpStatus.FORBIDDEN, 415, "비활성화된 계정입니다."),
+
+    NEWPASSWORD_MATCH(HttpStatus.BAD_REQUEST, 416, "새 비밀번호와 같습니다.");
+
 
     private final HttpStatus httpStatus;
     private final int code;
