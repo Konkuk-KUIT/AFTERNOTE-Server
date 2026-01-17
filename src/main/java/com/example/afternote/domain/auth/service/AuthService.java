@@ -1,9 +1,7 @@
 package com.example.afternote.domain.auth.service;
 
 
-import com.example.afternote.domain.auth.dto.LoginRequest;
-import com.example.afternote.domain.auth.dto.LoginResponse;
-import com.example.afternote.domain.auth.dto.SignupRequest;
+import com.example.afternote.domain.auth.dto.*;
 import com.example.afternote.domain.user.model.AuthProvider;
 import com.example.afternote.domain.user.model.User;
 import com.example.afternote.domain.user.model.UserStatus;
@@ -54,8 +52,24 @@ public class AuthService {
 
         String accessToken = jwtTokenProvider.generateAccessToken(user.getId());
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getId());
-        tokenService.saveToken("RT"+user.getEmail(), refreshToken);
+        tokenService.saveToken(refreshToken, user.getId());
 
         return LoginResponse.builder().accessToken(accessToken).refreshToken(refreshToken).build();
+    }
+
+    @Transactional
+    public ReissueResponse reissue(ReissueRequest request) {
+        String refreshToken = request.getRefreshToken();
+        Long userId = tokenService.getUserId(request.getRefreshToken());
+        if (!jwtTokenProvider.validateToken(refreshToken)||userId == null) {
+            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
+        }
+        tokenService.deleteToken(refreshToken);
+        String newAccessToken = jwtTokenProvider.generateAccessToken(userId);
+        String newRefreshToken = jwtTokenProvider.generateRefreshToken(userId);
+        tokenService.saveToken(newRefreshToken, userId);
+
+        return ReissueResponse.builder().accessToken(newAccessToken).refreshToken(newRefreshToken).build();
+
     }
 }
