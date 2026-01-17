@@ -72,4 +72,17 @@ public class AuthService {
         return ReissueResponse.builder().accessToken(newAccessToken).refreshToken(newRefreshToken).build();
 
     }
+
+    @Transactional
+    public void passwordChange(Long userId,PasswordChangeRequest request) {
+        if(request.getNewPassword().equals(request.getCurrentPassword())){
+            throw new CustomException(ErrorCode.NEWPASSWORD_MATCH);
+        }
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+            throw new CustomException(ErrorCode.PASSWORD_MISMATCH); // 현재 비번 틀림 예외
+        }
+        user.updatePassword(passwordEncoder.encode(request.getNewPassword()));
+    }
 }

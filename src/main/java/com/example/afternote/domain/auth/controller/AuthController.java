@@ -5,7 +5,9 @@ import com.example.afternote.domain.auth.dto.*;
 import com.example.afternote.domain.auth.service.AuthService;
 import com.example.afternote.domain.user.model.User;
 import com.example.afternote.global.common.ApiResponse;
+import com.example.afternote.global.resolver.UserId;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -43,4 +45,15 @@ public class AuthController {
         ReissueResponse reissueResponse = authService.reissue(reissueRequest);
         return ApiResponse.success(reissueResponse);
     }
+
+    @Operation(summary = "비밀번호 변경 API", description = "현재 비밀번호와 새 비밀번호를 입력합니다.")
+    @PostMapping("/password/change")
+    public ApiResponse<Object> passwordChange(
+            @Parameter(hidden = true) @UserId Long userId, 
+            @Valid @RequestBody PasswordChangeRequest passwordChangeRequest
+    ) {
+        authService.passwordChange(userId, passwordChangeRequest);
+        return ApiResponse.success(null);
+    }
+
 }
