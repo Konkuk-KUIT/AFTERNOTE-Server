@@ -2,6 +2,7 @@ package com.example.afternote.global.config;
 
 import com.example.afternote.global.resolver.UserIdArgumentResolver;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -12,13 +13,16 @@ import java.util.List;
 /**
  * Web MVC 설정
  * - ArgumentResolver 등록
- * - CORS 설정
+ * - CORS 설정 (환경별 분리)
  */
 @Configuration
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
 
     private final UserIdArgumentResolver userIdArgumentResolver;
+    
+    @Value("${cors.allowed-origins}")
+    private String[] allowedOrigins;
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
@@ -28,7 +32,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOriginPatterns("*") // 모든 origin 허용 (개발/배포 환경 모두)
+                .allowedOrigins(allowedOrigins)  // 환경 변수로 관리
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true)

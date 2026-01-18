@@ -25,6 +25,12 @@ public class TokenService {
         return redisTemplate.opsForValue().get("RT:" + refreshToken);
     }
     
+    // 원자적 조회 및 삭제 (TOCTOU 방지)
+    // reissue 시 동시성 문제를 방지하기 위해 사용
+    public Long getUserIdAndDelete(String refreshToken) {
+        return redisTemplate.opsForValue().getAndDelete("RT:" + refreshToken);
+    }
+    
     // 로그아웃 시 Refresh Token 삭제
     public void deleteToken(String refreshToken) {
         redisTemplate.delete("RT:" + refreshToken);
