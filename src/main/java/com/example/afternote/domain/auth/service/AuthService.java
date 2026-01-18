@@ -69,14 +69,14 @@ public class AuthService {
         // 2. JWT에서 userId 추출
         Long userId = jwtTokenProvider.getUserId(refreshToken);
         
-        // 3. Redis에 저장된 userId와 비교 (토큰이 탈취되지 않았는지 확인)
-        Long storedUserId = tokenService.getUserId(refreshToken);
+        // 3. Redis에서 원자적으로 조회 및 삭제 (TOCTOU 방지)
+        // 동시 요청이 들어와도 하나만 성공하도록 보장
+        Long storedUserId = tokenService.getUserIdAndDelete(refreshToken);
         if (storedUserId == null || !storedUserId.equals(userId)) {
             throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
         
-        // 4. 기존 토큰 삭제 후 신규 발급 (RTR 전략)
-        tokenService.deleteToken(refreshToken);
+        // 4. 신규 토큰 발급 (RTR 전략)
         String newAccessToken = jwtTokenProvider.generateAccessToken(userId);
         String newRefreshToken = jwtTokenProvider.generateRefreshToken(userId);
         tokenService.saveToken(newRefreshToken, userId);
