@@ -70,7 +70,17 @@ public enum ErrorCode {
     // 계정 비활성화
     ACCOUNT_DISABLED(HttpStatus.FORBIDDEN, 415, "비활성화된 계정입니다."),
 
-    NEWPASSWORD_MATCH(HttpStatus.BAD_REQUEST, 416, "새 비밀번호와 같습니다.");
+    NEWPASSWORD_MATCH(HttpStatus.BAD_REQUEST, 416, "새 비밀번호와 같습니다."),
+
+    // ======================================
+    // 4. 타임레터 관련 오류 (code: 420 ~ 429)
+    // ======================================
+    TIME_LETTER_NOT_FOUND(HttpStatus.NOT_FOUND, 420, "타임레터를 찾을 수 없습니다."),
+    TIME_LETTER_ACCESS_DENIED(HttpStatus.FORBIDDEN, 421, "해당 타임레터에 대한 권한이 없습니다."),
+    TIME_LETTER_ALREADY_SENT(HttpStatus.BAD_REQUEST, 422, "이미 발송된 타임레터는 수정/삭제할 수 없습니다."),
+    TIME_LETTER_INVALID_STATUS(HttpStatus.BAD_REQUEST, 423, "유효하지 않은 상태 변경입니다."),
+    TIME_LETTER_REQUIRED_FIELDS(HttpStatus.BAD_REQUEST, 424, "정식 등록 시 제목, 내용, 발송일시는 필수입니다."),
+    TIME_LETTER_INVALID_SEND_DATE(HttpStatus.BAD_REQUEST, 425, "발송일시는 현재 시간 이후여야 합니다.");
 
 
     private final HttpStatus httpStatus;
