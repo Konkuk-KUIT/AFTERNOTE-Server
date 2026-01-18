@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  * 
  * 사용 예시:
  * @GetMapping("/profile")
- * public Response getProfile(@AuthUser Long userId) {
+ * public Response getProfile(@UserId Long userId) {
  *     // userId를 바로 사용
  * }
  */
