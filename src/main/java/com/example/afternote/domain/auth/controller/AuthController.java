@@ -1,14 +1,13 @@
 package com.example.afternote.domain.auth.controller;
 
 
-import com.example.afternote.domain.auth.dto.LoginRequest;
-import com.example.afternote.domain.auth.dto.LoginResponse;
-import com.example.afternote.domain.auth.dto.SignupRequest;
-import com.example.afternote.domain.auth.dto.SignupResponse;
+import com.example.afternote.domain.auth.dto.*;
 import com.example.afternote.domain.auth.service.AuthService;
 import com.example.afternote.domain.user.model.User;
 import com.example.afternote.global.common.ApiResponse;
+import com.example.afternote.global.resolver.UserId;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -38,4 +37,35 @@ public class AuthController {
         LoginResponse loginResponse = authService.login(loginRequest);
         return ApiResponse.success(loginResponse);
     }
+
+    @Operation(summary = "토큰 재발급 API", description = "리프레쉬 토큰을 이용해 다시 재발급을 합니다.")
+    @PostMapping("/reissue")
+    public ApiResponse<ReissueResponse> reissue(@Valid @RequestBody ReissueRequest reissueRequest) {
+
+        ReissueResponse reissueResponse = authService.reissue(reissueRequest);
+        return ApiResponse.success(reissueResponse);
+    }
+
+    @Operation(summary = "비밀번호 변경 API", description = "현재 비밀번호와 새 비밀번호를 입력합니다.")
+    @PostMapping("/password/change")
+    public ApiResponse<Object> passwordChange(
+            @Parameter(hidden = true) @UserId Long userId, 
+            @Valid @RequestBody PasswordChangeRequest passwordChangeRequest
+    ) {
+        authService.passwordChange(userId, passwordChangeRequest);
+        return ApiResponse.success(null);
+    }
+
+    @Operation(summary = "로그아웃 API", description = "리프레쉬 토큰을 입력합니다.")
+    @PostMapping("/logout")
+    public ApiResponse<Object> logout(
+            @Parameter(hidden = true) @UserId Long userId,
+            @Valid @RequestBody  LogoutRequest logoutRequest
+    ) {
+        authService.logout(userId, logoutRequest);
+        return ApiResponse.success(null);
+    }
+
+
+
 }

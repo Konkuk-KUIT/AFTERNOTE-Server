@@ -7,26 +7,26 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class TokenService {
 
-    private final RedisTemplate<String, String> redisTemplate;
+    private final RedisTemplate<String, Long> redisTemplate;
 
-    public TokenService(RedisTemplate<String, String> redisTemplate) {
+    public TokenService(RedisTemplate<String, Long> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
     // Refresh Token 저장 (예: 7일간 유효)
     // Key를 "RT:사용자ID" 또는 "RT:이메일" 형태로 지정하여 구분하기 쉽게 함
-    public void saveToken(String email, String refreshToken) {
+    public void saveToken(String refreshToken, Long userId) {
         redisTemplate.opsForValue()
-                     .set("RT:" + email, refreshToken, 7, TimeUnit.DAYS);
+                     .set("RT:"+refreshToken,userId, 7, TimeUnit.DAYS);
     }
 
     //조회
-    public String getToken(String email) {
-        return redisTemplate.opsForValue().get("RT:" + email);
+    public Long getUserId(String refreshToken) {
+        return redisTemplate.opsForValue().get("RT:" + refreshToken);
     }
     
     // 로그아웃 시 Refresh Token 삭제
-    public void deleteToken(String email) {
-        redisTemplate.delete("RT:" + email);
+    public void deleteToken(String refreshToken) {
+        redisTemplate.delete("RT:" + refreshToken);
     }
 }
