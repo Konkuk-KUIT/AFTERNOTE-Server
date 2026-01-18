@@ -31,16 +31,18 @@ public class TimeLetterMedia {
     @Column(name = "media_type", nullable = false)
     private MediaType mediaType;
 
-    // 파일 경로나 URL을 저장할 필드가 필요하다면 추가 (ERD에는 없지만 보통 필요함)
-    // private String fileUrl;
+    // 파일 경로 또는 URL
+    @Column(name = "media_url", nullable = false, length = 500)
+    private String mediaUrl;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @Builder
-    public TimeLetterMedia(TimeLetter timeLetter, MediaType mediaType) {
+    public TimeLetterMedia(TimeLetter timeLetter, MediaType mediaType, String mediaUrl) {
         this.timeLetter = timeLetter;
         this.mediaType = mediaType;
+        this.mediaUrl = mediaUrl;
     }
 }
