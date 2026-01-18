@@ -70,8 +70,11 @@ public enum ErrorCode {
     // 계정 비활성화
     ACCOUNT_DISABLED(HttpStatus.FORBIDDEN, 415, "비활성화된 계정입니다."),
 
-    NEWPASSWORD_MATCH(HttpStatus.BAD_REQUEST, 416, "새 비밀번호와 같습니다.");
+    //비밀번호 변경 오류
+    NEWPASSWORD_MATCH(HttpStatus.BAD_REQUEST, 416, "새 비밀번호와 같습니다."),
 
+    //이메일 인증 실패
+    INVALID_EMAIL_VERIFICATION(HttpStatus.BAD_REQUEST, 417, "인증번호가 유효하지 않습니다.");
 
     private final HttpStatus httpStatus;
     private final int code;
