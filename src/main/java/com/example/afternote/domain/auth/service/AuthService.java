@@ -21,8 +21,9 @@ public class AuthService {
 
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
-    private final TokenService tokenService;
 
+    private final TokenService tokenService;
+    private final EmailService emailService;
 
     @Transactional
     public User signup(SignupRequest request) {
@@ -112,5 +113,17 @@ public class AuthService {
         
         // Refresh Token 삭제 (이후 재발급 불가)
         tokenService.deleteToken(refreshToken);
+    }
+
+    @Transactional
+    public void emailSend(EmailSendRequest request) {
+        emailService.sendCode(request.getEmail());
+    }
+
+    @Transactional
+    public void emailVerify(EmailVerifyRequest request) {
+        if(!emailService.verifyCode(request.getEmail(), request.getCertificateCode())){
+            throw new CustomException(ErrorCode.INVALID_EMAIL_VERIFICATION);
+        }
     }
 }
