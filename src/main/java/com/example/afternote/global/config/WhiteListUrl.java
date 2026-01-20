@@ -14,8 +14,12 @@ public enum WhiteListUrl {
     API_DOCS("/v3/api-docs/**"),
     RESOURCES("/swagger-resources/**"),
 
-    //회원가입
-    AUTH("/auth/**");
+    //회원가입, 로그인 (reissue는 JWT 검증 필요하므로 제외)
+    AUTH_SIGNUP("/auth/sign-up"),
+    AUTH_LOGIN("/auth/login"),
+    AUTH_REISSUE("/auth/reissue"),
+    AUTH_LOGOUT("/auth/logout");
+
 
     private final String url;
 
