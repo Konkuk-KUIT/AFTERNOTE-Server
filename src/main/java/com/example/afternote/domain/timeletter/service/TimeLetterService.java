@@ -167,7 +167,7 @@ public class TimeLetterService {
         }
 
         // 엔티티 업데이트
-        timeLetter.update(request.getTitle(), request.getContent(), request.getSendAt(), request.getStatus());
+        timeLetter.update(newTitle, newContent, newSendAt, newStatus);
 
         // 미디어 갱신 (기존 삭제 후 새로 저장)
         List<TimeLetterMedia> updatedMediaList;
