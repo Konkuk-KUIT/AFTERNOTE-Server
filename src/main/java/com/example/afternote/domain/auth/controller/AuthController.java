@@ -66,6 +66,25 @@ public class AuthController {
         return ApiResponse.success(null);
     }
 
+    @Operation(summary = "이메일 인증번호 전송 API", description = "이메일을 입력해 인증번호를 받습니다.")
+    @PostMapping("/email/send")
+    public ApiResponse<Object> emailSend(
+            @Valid @RequestBody  EmailSendRequest emailSendRequest
+    ) {
+        authService.emailSend(emailSendRequest);
+        return ApiResponse.success(null);
+    }
+
+    @Operation(summary = "이메일 인증번호 검증 API", description = "이메일과 인증코드를 통해 검증받습니다.")
+    @PostMapping("/email/verify")
+    public ApiResponse<Object> emailVerify(
+            @Valid @RequestBody   EmailVerifyRequest emailVerifyRequest
+    ) {
+        authService.emailVerify(emailVerifyRequest);
+        return ApiResponse.success(null);
+    }
+
+
 
 
 }

@@ -82,6 +82,8 @@ public enum ErrorCode {
     TIME_LETTER_REQUIRED_FIELDS(HttpStatus.BAD_REQUEST, 424, "정식 등록 시 제목, 내용, 발송일시는 필수입니다."),
     TIME_LETTER_INVALID_SEND_DATE(HttpStatus.BAD_REQUEST, 425, "발송일시는 현재 시간 이후여야 합니다.");
 
+    //이메일 인증 실패
+    INVALID_EMAIL_VERIFICATION(HttpStatus.BAD_REQUEST, 417, "인증번호가 유효하지 않습니다.");
 
     private final HttpStatus httpStatus;
     private final int code;
