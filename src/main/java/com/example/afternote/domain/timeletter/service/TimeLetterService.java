@@ -34,7 +34,6 @@ public class TimeLetterService {
     public TimeLetterListResponse getTimeLetters(Long userId) {
         List<TimeLetter> timeLetters = timeLetterRepository
                 .findByUserIdAndStatusOrderByCreatedAtDesc(userId, TimeLetterStatus.SCHEDULED);
-        System.out.println("timeLetters = " + timeLetters);
         List<TimeLetterResponse> responses = timeLetters.stream()
                 .map(timeLetter -> {
                     List<TimeLetterMedia> mediaList = timeLetterMediaRepository.findByTimeLetterId(timeLetter.getId());

@@ -47,7 +47,7 @@ public class TimeLetterResponse {
                 .content(timeLetter.getContent())
                 .sendAt(timeLetter.getSendAt())
                 .status(timeLetter.getStatus())
-                .mediaList(mediaList.stream()
+                .mediaList(mediaList == null ? List.of() : mediaList.stream()
                         .map(TimeLetterMediaResponse::from)
                         .collect(Collectors.toList()))
                 .createdAt(timeLetter.getCreatedAt())
