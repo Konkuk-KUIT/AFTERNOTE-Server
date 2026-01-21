@@ -71,6 +71,7 @@ public enum ErrorCode {
     ACCOUNT_DISABLED(HttpStatus.FORBIDDEN, 415, "비활성화된 계정입니다."),
 
     NEWPASSWORD_MATCH(HttpStatus.BAD_REQUEST, 416, "새 비밀번호와 같습니다."),
+    INVALID_EMAIL_VERIFICATION(HttpStatus.BAD_REQUEST, 417, "인증번호가 유효하지 않습니다."),
 
     // ======================================
     // 4. 타임레터 관련 오류 (code: 420 ~ 429)
@@ -83,7 +84,6 @@ public enum ErrorCode {
     TIME_LETTER_INVALID_SEND_DATE(HttpStatus.BAD_REQUEST, 425, "발송일시는 현재 시간 이후여야 합니다.");
 
     //이메일 인증 실패
-    INVALID_EMAIL_VERIFICATION(HttpStatus.BAD_REQUEST, 417, "인증번호가 유효하지 않습니다.");
 
     private final HttpStatus httpStatus;
     private final int code;
