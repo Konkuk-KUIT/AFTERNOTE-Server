@@ -1,7 +1,9 @@
 package com.example.afternote.domain.user.service;
 
+import com.example.afternote.domain.user.dto.UserPushSettingResponse;
 import com.example.afternote.domain.user.dto.UserResponse;
 import com.example.afternote.domain.user.dto.UserUpdateProfileRequest;
+import com.example.afternote.domain.user.dto.UserUpdatePushSettingRequest;
 import com.example.afternote.domain.user.model.User;
 import com.example.afternote.domain.user.repository.UserRepository;
 import com.example.afternote.global.exception.CustomException;
@@ -37,5 +39,29 @@ public class UserService {
 
         return UserResponse.from(user);
     }
+
+
+    public UserPushSettingResponse getMyPushSettings(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        return UserPushSettingResponse.from(user);
+    }
+
+    @Transactional
+    public UserPushSettingResponse updateMyPushSettings(Long userId, UserUpdatePushSettingRequest request
+    ) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        user.updatePushSettings(
+                request.isTimeLetter(),
+                request.isMindRecord(),
+                request.isAfterNote()
+        );
+
+        return UserPushSettingResponse.from(user);
+    }
+
 
 }

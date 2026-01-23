@@ -9,7 +9,7 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
-public class UserPushSettingsResponse {
+public class UserPushSettingResponse {
 
     @Schema(description = "타임레터 푸시 알림 수신 여부", example = "true")
     private boolean timeLetter;
@@ -20,8 +20,8 @@ public class UserPushSettingsResponse {
     @Schema(description = "애프터노트 푸시 알림 수신 여부", example = "true")
     private boolean afterNote;
 
-    public static UserPushSettingsResponse from(User user) {
-        return UserPushSettingsResponse.builder()
+    public static UserPushSettingResponse from(User user) {
+        return UserPushSettingResponse.builder()
                 .timeLetter(user.isTimeLetterPushEnabled())
                 .mindRecord(user.isMindRecordPushEnabled())
                 .afterNote(user.isAfterNotePushEnabled())

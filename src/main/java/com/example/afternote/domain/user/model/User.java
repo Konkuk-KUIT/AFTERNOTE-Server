@@ -92,4 +92,10 @@ public class User {
             this.profileImageUrl = profileImageUrl;
         }
     }
+
+    public void updatePushSettings(boolean timeLetter, boolean mindRecord, boolean afterNote) {
+        this.timeLetterPushEnabled = timeLetter;
+        this.mindRecordPushEnabled = mindRecord;
+        this.afterNotePushEnabled = afterNote;
+    }
 }
