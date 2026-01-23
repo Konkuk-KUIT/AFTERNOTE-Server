@@ -4,6 +4,7 @@ import com.example.afternote.domain.user.dto.UserResponse;
 import com.example.afternote.domain.user.dto.UserUpdateProfileRequest;
 import com.example.afternote.domain.user.service.UserService;
 import com.example.afternote.global.common.ApiResponse;
+import com.example.afternote.global.resolver.UserId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ public class UserController {
     )
     @GetMapping("/me")
     public ApiResponse<UserResponse> getMyProfile(
-            @AuthenticationPrincipal Long userId
+            @UserId Long userId
     ) {
         return ApiResponse.success(
                 userService.getMyProfile(userId)
@@ -37,7 +38,7 @@ public class UserController {
     )
     @PatchMapping("/me")
     public ApiResponse<UserResponse> updateMyProfile(
-            @AuthenticationPrincipal Long userId,
+            @UserId Long userId,
             @RequestBody(required = false) UserUpdateProfileRequest request
     ) {
         return ApiResponse.success(
