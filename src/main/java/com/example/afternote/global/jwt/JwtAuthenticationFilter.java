@@ -37,15 +37,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             // 4. 유저 정보를 임시로 만들어서 SecurityContext에 넣어주기 (로그인 인정)
             // (권한은 일단 USER로 통일. 실제로는 DB에서 조회해서 넣을 수도 있음)
-            //UserDetails userDetails = new User(userId, "", Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")));
-            //Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
-
-            Authentication authentication =
-                    new UsernamePasswordAuthenticationToken(
-                            userId,   // ⭐ 핵심: principal에 Long 저장
-                            null,
-                            Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"))
-                    );
+            UserDetails userDetails = new User(String.valueOf(userId), "", Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")));
+            Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
