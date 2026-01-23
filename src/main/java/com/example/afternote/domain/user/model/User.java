@@ -44,6 +44,15 @@ public class User {
     @Column(nullable = false)
     private AuthProvider provider; // ERD 하단에 추가된 provider 필드 반영
 
+    @Column(nullable = false)
+    private boolean timeLetterPushEnabled;
+
+    @Column(nullable = false)
+    private boolean mindRecordPushEnabled;
+
+    @Column(nullable = false)
+    private boolean afterNotePushEnabled;
+
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -66,6 +75,10 @@ public class User {
         this.profileImageUrl = profileImageUrl;
         this.status = status;
         this.provider = provider;
+
+        this.timeLetterPushEnabled = true;
+        this.mindRecordPushEnabled = true;
+        this.afterNotePushEnabled = true;
     }
 
     public void updateProfile(String name, String phone, String profileImageUrl) {
