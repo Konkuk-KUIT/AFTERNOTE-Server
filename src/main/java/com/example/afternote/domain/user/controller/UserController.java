@@ -25,10 +25,10 @@ public class UserController {
     )
     @GetMapping("/me")
     public ApiResponse<UserResponse> getMyProfile(
-            @Parameter(hidden = true) @AuthenticationPrincipal Long userId
+            @Parameter(hidden = true) @AuthenticationPrincipal Long userid
     ) {
         return ApiResponse.success(
-                userService.getMyProfile(userId)
+                userService.getMyProfile(userid)
         );
     }
 
