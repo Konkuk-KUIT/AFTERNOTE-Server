@@ -5,6 +5,7 @@ import com.example.afternote.domain.user.dto.UserUpdateProfileRequest;
 import com.example.afternote.domain.user.service.UserService;
 import com.example.afternote.global.common.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,7 +25,7 @@ public class UserController {
     )
     @GetMapping("/me")
     public ApiResponse<UserResponse> getMyProfile(
-            @AuthenticationPrincipal Long userId
+            @Parameter(hidden = true) @AuthenticationPrincipal Long userId
     ) {
         return ApiResponse.success(
                 userService.getMyProfile(userId)
