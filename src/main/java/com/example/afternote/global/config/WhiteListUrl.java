@@ -9,13 +9,15 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public enum WhiteListUrl {
 
-    //swagger
+    //swaggar
     SWAGGER_UI("/swagger-ui/**"),
     API_DOCS("/v3/api-docs/**"),
     RESOURCES("/swagger-resources/**"),
 
-    //회원가입
-    AUTH("/auth/**");
+    //회원가입, 로그인, 토큰 재발급
+    AUTH_SIGNUP("/auth/sign-up"),
+    AUTH_LOGIN("/auth/login"),
+    AUTH_REISSUE("/auth/reissue");
 
     private final String url;
 

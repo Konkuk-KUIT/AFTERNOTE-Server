@@ -1,5 +1,6 @@
 package com.example.afternote.global.jwt;
 
+import com.example.afternote.global.resolver.UserIdArgumentResolver;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,7 +36,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // 3. 토큰에서 ID(Subject) 꺼내기
             Long userId = jwtTokenProvider.getUserId(token);
 
-            // 4. 유저 정보를 임시로 만들어서 SecurityContext에 넣어주기 (로그인 인정)
+            // 4. Request Attribute에 userId 저장 (컨트롤러에서 @AuthUser로 접근 가능)
+            request.setAttribute(UserIdArgumentResolver.USER_ID_ATTRIBUTE, userId);
+
+            // 5. 유저 정보를 임시로 만들어서 SecurityContext에 넣어주기 (로그인 인정)
             // (권한은 일단 USER로 통일. 실제로는 DB에서 조회해서 넣을 수도 있음)
             UserDetails userDetails = new User(String.valueOf(userId), "", Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")));
             Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
@@ -43,7 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
-        // 5. 다음 필터로 넘기기
+        // 6. 다음 필터로 넘기기
         filterChain.doFilter(request, response);
     }
 

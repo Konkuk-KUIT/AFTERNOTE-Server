@@ -1,9 +1,7 @@
 package com.example.afternote.domain.auth.service;
 
 
-import com.example.afternote.domain.auth.dto.LoginRequest;
-import com.example.afternote.domain.auth.dto.LoginResponse;
-import com.example.afternote.domain.auth.dto.SignupRequest;
+import com.example.afternote.domain.auth.dto.*;
 import com.example.afternote.domain.user.model.AuthProvider;
 import com.example.afternote.domain.user.model.User;
 import com.example.afternote.domain.user.model.UserStatus;
@@ -23,8 +21,9 @@ public class AuthService {
 
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
-    private final TokenService tokenService;
 
+    private final TokenService tokenService;
+    private final EmailService emailService;
 
     @Transactional
     public User signup(SignupRequest request) {
@@ -54,8 +53,77 @@ public class AuthService {
 
         String accessToken = jwtTokenProvider.generateAccessToken(user.getId());
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getId());
-        tokenService.saveToken("RT"+user.getEmail(), refreshToken);
+        tokenService.saveToken(refreshToken, user.getId());
 
         return LoginResponse.builder().accessToken(accessToken).refreshToken(refreshToken).build();
+    }
+
+    @Transactional
+    public ReissueResponse reissue(ReissueRequest request) {
+        String refreshToken = request.getRefreshToken();
+        
+        // 1. JWT 자체의 유효성 먼저 검증 (서명, 만료시간)
+        if (!jwtTokenProvider.validateToken(refreshToken)) {
+            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
+        }
+        
+        // 2. JWT에서 userId 추출
+        Long userId = jwtTokenProvider.getUserId(refreshToken);
+        
+        // 3. Redis에서 원자적으로 조회 및 삭제 (TOCTOU 방지)
+        // 동시 요청이 들어와도 하나만 성공하도록 보장
+        Long storedUserId = tokenService.getUserIdAndDelete(refreshToken);
+        if (storedUserId == null || !storedUserId.equals(userId)) {
+            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
+        }
+        
+        // 4. 신규 토큰 발급 (RTR 전략)
+        String newAccessToken = jwtTokenProvider.generateAccessToken(userId);
+        String newRefreshToken = jwtTokenProvider.generateRefreshToken(userId);
+        tokenService.saveToken(newRefreshToken, userId);
+
+        return ReissueResponse.builder()
+                .accessToken(newAccessToken)
+                .refreshToken(newRefreshToken)
+                .build();
+    }
+
+    @Transactional
+    public void passwordChange(Long userId,PasswordChangeRequest request) {
+        if(request.getNewPassword().equals(request.getCurrentPassword())){
+            throw new CustomException(ErrorCode.NEWPASSWORD_MATCH);
+        }
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+            throw new CustomException(ErrorCode.PASSWORD_MISMATCH); // 현재 비번 틀림 예외
+        }
+        user.updatePassword(passwordEncoder.encode(request.getNewPassword()));
+    }
+
+    @Transactional
+    public void logout(Long userId, LogoutRequest request) {
+        String refreshToken = request.getRefreshToken();
+        
+        // Redis에서 조회한 userId와 JWT의 userId가 일치하는지 확인
+        Long storedUserId = tokenService.getUserId(refreshToken);
+        if (storedUserId == null || !storedUserId.equals(userId)) {
+            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
+        }
+        
+        // Refresh Token 삭제 (이후 재발급 불가)
+        tokenService.deleteToken(refreshToken);
+    }
+
+    @Transactional
+    public void emailSend(EmailSendRequest request) {
+        emailService.sendCode(request.getEmail());
+    }
+
+    @Transactional
+    public void emailVerify(EmailVerifyRequest request) {
+        if(!emailService.verifyCode(request.getEmail(), request.getCertificateCode())){
+            throw new CustomException(ErrorCode.INVALID_EMAIL_VERIFICATION);
+        }
     }
 }
