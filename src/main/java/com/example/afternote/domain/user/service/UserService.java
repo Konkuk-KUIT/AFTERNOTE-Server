@@ -29,9 +29,11 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        if (request.getName() != null) { user.setName(request.getName()); }
-        if (request.getPhone() != null) { user.setPhone(request.getPhone()); }
-        if (request.getProfileImageUrl() != null) { user.setProfileImageUrl(request.getProfileImageUrl()); }
+        user.updateProfile(
+                request.getName(),
+                request.getPhone(),
+                request.getProfileImageUrl()
+        );
 
         return UserResponse.from(user);
     }

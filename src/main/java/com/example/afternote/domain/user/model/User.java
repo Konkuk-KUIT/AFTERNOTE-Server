@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -28,15 +27,12 @@ public class User {
     @Column(nullable = false) // 카카오 로그인만 쓸 경우 nullable = true로 변경 고려
     private String password;
 
-    @Setter
     @Column(nullable = false, length = 50)
     private String name;
 
-    @Setter
     @Column
     private String phone; // 연락처 (선택)
 
-    @Setter
     @Column
     private String profileImageUrl; // 프로필 이미지 URL (선택)
 
@@ -70,5 +66,17 @@ public class User {
         this.profileImageUrl = profileImageUrl;
         this.status = status;
         this.provider = provider;
+    }
+
+    public void updateProfile(String name, String phone, String profileImageUrl) {
+        if (name != null) {
+            this.name = name;
+        }
+        if (phone != null) {
+            this.phone = phone;
+        }
+        if (profileImageUrl != null) {
+            this.profileImageUrl = profileImageUrl;
+        }
     }
 }
