@@ -12,13 +12,13 @@ import lombok.Getter;
 public class UserPushSettingResponse {
 
     @Schema(description = "타임레터 푸시 알림 수신 여부", example = "true")
-    private boolean timeLetter;
+    private Boolean timeLetter;
 
     @Schema(description = "마음의 기록 푸시 알림 수신 여부", example = "false")
-    private boolean mindRecord;
+    private Boolean mindRecord;
 
     @Schema(description = "애프터노트 푸시 알림 수신 여부", example = "true")
-    private boolean afterNote;
+    private Boolean afterNote;
 
     public static UserPushSettingResponse from(User user) {
         return UserPushSettingResponse.builder()

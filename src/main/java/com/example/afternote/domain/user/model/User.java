@@ -1,5 +1,7 @@
 package com.example.afternote.domain.user.model;
 
+import com.example.afternote.global.exception.CustomException;
+import com.example.afternote.global.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -83,12 +85,15 @@ public class User {
 
     public void updateProfile(String name, String phone, String profileImageUrl) {
         if (name != null) {
+            if (name.isBlank()) {
+                throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
+            }
             this.name = name;
         }
-        if (phone != null) {
+        if (phone != null && !phone.isBlank()) {
             this.phone = phone;
         }
-        if (profileImageUrl != null) {
+        if (profileImageUrl != null && !profileImageUrl.isBlank()) {
             this.profileImageUrl = profileImageUrl;
         }
     }

@@ -55,9 +55,9 @@ public class UserService {
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         user.updatePushSettings(
-                request.isTimeLetter(),
-                request.isMindRecord(),
-                request.isAfterNote()
+                request.getTimeLetter(),
+                request.getMindRecord(),
+                request.getAfterNote()
         );
 
         return UserPushSettingResponse.from(user);

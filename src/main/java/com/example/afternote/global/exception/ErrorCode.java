@@ -74,7 +74,12 @@ public enum ErrorCode {
     NEWPASSWORD_MATCH(HttpStatus.BAD_REQUEST, 416, "새 비밀번호와 같습니다."),
 
     //이메일 인증 실패
-    INVALID_EMAIL_VERIFICATION(HttpStatus.BAD_REQUEST, 417, "인증번호가 유효하지 않습니다.");
+    INVALID_EMAIL_VERIFICATION(HttpStatus.BAD_REQUEST, 417, "인증번호가 유효하지 않습니다."),
+
+    // ======================================
+    // 4. 요청 값 검증 오류 (code: 420 ~)
+    // ======================================
+    INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, 420, "요청 값이 올바르지 않습니다.");
 
     private final HttpStatus httpStatus;
     private final int code;
