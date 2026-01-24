@@ -41,7 +41,7 @@ public class UserController {
     @PatchMapping("/me")
     public ApiResponse<UserResponse> updateMyProfile(
             @UserId Long userId,
-            @Valid @RequestBody(required = false) UserUpdateProfileRequest request
+            @Valid @RequestBody UserUpdateProfileRequest request
     ) {
         return ApiResponse.success(
                 userService.updateMyProfile(userId, request)
