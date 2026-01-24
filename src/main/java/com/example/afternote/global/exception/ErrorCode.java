@@ -56,10 +56,10 @@ public enum ErrorCode {
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, 410, "이미 가입된 이메일입니다."),
 
     // 사용자를 찾을 수 없음
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, 411, "사용자를 찾을 수 없습니다."),
+    USER_NOT_FOUND(HttpStatus.UNAUTHORIZED, 411, "아이디 또는 비밀번호가 일치하지 않습니다."),
 
     // 비밀번호 불일치
-    PASSWORD_MISMATCH(HttpStatus.BAD_REQUEST, 412, "비밀번호가 일치하지 않습니다."),
+    PASSWORD_MISMATCH(HttpStatus.UNAUTHORIZED, 412, "아이디 또는 비밀번호가 일치하지 않습니다."),
 
     // 비밀번호 형식 오류
     INVALID_PASSWORD_FORMAT(HttpStatus.BAD_REQUEST, 413, "비밀번호는 8자 이상, 영문/숫자/특수문자를 포함해야 합니다."),
@@ -71,6 +71,7 @@ public enum ErrorCode {
     ACCOUNT_DISABLED(HttpStatus.FORBIDDEN, 415, "비활성화된 계정입니다."),
 
     NEWPASSWORD_MATCH(HttpStatus.BAD_REQUEST, 416, "새 비밀번호와 같습니다."),
+
     INVALID_EMAIL_VERIFICATION(HttpStatus.BAD_REQUEST, 417, "인증번호가 유효하지 않습니다."),
 
     // ======================================
