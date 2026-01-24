@@ -93,9 +93,9 @@ public class User {
         }
     }
 
-    public void updatePushSettings(boolean timeLetter, boolean mindRecord, boolean afterNote) {
-        this.timeLetterPushEnabled = timeLetter;
-        this.mindRecordPushEnabled = mindRecord;
-        this.afterNotePushEnabled = afterNote;
+    public void updatePushSettings(Boolean timeLetter, Boolean mindRecord, Boolean afterNote) {
+        if (timeLetter != null) { this.timeLetterPushEnabled = timeLetter; }
+        if (mindRecord != null) { this.mindRecordPushEnabled = mindRecord; }
+        if (afterNote != null) { this.afterNotePushEnabled = afterNote; }
     }
 }
