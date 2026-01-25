@@ -30,14 +30,18 @@ public class Receiver {
     @Column(length = 20)
     private String phone;
 
+    @Column(length = 50)
+    private String email;
+
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @Builder
-    public Receiver(String name, String relation, String phone) {
+    public Receiver(String name, String relation, String phone, String email) {
         this.name = name;
         this.relation = relation;
         this.phone = phone;
+        this.email = email;
     }
 }
