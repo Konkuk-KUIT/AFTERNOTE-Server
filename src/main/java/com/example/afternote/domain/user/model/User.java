@@ -1,5 +1,7 @@
 package com.example.afternote.domain.user.model;
 
+import com.example.afternote.global.exception.CustomException;
+import com.example.afternote.global.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -44,6 +46,15 @@ public class User {
     @Column(nullable = false)
     private AuthProvider provider; // ERD 하단에 추가된 provider 필드 반영
 
+    @Column(nullable = false)
+    private boolean timeLetterPushEnabled;
+
+    @Column(nullable = false)
+    private boolean mindRecordPushEnabled;
+
+    @Column(nullable = false)
+    private boolean afterNotePushEnabled;
+
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -66,17 +77,30 @@ public class User {
         this.profileImageUrl = profileImageUrl;
         this.status = status;
         this.provider = provider;
+
+        this.timeLetterPushEnabled = true;
+        this.mindRecordPushEnabled = true;
+        this.afterNotePushEnabled = true;
     }
 
     public void updateProfile(String name, String phone, String profileImageUrl) {
         if (name != null) {
+            if (name.isBlank()) {
+                throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
+            }
             this.name = name;
         }
-        if (phone != null) {
+        if (phone != null && !phone.isBlank()) {
             this.phone = phone;
         }
-        if (profileImageUrl != null) {
+        if (profileImageUrl != null && !profileImageUrl.isBlank()) {
             this.profileImageUrl = profileImageUrl;
         }
+    }
+
+    public void updatePushSettings(Boolean timeLetter, Boolean mindRecord, Boolean afterNote) {
+        if (timeLetter != null) { this.timeLetterPushEnabled = timeLetter; }
+        if (mindRecord != null) { this.mindRecordPushEnabled = mindRecord; }
+        if (afterNote != null) { this.afterNotePushEnabled = afterNote; }
     }
 }

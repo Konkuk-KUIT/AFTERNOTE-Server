@@ -2,8 +2,10 @@ package com.example.afternote.domain.user.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class UserUpdateProfileRequest {
     @Schema(description = "사용자 이름", example = "김소희", nullable = true)
     private String name;

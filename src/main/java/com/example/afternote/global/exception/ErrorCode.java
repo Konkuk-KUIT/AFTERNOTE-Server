@@ -81,9 +81,13 @@ public enum ErrorCode {
     TIME_LETTER_ALREADY_SENT(HttpStatus.BAD_REQUEST, 422, "이미 발송된 타임레터는 수정/삭제할 수 없습니다."),
     TIME_LETTER_INVALID_STATUS(HttpStatus.BAD_REQUEST, 423, "유효하지 않은 상태 변경입니다."),
     TIME_LETTER_REQUIRED_FIELDS(HttpStatus.BAD_REQUEST, 424, "정식 등록 시 제목, 내용, 발송일시는 필수입니다."),
-    TIME_LETTER_INVALID_SEND_DATE(HttpStatus.BAD_REQUEST, 425, "발송일시는 현재 시간 이후여야 합니다.");
+    TIME_LETTER_INVALID_SEND_DATE(HttpStatus.BAD_REQUEST, 425, "발송일시는 현재 시간 이후여야 합니다."),
 
-    //이메일 인증 실패
+    // ======================================
+    // 5. 요청 값 검증 오류 (code: 430 ~)
+    // ======================================
+    INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, 430, "요청 값이 올바르지 않습니다.");
+
 
     private final HttpStatus httpStatus;
     private final int code;
