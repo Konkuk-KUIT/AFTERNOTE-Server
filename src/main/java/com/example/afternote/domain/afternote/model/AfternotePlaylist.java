@@ -27,12 +27,15 @@ public class AfternotePlaylist {
     @Column(nullable = false, length = 100)
     private String title;
     
+<<<<<<< HEAD
     @Column(length = 500)
     private String atmosphere;
     
     @Embedded
     private MemorialVideo memorialVideo;
     
+=======
+>>>>>>> a4e8a8a ([feat] entity 구현)
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -40,6 +43,7 @@ public class AfternotePlaylist {
     @OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<AfternotePlaylistItem> items = new ArrayList<>();
+<<<<<<< HEAD
     
     /**
      * PATCH 업데이트: null이 아닌 필드만 업데이트
@@ -67,4 +71,6 @@ public class AfternotePlaylist {
         @Column(name = "thumbnail_url", length = 500)
         private String thumbnailUrl;
     }
+=======
+>>>>>>> a4e8a8a ([feat] entity 구현)
 }
