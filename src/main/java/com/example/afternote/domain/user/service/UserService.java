@@ -2,6 +2,7 @@ package com.example.afternote.domain.user.service;
 
 import com.example.afternote.domain.receiver.model.Receiver;
 import com.example.afternote.domain.receiver.model.UserReceiver;
+import com.example.afternote.domain.receiver.repository.ReceiverRepository;
 import com.example.afternote.domain.receiver.repository.UserReceiverRepository;
 import com.example.afternote.domain.user.dto.*;
 import com.example.afternote.domain.user.model.User;
@@ -19,6 +20,7 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
     private final UserReceiverRepository userReceiverRepository;
+    private final ReceiverRepository receiverRepository;
 
     public UserResponse getMyProfile(Long userId) {
 
@@ -93,6 +95,32 @@ public class UserService {
                 timeLetterCount,
                 afterNoteCount
         );
+    }
+
+    @Transactional
+    public UserCreateReceiverResponse createReceiver(
+            Long userId,
+            UserCreateReceiverRequest request
+    ) {
+        User user = findUserById(userId);
+
+        Receiver receiver = Receiver.builder()
+                .name(request.getName())
+                .relation(request.getRelation())
+                .phone(request.getPhone())
+                .email(request.getEmail())
+                .build();
+
+        receiverRepository.save(receiver);
+
+        UserReceiver userReceiver = UserReceiver.builder()
+                .user(user)
+                .receiver(receiver)
+                .build();
+
+        userReceiverRepository.save(userReceiver);
+
+        return UserCreateReceiverResponse.from(receiver.getId());
     }
 
     private User findUserById(Long userId) {
