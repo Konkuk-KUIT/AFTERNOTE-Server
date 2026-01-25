@@ -1,18 +1,16 @@
 package com.example.afternote.domain.user.service;
 
 import com.example.afternote.domain.receiver.model.Receiver;
-import com.example.afternote.domain.receiver.repository.ReceivedRepository;
+import com.example.afternote.domain.receiver.model.UserReceiver;
+import com.example.afternote.domain.receiver.repository.UserReceiverRepository;
 import com.example.afternote.domain.user.dto.*;
 import com.example.afternote.domain.user.model.User;
 import com.example.afternote.domain.user.repository.UserRepository;
-import com.example.afternote.domain.userreceiver.model.UserReceiver;
-import com.example.afternote.domain.userreceiver.repository.UserReceiverRepository;
 import com.example.afternote.global.exception.CustomException;
 import com.example.afternote.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 
 @Service
