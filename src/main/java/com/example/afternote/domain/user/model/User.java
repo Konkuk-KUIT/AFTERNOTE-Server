@@ -30,6 +30,12 @@ public class User {
     @Column(nullable = false, length = 50)
     private String name;
 
+    @Column
+    private String phone; // 연락처 (선택)
+
+    @Column
+    private String profileImageUrl; // 프로필 이미지 URL (선택)
+
     @Enumerated(EnumType.STRING) // DB에 숫자가 아닌 텍스트(ACTIVE)로 저장
     @Column(nullable = false)
     private UserStatus status;
@@ -51,11 +57,26 @@ public class User {
     }
 
     @Builder
-    public User(String email, String password, String name, UserStatus status, AuthProvider provider) {
+    public User(String email, String password, String name, String phone,
+                String profileImageUrl, UserStatus status, AuthProvider provider) {
         this.email = email;
         this.password = password;
         this.name = name;
+        this.phone = phone;
+        this.profileImageUrl = profileImageUrl;
         this.status = status;
         this.provider = provider;
+    }
+
+    public void updateProfile(String name, String phone, String profileImageUrl) {
+        if (name != null) {
+            this.name = name;
+        }
+        if (phone != null) {
+            this.phone = phone;
+        }
+        if (profileImageUrl != null) {
+            this.profileImageUrl = profileImageUrl;
+        }
     }
 }
