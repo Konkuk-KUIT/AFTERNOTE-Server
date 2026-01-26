@@ -55,7 +55,13 @@ public class MindRecordService {
         }
 
         MindRecordType type = request.getType();
-        YearMonth yearMonth = YearMonth.of(request.getYear(), request.getMonth());
+        YearMonth yearMonth;
+
+        try {
+            yearMonth = YearMonth.of(request.getYear(), request.getMonth());
+        } catch (Exception e) {
+            throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
+        }
 
         return mindRecordRepository.findByUserAndTypeAndRecordDateBetween(
                 user, type, yearMonth.atDay(1), yearMonth.atEndOfMonth()
