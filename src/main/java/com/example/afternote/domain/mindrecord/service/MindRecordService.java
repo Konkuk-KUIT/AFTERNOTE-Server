@@ -7,6 +7,7 @@ import com.example.afternote.domain.mindrecord.model.MindRecord;
 import com.example.afternote.domain.mindrecord.model.MindRecordType;
 import com.example.afternote.domain.mindrecord.repository.MindRecordRepository;
 import com.example.afternote.domain.user.model.User;
+import com.example.afternote.domain.user.repository.UserRepository;
 import com.example.afternote.global.exception.CustomException;
 import com.example.afternote.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -22,14 +23,18 @@ import java.util.List;
 public class MindRecordService {
 
     private final MindRecordRepository mindRecordRepository;
+    private final UserRepository userRepository;
 
     /**
      * 마음의 기록 목록 조회 (LIST / CALENDAR 공통)
      */
     public GetMindRecordListResponse getMindRecordList(
-            User user,
+            Long userId,
             GetMindRecordListRequest request
     ) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
         List<MindRecord> records = request.isCalendarView()
                 ? findCalendarRecords(user, request)
                 : findListRecords(user, request.getType());

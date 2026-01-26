@@ -22,7 +22,6 @@ public class GetMindRecordListRequest {
     @Schema(description = "월 (캘린더 조회 시)", example = "1", nullable = true)
     private Integer month;
 
-
     public boolean isCalendarView() {
         return view == ViewType.CALENDAR;
     }
