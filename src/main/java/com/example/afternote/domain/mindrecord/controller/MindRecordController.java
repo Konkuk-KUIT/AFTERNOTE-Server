@@ -2,11 +2,14 @@ package com.example.afternote.domain.mindrecord.controller;
 
 import com.example.afternote.domain.mindrecord.dto.GetMindRecordListRequest;
 import com.example.afternote.domain.mindrecord.dto.GetMindRecordListResponse;
+import com.example.afternote.domain.mindrecord.dto.PostMindRecordRequest;
+import com.example.afternote.domain.mindrecord.dto.PostMindRecordResponse;
 import com.example.afternote.domain.mindrecord.service.MindRecordService;
 import com.example.afternote.global.common.ApiResponse;
 import com.example.afternote.global.resolver.UserId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,5 +33,18 @@ public class MindRecordController {
         return ApiResponse.success(
                 mindRecordService.getMindRecordList(userId, request)
         );
+    }
+
+    @Operation(
+            summary = "마음의 기록 작성 API",
+            description = "마음의 기록을 작성합니다."
+    )
+    @PostMapping
+    public ApiResponse<PostMindRecordResponse> createMindRecord(
+            @UserId Long userId,
+            @Valid @RequestBody PostMindRecordRequest request
+    ) {
+        Long recordId = mindRecordService.createMindRecord(userId, request);
+        return ApiResponse.success(new PostMindRecordResponse(recordId));
     }
 }
