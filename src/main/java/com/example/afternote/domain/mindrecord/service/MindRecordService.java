@@ -95,4 +95,6 @@ public class MindRecordService {
                 .distinct()
                 .toList();
     }
+
+
 }
