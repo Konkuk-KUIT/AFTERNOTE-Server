@@ -3,11 +3,11 @@ package com.example.afternote.domain.mindrecord.dto;
 import com.example.afternote.domain.mindrecord.model.MindRecordType;
 import com.example.afternote.domain.mindrecord.model.ViewType;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
+@AllArgsConstructor
 public class GetMindRecordListRequest {
 
     @Schema(description = "기록 유형", example = "DIARY", nullable = false)
