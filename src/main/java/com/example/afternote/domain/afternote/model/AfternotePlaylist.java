@@ -27,6 +27,12 @@ public class AfternotePlaylist {
     @Column(nullable = false, length = 100)
     private String title;
     
+    @Column(length = 500)
+    private String atmosphere;
+    
+    @Embedded
+    private MemorialVideo memorialVideo;
+    
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -34,4 +40,31 @@ public class AfternotePlaylist {
     @OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<AfternotePlaylistItem> items = new ArrayList<>();
+    
+    /**
+     * PATCH 업데이트: null이 아닌 필드만 업데이트
+     */
+    public void update(String atmosphere, MemorialVideo memorialVideo) {
+        if (atmosphere != null) {
+            this.atmosphere = atmosphere;
+            this.title = atmosphere;
+        }
+        if (memorialVideo != null) {
+            this.memorialVideo = memorialVideo;
+        }
+    }
+    
+    @Embeddable
+    @Getter
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @AllArgsConstructor
+    @Builder
+    public static class MemorialVideo {
+        
+        @Column(name = "video_url", length = 500)
+        private String videoUrl;
+        
+        @Column(name = "thumbnail_url", length = 500)
+        private String thumbnailUrl;
+    }
 }
