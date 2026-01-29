@@ -6,6 +6,7 @@ import com.example.afternote.domain.receiver.model.Receiver;
 import com.example.afternote.domain.receiver.repository.ReceivedRepository;
 import com.example.afternote.global.exception.CustomException;
 import com.example.afternote.global.exception.ErrorCode;
+import com.example.afternote.global.util.AesEncryptionUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 public class AfternoteRelationService {
 
     private final ReceivedRepository receiverRepository;
+    private final AesEncryptionUtil aesEncryptionUtil;
 
     /**
      * 카테고리별 관계 데이터 저장
@@ -36,41 +38,45 @@ public class AfternoteRelationService {
     }
 
     /**
-     * SOCIAL 카테고리: credentials 저장
+     * SOCIAL 카테고리: credentials 저장 (암호화)
      */
     private void saveSocialCredentials(Afternote afternote, AfternoteCreateRequest request) {
         if (request.getCredentials() == null) return;
 
         if (request.getCredentials().getId() != null) {
+            String encryptedId = aesEncryptionUtil.encrypt(request.getCredentials().getId());
             afternote.getSecureContents().add(
-                    createSecureContent(afternote, "account_id", request.getCredentials().getId()));
+                    createSecureContent(afternote, "account_id", encryptedId));
         }
         if (request.getCredentials().getPassword() != null) {
+            String encryptedPassword = aesEncryptionUtil.encrypt(request.getCredentials().getPassword());
             afternote.getSecureContents().add(
-                    createSecureContent(afternote, "account_password", request.getCredentials().getPassword()));
+                    createSecureContent(afternote, "account_password", encryptedPassword));
         }
     }
     
     /**
-     * SOCIAL 카테고리: PATCH 업데이트 (제공된 필드만 업데이트)
+     * SOCIAL 카테고리: PATCH 업데이트 (제공된 필드만 업데이트, 암호화)
      */
     public void updateSocialCredentials(Afternote afternote, AfternoteCreateRequest request) {
         if (request.getCredentials() == null) return;
         
         // ID 업데이트
         if (request.getCredentials().getId() != null) {
+            String encryptedId = aesEncryptionUtil.encrypt(request.getCredentials().getId());
             // 기존 ID 삭제 후 새로 추가
             afternote.getSecureContents().removeIf(sc -> "account_id".equals(sc.getKeyName()));
             afternote.getSecureContents().add(
-                    createSecureContent(afternote, "account_id", request.getCredentials().getId()));
+                    createSecureContent(afternote, "account_id", encryptedId));
         }
         
         // Password 업데이트
         if (request.getCredentials().getPassword() != null) {
+            String encryptedPassword = aesEncryptionUtil.encrypt(request.getCredentials().getPassword());
             // 기존 Password 삭제 후 새로 추가
             afternote.getSecureContents().removeIf(sc -> "account_password".equals(sc.getKeyName()));
             afternote.getSecureContents().add(
-                    createSecureContent(afternote, "account_password", request.getCredentials().getPassword()));
+                    createSecureContent(afternote, "account_password", encryptedPassword));
         }
     }
 
