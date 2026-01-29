@@ -131,7 +131,13 @@ public enum ErrorCode {
     FIELD_CANNOT_BE_EMPTY(HttpStatus.BAD_REQUEST, 459, "필드 값은 공백일 수 없습니다."),
     ATMOSPHERE_CANNOT_BE_EMPTY(HttpStatus.BAD_REQUEST, 460, "분위기(atmosphere)는 공백일 수 없습니다."),
     VIDEO_URL_CANNOT_BE_EMPTY(HttpStatus.BAD_REQUEST, 461, "비디오 URL은 공백일 수 없습니다."),
-    THUMBNAIL_URL_CANNOT_BE_EMPTY(HttpStatus.BAD_REQUEST, 462, "썸네일 URL은 공백일 수 없습니다.");
+    THUMBNAIL_URL_CANNOT_BE_EMPTY(HttpStatus.BAD_REQUEST, 462, "썸네일 URL은 공백일 수 없습니다."),
+    
+    // ======================================
+    // 7. 암호화 관련 오류 (code: 470 ~)
+    // ======================================
+    ENCRYPTION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, 470, "암호화 처리 중 오류가 발생했습니다."),
+    DECRYPTION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, 471, "복호화 처리 중 오류가 발생했습니다.");
 
 
     private final HttpStatus httpStatus;
