@@ -168,7 +168,7 @@ public class AfternoteRelationService {
         return AfternoteSecureContent.builder()
                 .afternote(afternote)
                 .keyName(keyName)
-                .encryptedValue(value) // TODO: 암호화 필요
+                .encryptedValue(value)
                 .build();
     }
 

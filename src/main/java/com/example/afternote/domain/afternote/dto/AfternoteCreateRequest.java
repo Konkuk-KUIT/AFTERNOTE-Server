@@ -39,7 +39,7 @@ public class AfternoteCreateRequest {
     @Schema(description = "수신자 목록 (GALLERY 전용)")
     private List<ReceiverRequest> receivers;
     
-    @Schema(description = "플레이리스트 정보 (MUSIC 전용)")
+    @Schema(description = "플레이리스트 정보 (Playlist 전용)")
     private PlaylistRequest playlist;
 
     @Getter
