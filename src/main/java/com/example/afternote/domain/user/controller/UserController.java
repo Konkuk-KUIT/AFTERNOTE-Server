@@ -1,9 +1,6 @@
 package com.example.afternote.domain.user.controller;
 
-import com.example.afternote.domain.user.dto.UserPushSettingResponse;
-import com.example.afternote.domain.user.dto.UserResponse;
-import com.example.afternote.domain.user.dto.UserUpdateProfileRequest;
-import com.example.afternote.domain.user.dto.UserUpdatePushSettingRequest;
+import com.example.afternote.domain.user.dto.*;
 import com.example.afternote.domain.user.service.UserService;
 import com.example.afternote.global.common.ApiResponse;
 import com.example.afternote.global.resolver.UserId;
@@ -12,6 +9,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Tag(name = "User API", description = "회원 관련 API")
 @RestController
@@ -72,6 +71,33 @@ public class UserController {
     ) {
         return ApiResponse.success(
                 userService.updateMyPushSettings(userId, request)
+        );
+    }
+
+    @Operation(
+            summary = "수신인 목록 조회 API",
+            description = "로그인한 사용자가 등록한 수신인 목록을 조회합니다."
+    )
+    @GetMapping("/receivers")
+    public ApiResponse<List<ReceiverListResponse>> getReceivers(
+            @UserId Long userId
+    ) {
+        return ApiResponse.success(
+                userService.getReceivers(userId)
+        );
+    }
+
+    @Operation(
+            summary = "수신인 상세 조회 API",
+            description = "특정 수신인의 상세 정보를 조회합니다."
+    )
+    @GetMapping("/receivers/{receiverId}")
+    public ApiResponse<ReceiverDetailResponse> getReceiverDetail(
+            @UserId Long userId,
+            @PathVariable Long receiverId
+    ) {
+        return ApiResponse.success(
+                userService.getReceiverDetail(userId, receiverId)
         );
     }
 }
