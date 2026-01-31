@@ -51,10 +51,4 @@ public class DailyQuestionAnswer {
         this.content = content;
     }
 
-    public void updateQuestion(DailyQuestion question) {
-        if (question == null) {
-            throw new CustomException(ErrorCode.DAILY_QUESTION_NOT_FOUND);
-        }
-        this.dailyQuestion = question;
-    }
 }

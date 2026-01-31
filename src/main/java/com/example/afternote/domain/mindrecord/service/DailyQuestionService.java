@@ -35,13 +35,6 @@ public class DailyQuestionService {
         DailyQuestionAnswer answer = dailyQuestionAnswerRepository.findByMindRecord(record)
                 .orElseThrow(() -> new CustomException(ErrorCode.MIND_RECORD_NOT_FOUND));
 
-        // 질문 변경 (있을 때만)
-        if (request.getQuestionId() != null) {
-            DailyQuestion question = dailyQuestionRepository.findById(request.getQuestionId())
-                    .orElseThrow(() -> new CustomException(ErrorCode.DAILY_QUESTION_NOT_FOUND));
-            answer.updateQuestion(question);
-        }
-
         answer.updateContent(request.getContent());
     }
 }
