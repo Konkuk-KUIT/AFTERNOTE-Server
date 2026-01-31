@@ -38,6 +38,12 @@ jwt:
   access-token-expiration: ${JWT_ACCESS_EXPIRATION}
   refresh-token-expiration: ${JWT_REFRESH_EXPIRATION}
 
+# ChaCha20-Poly1305 암호화 설정 (SOCIAL credentials 보호)
+# 모바일 환경에 최적화된 암호화 (ARM 프로세서에서 AES보다 빠름)
+security:
+  chacha20:
+    secret-key: ${CHACHA20_SECRET_KEY:12345678901234567890123456789012} # 32 bytes for ChaCha20
+
 # CORS 설정 (환경별로 다르게 설정)
 cors:
   allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:5173}
