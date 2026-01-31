@@ -5,8 +5,10 @@ import com.example.afternote.domain.mindrecord.diary.repository.DiaryRepository;
 import com.example.afternote.domain.mindrecord.dto.*;
 import com.example.afternote.domain.mindrecord.model.MindRecord;
 import com.example.afternote.domain.mindrecord.model.MindRecordType;
+import com.example.afternote.domain.mindrecord.question.model.DailyQuestion;
 import com.example.afternote.domain.mindrecord.question.model.DailyQuestionAnswer;
 import com.example.afternote.domain.mindrecord.question.repository.DailyQuestionAnswerRepository;
+import com.example.afternote.domain.mindrecord.question.repository.DailyQuestionRepository;
 import com.example.afternote.domain.mindrecord.repository.MindRecordRepository;
 import com.example.afternote.domain.mindrecord.thought.model.DeepThought;
 import com.example.afternote.domain.mindrecord.thought.repository.DeepThoughtRepository;
@@ -32,6 +34,7 @@ public class MindRecordService {
     private final DiaryRepository diaryRepository;
     private final DailyQuestionAnswerRepository dailyQuestionAnswerRepository;
     private final DeepThoughtRepository deepThoughtRepository;
+    private final DailyQuestionRepository dailyQuestionRepository;
 
     /**
      * 마음의 기록 목록 조회 (LIST / CALENDAR 공통)
@@ -125,30 +128,32 @@ public class MindRecordService {
         }
 
         MindRecord record = switch (request.getType()) {
-            case DIARY -> MindRecord.diary(
-                    user, request.getTitle(), recordDate, request.getIsDraft()
-            );
-
-            case DAILY_QUESTION -> {
-                if (request.getQuestionId() == null) {
-                    throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
-                }
-                yield MindRecord.dailyQuestion(
-                        user, request.getTitle(), recordDate, request.getIsDraft()
-                );
-            }
-
-            case DEEP_THOUGHT -> {
-                if (request.getCategory() == null || request.getCategory().isBlank()) {
-                    throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
-                }
-                yield MindRecord.deepThought(
-                        user, request.getTitle(), recordDate, request.getIsDraft()
-                );
-            }
+            case DIARY -> MindRecord.diary(user, request.getTitle(), recordDate, request.getIsDraft());
+            case DAILY_QUESTION -> MindRecord.dailyQuestion(user, request.getTitle(), recordDate, request.getIsDraft());
+            case DEEP_THOUGHT -> MindRecord.deepThought(user, request.getTitle(), recordDate, request.getIsDraft());
         };
 
         mindRecordRepository.save(record);
+
+        switch (request.getType()) {
+            case DIARY -> {
+                Diary diary = Diary.create(record, request.getContent());
+                diaryRepository.save(diary);
+            }
+            case DAILY_QUESTION -> {
+                DailyQuestion question = dailyQuestionRepository.findById(request.getQuestionId())
+                        .orElseThrow(() -> new CustomException(ErrorCode.DAILY_QUESTION_NOT_FOUND));
+
+                DailyQuestionAnswer answer =
+                        DailyQuestionAnswer.create(record, question, request.getContent());
+                dailyQuestionAnswerRepository.save(answer);
+            }
+            case DEEP_THOUGHT -> {
+                DeepThought thought =
+                        DeepThought.create(record, request.getCategory(), request.getContent());
+                deepThoughtRepository.save(thought);
+            }
+        }
         return record.getId();
     }
 
