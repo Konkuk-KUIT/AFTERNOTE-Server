@@ -87,7 +87,29 @@ public enum ErrorCode {
     // ======================================
     // 5. 요청 값 검증 오류 (code: 430 ~)
     // ======================================
-    INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, 430, "요청 값이 올바르지 않습니다.");
+    INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, 430, "요청 값이 올바르지 않습니다."),
+
+    // ======================================
+    // 6. 마음의 기록(MindRecord) 관련 오류 (code: 440 ~)
+    // ======================================
+
+    // 마음의 기록을 찾을 수 없음
+    MIND_RECORD_NOT_FOUND(HttpStatus.NOT_FOUND, 440, "마음의 기록을 찾을 수 없습니다."),
+
+    // 본인의 마음의 기록이 아님
+    MIND_RECORD_FORBIDDEN(HttpStatus.FORBIDDEN, 441, "해당 마음의 기록에 대한 권한이 없습니다."),
+
+    // 데일리 질문을 찾을 수 없음
+    DAILY_QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND,442 ,"데일리 질문을 찾을 수 없습니다." ),
+
+    // 깊은생각 기록 수정/생성 시 카테고리 누락
+    DEEP_THOUGHT_CATEGORY_REQUIRED(HttpStatus.BAD_REQUEST, 443, "깊은 생각 카테고리는 필수입니다."),
+
+    // 마음의 기록 수정/생성 시 본문 내용 누락
+    MIND_RECORD_CONTENT_REQUIRED(HttpStatus.BAD_REQUEST, 444, "마음의 기록 내용은 필수입니다."),
+
+    // 데일리 질문 ID 누락
+    DAILY_QUESTION_REQUIRED(HttpStatus.BAD_REQUEST, 445, "데일리 질문 ID는 필수입니다.");
 
 
     private final HttpStatus httpStatus;
