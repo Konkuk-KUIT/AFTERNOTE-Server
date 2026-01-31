@@ -6,6 +6,7 @@ import com.example.afternote.domain.mindrecord.service.MindRecordService;
 import com.example.afternote.global.common.ApiResponse;
 import com.example.afternote.global.resolver.UserId;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,7 @@ public class MindRecordController {
     )
     @GetMapping
     public ApiResponse<GetMindRecordListResponse> getMindRecordList(
-            @UserId Long userId,
+            @Parameter(hidden = true) @UserId Long userId,
             GetMindRecordListRequest request
     ) {
         return ApiResponse.success(
