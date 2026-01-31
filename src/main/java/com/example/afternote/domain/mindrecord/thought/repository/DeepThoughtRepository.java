@@ -11,4 +11,6 @@ import java.util.Optional;
 public interface DeepThoughtRepository extends JpaRepository<DeepThought, Long> {
 
     Optional<DeepThought> findByMindRecord(MindRecord mindRecord);
+
+    void deleteByMindRecord(MindRecord mindRecord);
 }

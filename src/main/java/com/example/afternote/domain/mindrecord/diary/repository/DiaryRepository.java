@@ -11,4 +11,6 @@ import java.util.Optional;
 public interface DiaryRepository extends JpaRepository<Diary, Long> {
 
     Optional<Diary> findByMindRecord(MindRecord mindRecord);
+
+    void deleteByMindRecord(MindRecord mindRecord);
 }

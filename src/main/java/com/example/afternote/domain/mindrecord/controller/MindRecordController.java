@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "MindRecord API", description = "마음의 기록 조회 API")
@@ -61,5 +62,18 @@ public class MindRecordController {
         return ApiResponse.success(
                 mindRecordService.getMindRecordDetail(userId, recordId)
         );
+    }
+
+    @DeleteMapping("/{recordId}")
+    @Operation(
+            summary = "마음의 기록 삭제 API",
+            description = "특정 마음의 기록을 삭제합니다."
+    )
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteMindRecord(
+            @Parameter(hidden = true) @UserId Long userId,
+            @PathVariable Long recordId
+    ) {
+        mindRecordService.deleteMindRecord(userId, recordId);
     }
 }

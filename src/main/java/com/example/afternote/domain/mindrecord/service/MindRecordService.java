@@ -218,4 +218,21 @@ public class MindRecordService {
 
         return record;
     }
+
+    /**
+     * 마음의 기록 삭제 (DELETE)
+     */
+    @Transactional
+    public void deleteMindRecord(Long userId, Long recordId) {
+
+        MindRecord record = findRecord(recordId, userId);
+
+        switch (record.getType()) {
+            case DIARY -> diaryRepository.deleteByMindRecord(record);
+            case DAILY_QUESTION -> dailyQuestionAnswerRepository.deleteByMindRecord(record);
+            case DEEP_THOUGHT -> deepThoughtRepository.deleteByMindRecord(record);
+        }
+
+        mindRecordRepository.delete(record);
+    }
 }

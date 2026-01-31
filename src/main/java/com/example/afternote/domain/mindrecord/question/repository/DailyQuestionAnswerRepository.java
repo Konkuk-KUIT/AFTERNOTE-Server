@@ -12,4 +12,6 @@ public interface DailyQuestionAnswerRepository
         extends JpaRepository<DailyQuestionAnswer, Long> {
 
     Optional<DailyQuestionAnswer> findByMindRecord(MindRecord mindRecord);
+
+    void deleteByMindRecord(MindRecord mindRecord);
 }
