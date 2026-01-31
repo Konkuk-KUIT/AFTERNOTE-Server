@@ -59,9 +59,25 @@ public class MindRecordController {
             @Parameter(hidden = true) @UserId Long userId,
             @PathVariable Long recordId
     ) {
+        System.out.println("userId = " + userId + ", recordId = " + recordId);
+
         return ApiResponse.success(
                 mindRecordService.getMindRecordDetail(userId, recordId)
         );
+    }
+
+    @Operation(
+            summary = "마음의 기록 수정 API",
+            description = "기존에 작성된 마음의 기록을 수정합니다."
+    )
+    @PatchMapping("/{recordId}")
+    public ApiResponse<Void> updateMindRecord(
+            @Parameter(hidden = true) @UserId Long userId,
+            @PathVariable Long recordId,
+            @Valid @RequestBody PatchMindRecordRequest request
+    ) {
+        mindRecordService.updateMindRecord(userId, recordId, request);
+        return ApiResponse.success(null);
     }
 
     @DeleteMapping("/{recordId}")
