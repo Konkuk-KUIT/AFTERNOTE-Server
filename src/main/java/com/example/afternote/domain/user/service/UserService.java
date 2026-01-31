@@ -61,7 +61,6 @@ public class UserService {
         return UserPushSettingResponse.from(user);
     }
 
-    @Transactional(readOnly = true)
     public List<ReceiverListResponse> getReceivers(Long userId) {
 
         User user = findUserById(userId);
@@ -71,7 +70,6 @@ public class UserService {
                 .toList();
     }
 
-    @Transactional(readOnly = true)
     public ReceiverDetailResponse getReceiverDetail(Long userId, Long receiverId) {
 
         User user = findUserById(userId);
