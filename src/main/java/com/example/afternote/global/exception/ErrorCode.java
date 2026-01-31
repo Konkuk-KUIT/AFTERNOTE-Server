@@ -106,7 +106,11 @@ public enum ErrorCode {
     DEEP_THOUGHT_CATEGORY_REQUIRED(HttpStatus.BAD_REQUEST, 443, "깊은 생각 카테고리는 필수입니다."),
 
     // 마음의 기록 수정/생성 시 본문 내용 누락
-    MIND_RECORD_CONTENT_REQUIRED(HttpStatus.BAD_REQUEST, 444, "마음의 기록 내용은 필수입니다.");
+    MIND_RECORD_CONTENT_REQUIRED(HttpStatus.BAD_REQUEST, 444, "마음의 기록 내용은 필수입니다."),
+
+    // 데일리 질문 ID 누락
+    DAILY_QUESTION_REQUIRED(HttpStatus.BAD_REQUEST, 445, "데일리 질문 ID는 필수입니다.");
+
 
     private final HttpStatus httpStatus;
     private final int code;

@@ -22,6 +22,10 @@ public class DailyQuestionService {
     private final DailyQuestionRepository dailyQuestionRepository;
 
     public void create(MindRecord record, PostMindRecordRequest request) {
+        if (request.getQuestionId() == null) {
+            throw new CustomException(ErrorCode.DAILY_QUESTION_REQUIRED);
+        }
+
         DailyQuestion question = dailyQuestionRepository.findById(request.getQuestionId())
                 .orElseThrow(() -> new CustomException(ErrorCode.DAILY_QUESTION_NOT_FOUND));
 

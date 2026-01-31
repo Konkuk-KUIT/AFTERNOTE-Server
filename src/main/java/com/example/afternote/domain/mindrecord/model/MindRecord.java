@@ -59,33 +59,6 @@ public class MindRecord {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public static MindRecord diary(
-            User user,
-            String title,
-            LocalDate recordDate,
-            boolean isDraft
-    ) {
-        return create(user, MindRecordType.DIARY, title, recordDate, isDraft);
-    }
-
-    public static MindRecord dailyQuestion(
-            User user,
-            String title,
-            LocalDate recordDate,
-            boolean isDraft
-    ) {
-        return create(user, MindRecordType.DAILY_QUESTION, title, recordDate, isDraft);
-    }
-
-    public static MindRecord deepThought(
-            User user,
-            String title,
-            LocalDate recordDate,
-            boolean isDraft
-    ) {
-        return create(user, MindRecordType.DEEP_THOUGHT, title, recordDate, isDraft);
-    }
-
     public static MindRecord create(
             User user,
             MindRecordType type,

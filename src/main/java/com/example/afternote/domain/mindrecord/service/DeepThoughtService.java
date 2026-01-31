@@ -19,6 +19,9 @@ public class DeepThoughtService {
     private final DeepThoughtRepository deepThoughtRepository;
 
     public void create(MindRecord record, PostMindRecordRequest request) {
+        if (request.getCategory() == null || request.getCategory().isBlank()) {
+            throw new CustomException(ErrorCode.DEEP_THOUGHT_CATEGORY_REQUIRED);
+        }
         DeepThought thought =
                 DeepThought.create(record, request.getCategory(), request.getContent());
         deepThoughtRepository.save(thought);
