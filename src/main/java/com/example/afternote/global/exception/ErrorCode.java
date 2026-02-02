@@ -90,7 +90,54 @@ public enum ErrorCode {
     // ======================================
     // 5. 요청 값 검증 오류 (code: 430 ~)
     // ======================================
-    INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, 430, "요청 값이 올바르지 않습니다.");
+    INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, 430, "요청 값이 올바르지 않습니다."),
+
+    // ======================================
+    // 6. 애프터노트 관련 오류 (code: 440 ~ 459)
+    // ======================================
+    AFTERNOTE_NOT_FOUND(HttpStatus.NOT_FOUND, 440, "애프터노트를 찾을 수 없습니다."),
+    AFTERNOTE_ACCESS_DENIED(HttpStatus.FORBIDDEN, 441, "해당 애프터노트에 대한 권한이 없습니다."),
+    
+    // 카테고리 관련
+    CATEGORY_REQUIRED(HttpStatus.BAD_REQUEST, 442, "카테고리는 필수입니다."),
+    
+    // SOCIAL 카테고리 관련
+    SOCIAL_CREDENTIALS_REQUIRED(HttpStatus.BAD_REQUEST, 443, "SOCIAL 카테고리는 계정 정보(credentials)가 필수입니다."),
+    SOCIAL_ACCOUNT_ID_REQUIRED(HttpStatus.BAD_REQUEST, 444, "계정 ID는 필수입니다."),
+    SOCIAL_ACCOUNT_PASSWORD_REQUIRED(HttpStatus.BAD_REQUEST, 445, "계정 비밀번호는 필수입니다."),
+    
+    // GALLERY 카테고리 관련
+    GALLERY_RECEIVERS_REQUIRED(HttpStatus.BAD_REQUEST, 446, "GALLERY 카테고리는 수신자(receivers)가 필수입니다."),
+    GALLERY_RECEIVER_ID_REQUIRED(HttpStatus.BAD_REQUEST, 447, "수신자 ID는 필수입니다."),
+    RECEIVER_NOT_FOUND(HttpStatus.NOT_FOUND, 448, "수신자를 찾을 수 없습니다."),
+    
+    // PLAYLIST 카테고리 관련
+    PLAYLIST_REQUIRED(HttpStatus.BAD_REQUEST, 449, "PLAYLIST 카테고리는 플레이리스트(playlist)가 필수입니다."),
+    PLAYLIST_SONGS_REQUIRED(HttpStatus.BAD_REQUEST, 450, "플레이리스트에는 최소 1곡 이상이 필요합니다."),
+    PLAYLIST_SONG_TITLE_REQUIRED(HttpStatus.BAD_REQUEST, 451, "곡 제목은 필수입니다."),
+    PLAYLIST_SONG_ARTIST_REQUIRED(HttpStatus.BAD_REQUEST, 452, "아티스트는 필수입니다."),
+    
+    // SOCIAL/GALLERY 공통 필드
+    PROCESS_METHOD_REQUIRED(HttpStatus.BAD_REQUEST, 453, "처리 방법(processMethod)은 필수입니다."),
+    ACTIONS_REQUIRED(HttpStatus.BAD_REQUEST, 454, "액션(actions)은 최소 1개 이상 필요합니다."),
+    
+    // 업데이트 시 카테고리 불일치
+    CATEGORY_CANNOT_BE_CHANGED(HttpStatus.BAD_REQUEST, 455, "카테고리는 변경할 수 없습니다."),
+    INVALID_FIELD_FOR_SOCIAL(HttpStatus.BAD_REQUEST, 456, "SOCIAL 카테고리는 credentials만 수정할 수 있습니다."),
+    INVALID_FIELD_FOR_GALLERY(HttpStatus.BAD_REQUEST, 457, "GALLERY 카테고리는 receivers만 수정할 수 있습니다."),
+    INVALID_FIELD_FOR_PLAYLIST(HttpStatus.BAD_REQUEST, 458, "PLAYLIST 카테고리는 playlist만 수정할 수 있습니다."),
+    
+    // 필드 값 검증
+    FIELD_CANNOT_BE_EMPTY(HttpStatus.BAD_REQUEST, 459, "필드 값은 공백일 수 없습니다."),
+    ATMOSPHERE_CANNOT_BE_EMPTY(HttpStatus.BAD_REQUEST, 460, "분위기(atmosphere)는 공백일 수 없습니다."),
+    VIDEO_URL_CANNOT_BE_EMPTY(HttpStatus.BAD_REQUEST, 461, "비디오 URL은 공백일 수 없습니다."),
+    THUMBNAIL_URL_CANNOT_BE_EMPTY(HttpStatus.BAD_REQUEST, 462, "썸네일 URL은 공백일 수 없습니다."),
+    
+    // ======================================
+    // 7. 암호화 관련 오류 (code: 470 ~)
+    // ======================================
+    ENCRYPTION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, 470, "암호화 처리 중 오류가 발생했습니다."),
+    DECRYPTION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, 471, "복호화 처리 중 오류가 발생했습니다.");
 
 
     private final HttpStatus httpStatus;

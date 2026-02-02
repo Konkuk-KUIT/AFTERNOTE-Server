@@ -36,7 +36,7 @@ public class Afternote {
     private String title;
     
     @Column(columnDefinition = "TEXT")
-    private String description;
+    private String leaveMessage;
     
     @Column(name = "sort_order")
     private Integer sortOrder;
@@ -66,4 +66,22 @@ public class Afternote {
     @OneToMany(mappedBy = "afternote", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<AfternotePlaylist> playlists = new ArrayList<>();
+    
+    // 업데이트 메서드
+    public void update(String title, Integer sortOrder, String leaveMessage, ProcessMethod processMethod, List<String> actions) {
+        this.title = title;
+        this.sortOrder = sortOrder;
+        this.leaveMessage = leaveMessage;
+        this.processMethod = processMethod;
+        this.actions.clear();
+        if (actions != null) {
+            this.actions.addAll(actions);
+        }
+    }
+    
+    public void clearRelations() {
+        this.secureContents.clear();
+        this.receivers.clear();
+        this.playlists.clear();
+    }
 }
