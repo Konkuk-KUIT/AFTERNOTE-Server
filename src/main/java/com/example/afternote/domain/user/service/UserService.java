@@ -12,6 +12,8 @@ import com.example.afternote.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -104,9 +106,12 @@ public class UserService {
 
         Receiver receiver = Receiver.builder()
                 .name(request.getName())
+                .createdAt(LocalDateTime.now())
+                .sortOrder(1) // 확인해주세요
                 .relation(request.getRelation())
                 .phone(request.getPhone())
                 .email(request.getEmail())
+                .userId(userId)
                 .build();
 
         receiverRepository.save(receiver);
