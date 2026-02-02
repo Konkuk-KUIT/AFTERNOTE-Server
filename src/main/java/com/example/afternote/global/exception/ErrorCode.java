@@ -100,7 +100,8 @@ public enum ErrorCode {
     DAILY_QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND, 442, "데일리 질문을 찾을 수 없습니다."),                                                                                                                 
     DEEP_THOUGHT_CATEGORY_REQUIRED(HttpStatus.BAD_REQUEST, 443, "깊은 생각 카테고리는 필수입니다."),                                                                                                        
     MIND_RECORD_CONTENT_REQUIRED(HttpStatus.BAD_REQUEST, 444, "마음의 기록 내용은 필수입니다."),                                                                                                            
-    DAILY_QUESTION_REQUIRED(HttpStatus.BAD_REQUEST, 445, "데일리 질문 ID는 필수입니다."),                                                                                                                   
+    DAILY_QUESTION_REQUIRED(HttpStatus.BAD_REQUEST, 445, "데일리 질문 ID는 필수입니다."),
+    MIND_RECORD_TITLE_REQUIRED(HttpStatus.BAD_REQUEST, 446, "마음의 기록 제목은 필수입니다."),
 
     // ======================================                                                                                                                                                               
     // 7. 애프터노트 관련 오류 (code: 460 ~ 479)                                                                                                                                                            
@@ -132,7 +133,8 @@ public enum ErrorCode {
     // 8. 암호화 관련 오류 (code: 490 ~)                                                                                                                                                                    
     // ======================================                                                                                                                                                               
     ENCRYPTION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, 490, "암호화 처리 중 오류가 발생했습니다."),                                                                                                        
-    DECRYPTION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, 491, "복호화 처리 중 오류가 발생했습니다.");        
+    DECRYPTION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, 491, "복호화 처리 중 오류가 발생했습니다.");
+
 
 
     private final HttpStatus httpStatus;
