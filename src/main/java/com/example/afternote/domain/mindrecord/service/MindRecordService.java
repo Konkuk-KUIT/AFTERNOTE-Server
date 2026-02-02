@@ -187,11 +187,18 @@ public class MindRecordService {
     public Long updateMindRecord(Long userId, Long recordId, PatchMindRecordRequest request) {
 
         MindRecord record = findRecord(recordId, userId);
-        LocalDate recordDate;
-        try {
-            recordDate = LocalDate.parse(request.getDate());
-        } catch (Exception e) {
-            throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
+
+        if (request.getTitle() != null && request.getTitle().isBlank()) {
+            throw new CustomException(ErrorCode.MIND_RECORD_TITLE_REQUIRED);
+        }
+
+        LocalDate recordDate = null;
+        if (request.getDate() != null) {
+            try {
+                recordDate = LocalDate.parse(request.getDate());
+            } catch (Exception e) {
+                throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
+            }
         }
         record.updateCommon(
                 request.getTitle(),
