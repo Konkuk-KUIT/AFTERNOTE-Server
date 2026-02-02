@@ -6,7 +6,7 @@ import com.example.afternote.domain.receiver.model.Receiver;
 import com.example.afternote.domain.receiver.repository.ReceivedRepository;
 import com.example.afternote.global.exception.CustomException;
 import com.example.afternote.global.exception.ErrorCode;
-import com.example.afternote.global.util.AesEncryptionUtil;
+import com.example.afternote.global.util.ChaChaEncryptionUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 public class AfternoteRelationService {
 
     private final ReceivedRepository receiverRepository;
-    private final AesEncryptionUtil aesEncryptionUtil;
+    private final ChaChaEncryptionUtil chaChaEncryptionUtil;
 
     /**
      * 카테고리별 관계 데이터 저장
@@ -44,12 +44,12 @@ public class AfternoteRelationService {
         if (request.getCredentials() == null) return;
 
         if (request.getCredentials().getId() != null) {
-            String encryptedId = aesEncryptionUtil.encrypt(request.getCredentials().getId());
+            String encryptedId = chaChaEncryptionUtil.encrypt(request.getCredentials().getId());
             afternote.getSecureContents().add(
                     createSecureContent(afternote, "account_id", encryptedId));
         }
         if (request.getCredentials().getPassword() != null) {
-            String encryptedPassword = aesEncryptionUtil.encrypt(request.getCredentials().getPassword());
+            String encryptedPassword = chaChaEncryptionUtil.encrypt(request.getCredentials().getPassword());
             afternote.getSecureContents().add(
                     createSecureContent(afternote, "account_password", encryptedPassword));
         }
@@ -63,7 +63,7 @@ public class AfternoteRelationService {
         
         // ID 업데이트
         if (request.getCredentials().getId() != null) {
-            String encryptedId = aesEncryptionUtil.encrypt(request.getCredentials().getId());
+            String encryptedId = chaChaEncryptionUtil.encrypt(request.getCredentials().getId());
             // 기존 ID 삭제 후 새로 추가
             afternote.getSecureContents().removeIf(sc -> "account_id".equals(sc.getKeyName()));
             afternote.getSecureContents().add(
@@ -72,7 +72,7 @@ public class AfternoteRelationService {
         
         // Password 업데이트
         if (request.getCredentials().getPassword() != null) {
-            String encryptedPassword = aesEncryptionUtil.encrypt(request.getCredentials().getPassword());
+            String encryptedPassword = chaChaEncryptionUtil.encrypt(request.getCredentials().getPassword());
             // 기존 Password 삭제 후 새로 추가
             afternote.getSecureContents().removeIf(sc -> "account_password".equals(sc.getKeyName()));
             afternote.getSecureContents().add(
