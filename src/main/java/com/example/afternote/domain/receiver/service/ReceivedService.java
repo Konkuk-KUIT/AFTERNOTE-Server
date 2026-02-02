@@ -114,6 +114,9 @@ public class ReceivedService {
             throw new CustomException(ErrorCode.RECEIVER_NOT_FOUND);
         }
 
+        // 본인이 등록한 수신자인지 검증
+        validateReceiversOwnership(userId, receivers);
+
         LocalDateTime deliveredAt = request.getDeliveredAt() != null
                 ? request.getDeliveredAt()
                 : timeLetter.getSendAt();
@@ -149,6 +152,9 @@ public class ReceivedService {
             throw new CustomException(ErrorCode.RECEIVER_NOT_FOUND);
         }
 
+        // 본인이 등록한 수신자인지 검증
+        validateReceiversOwnership(userId, receivers);
+
         List<MindRecordReceiver> mindRecordReceivers = receivers.stream()
                 .map(receiver -> MindRecordReceiver.builder()
                         .mindRecord(mindRecord)
@@ -159,6 +165,18 @@ public class ReceivedService {
         return mindRecordReceiverRepository.saveAll(mindRecordReceivers).stream()
                 .map(MindRecordReceiver::getId)
                 .toList();
+    }
+
+    /**
+     * 수신자가 본인이 등록한 수신자인지 검증
+     */
+    private void validateReceiversOwnership(Long userId, List<Receiver> receivers) {
+        boolean hasUnauthorizedReceiver = receivers.stream()
+                .anyMatch(receiver -> !receiver.getUserId().equals(userId));
+
+        if (hasUnauthorizedReceiver) {
+            throw new CustomException(ErrorCode.NOT_ENOUGH_PERMISSION);
+        }
     }
 
     /**
