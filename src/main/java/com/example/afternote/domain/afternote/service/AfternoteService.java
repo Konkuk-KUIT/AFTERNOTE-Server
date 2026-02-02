@@ -3,11 +3,9 @@ package com.example.afternote.domain.afternote.service;
 import com.example.afternote.domain.afternote.dto.*;
 import com.example.afternote.domain.afternote.model.*;
 import com.example.afternote.domain.afternote.repository.AfternoteRepository;
-import com.example.afternote.domain.receiver.model.Receiver;
-import com.example.afternote.domain.receiver.repository.ReceivedRepository;
 import com.example.afternote.global.exception.CustomException;
 import com.example.afternote.global.exception.ErrorCode;
-import com.example.afternote.global.util.AesEncryptionUtil;
+import com.example.afternote.global.util.ChaChaEncryptionUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,7 +25,7 @@ public class AfternoteService {
     private final AfternoteRepository afternoteRepository;
     private final AfternoteRelationService relationService;
     private final AfternoteValidator validator;
-    private final AesEncryptionUtil aesEncryptionUtil;
+    private final ChaChaEncryptionUtil chaChaEncryptionUtil;
 
     public AfternotePageResponse getAfternotes(Long userId, AfternoteCategoryType category, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -74,13 +72,13 @@ public class AfternoteService {
                 String accountId = afternote.getSecureContents().stream()
                         .filter(sc -> "account_id".equals(sc.getKeyName()))
                         .findFirst()
-                        .map(sc -> aesEncryptionUtil.decrypt(sc.getEncryptedValue()))
+                        .map(sc -> chaChaEncryptionUtil.decrypt(sc.getEncryptedValue()))
                         .orElse(null);
                 
                 String accountPassword = afternote.getSecureContents().stream()
                         .filter(sc -> "account_password".equals(sc.getKeyName()))
                         .findFirst()
-                        .map(sc -> aesEncryptionUtil.decrypt(sc.getEncryptedValue()))
+                        .map(sc -> chaChaEncryptionUtil.decrypt(sc.getEncryptedValue()))
                         .orElse(null);
                 
                 if (accountId != null || accountPassword != null) {
