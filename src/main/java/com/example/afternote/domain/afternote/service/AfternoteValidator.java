@@ -2,6 +2,8 @@ package com.example.afternote.domain.afternote.service;
 
 import com.example.afternote.domain.afternote.dto.AfternoteCreateRequest;
 import com.example.afternote.domain.afternote.model.AfternoteCategoryType;
+import com.example.afternote.domain.afternote.repository.AfternoteRepository;
+import com.example.afternote.domain.user.repository.UserRepository;
 import com.example.afternote.global.exception.CustomException;
 import com.example.afternote.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +15,13 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class AfternoteValidator {
+
+    private final AfternoteRepository afternoteRepository;
+    private final UserRepository userRepository;
+
+    public void validate(Long userId, Long afternoteId){
+
+    }
 
     /**
      * POST 요청 검증
