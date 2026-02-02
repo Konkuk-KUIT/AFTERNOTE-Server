@@ -107,6 +107,7 @@ public class UserService {
                 .relation(request.getRelation())
                 .phone(request.getPhone())
                 .email(request.getEmail())
+                .userId(user.getId())
                 .build();
 
         receiverRepository.save(receiver);

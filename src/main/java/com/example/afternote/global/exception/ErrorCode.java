@@ -74,9 +74,6 @@ public enum ErrorCode {
 
     INVALID_EMAIL_VERIFICATION(HttpStatus.BAD_REQUEST, 417, "인증번호가 유효하지 않습니다."),
 
-    // 수신자를 찾을 수 없음
-    RECEIVER_NOT_FOUND(HttpStatus.NOT_FOUND, 418, "수신자를 찾을 수 없습니다."),
-
     // ======================================
     // 4. 타임레터 관련 오류 (code: 420 ~ 429)
     // ======================================
