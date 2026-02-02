@@ -45,9 +45,6 @@ public class DailyQuestionAnswer {
     }
 
     public void updateContent(String content) {
-        if (content == null) {
-            throw new CustomException(ErrorCode.MIND_RECORD_CONTENT_REQUIRED);
-        }
         this.content = content;
     }
 
