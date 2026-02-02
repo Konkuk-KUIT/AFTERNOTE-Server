@@ -25,12 +25,9 @@ public class AfternotePlaylistItem {
     @Column(length = 100)
     private String artist;
     
-<<<<<<< HEAD
     @Column(name = "cover_url", length = 500)
     private String coverUrl;
-    
-=======
->>>>>>> a4e8a8a ([feat] entity 구현)
+
     @Column(name = "sort_order", nullable = false)
     private Integer sortOrder;
 }

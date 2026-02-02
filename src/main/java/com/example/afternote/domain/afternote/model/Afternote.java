@@ -36,12 +36,8 @@ public class Afternote {
     private String title;
     
     @Column(columnDefinition = "TEXT")
-<<<<<<< HEAD
     private String leaveMessage;
-=======
-    private String description;
->>>>>>> a4e8a8a ([feat] entity 구현)
-    
+
     @Column(name = "sort_order")
     private Integer sortOrder;
     
@@ -70,8 +66,7 @@ public class Afternote {
     @OneToMany(mappedBy = "afternote", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<AfternotePlaylist> playlists = new ArrayList<>();
-<<<<<<< HEAD
-    
+
     // 업데이트 메서드
     public void update(String title, Integer sortOrder, String leaveMessage, ProcessMethod processMethod, List<String> actions) {
         this.title = title;
@@ -89,6 +84,5 @@ public class Afternote {
         this.receivers.clear();
         this.playlists.clear();
     }
-=======
->>>>>>> a4e8a8a ([feat] entity 구현)
+
 }
