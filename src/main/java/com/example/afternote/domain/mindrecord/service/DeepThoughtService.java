@@ -32,9 +32,14 @@ public class DeepThoughtService {
                 .orElseThrow(() -> new CustomException(ErrorCode.MIND_RECORD_NOT_FOUND));
 
         if (request.getCategory() != null) {
+            if (request.getCategory().isBlank()) {
+                throw new CustomException(ErrorCode.DEEP_THOUGHT_CATEGORY_REQUIRED);
+            }
             thought.updateCategory(request.getCategory());
         }
 
-        thought.updateContent(request.getContent());
+        if (request.getContent() != null) {
+            thought.updateContent(request.getContent());
+        }
     }
 }
