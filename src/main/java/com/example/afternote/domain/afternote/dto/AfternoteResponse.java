@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class AfternoteResponse {
 
     @Schema(description = "애프터노트 ID", example = "10")
-    private Long noteId;
+    private Long afternoteId;
     
     @Schema(description = "제목", example = "인스타그램")
     private String title;
