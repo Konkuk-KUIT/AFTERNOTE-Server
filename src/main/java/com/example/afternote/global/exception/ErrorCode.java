@@ -109,7 +109,7 @@ public enum ErrorCode {
     // GALLERY 카테고리 관련
     GALLERY_RECEIVERS_REQUIRED(HttpStatus.BAD_REQUEST, 446, "GALLERY 카테고리는 수신자(receivers)가 필수입니다."),
     GALLERY_RECEIVER_ID_REQUIRED(HttpStatus.BAD_REQUEST, 447, "수신자 ID는 필수입니다."),
-    RECEIVER_NOT_FOUND(HttpStatus.NOT_FOUND, 448, "수신자를 찾을 수 없습니다."),
+    GALLERY_RECEIVER_NOT_FOUND(HttpStatus.NOT_FOUND, 448, "수신자를 찾을 수 없습니다."),
     
     // PLAYLIST 카테고리 관련
     PLAYLIST_REQUIRED(HttpStatus.BAD_REQUEST, 449, "PLAYLIST 카테고리는 플레이리스트(playlist)가 필수입니다."),

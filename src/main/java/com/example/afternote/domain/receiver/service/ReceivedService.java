@@ -1,13 +1,18 @@
 package com.example.afternote.domain.receiver.service;
 
 import com.example.afternote.domain.afternote.model.AfternoteReceiver;
+import com.example.afternote.domain.mindrecord.model.MindRecord;
+import com.example.afternote.domain.mindrecord.repository.MindRecordRepository;
 import com.example.afternote.domain.receiver.dto.*;
 import com.example.afternote.domain.receiver.model.MindRecordReceiver;
+import com.example.afternote.domain.receiver.model.Receiver;
 import com.example.afternote.domain.receiver.model.TimeLetterReceiver;
 import com.example.afternote.domain.receiver.repository.AfternoteReceiverRepository;
 import com.example.afternote.domain.receiver.repository.MindRecordReceiverRepository;
 import com.example.afternote.domain.receiver.repository.ReceiverRepository;
 import com.example.afternote.domain.receiver.repository.TimeLetterReceiverRepository;
+import com.example.afternote.domain.timeletter.model.TimeLetter;
+import com.example.afternote.domain.timeletter.repository.TimeLetterRepository;
 import com.example.afternote.domain.user.model.User;
 import com.example.afternote.domain.user.repository.UserRepository;
 import com.example.afternote.global.exception.CustomException;
@@ -16,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,6 +37,8 @@ public class ReceivedService {
     private final TimeLetterReceiverRepository timeLetterReceiverRepository;
     private final AfternoteReceiverRepository afternoteReceiverRepository;
     private final MindRecordReceiverRepository mindRecordReceiverRepository;
+    private final TimeLetterRepository timeLetterRepository;
+    private final MindRecordRepository mindRecordRepository;
     private final UserRepository userRepository;
 
     /**
@@ -91,6 +99,66 @@ public class ReceivedService {
                 .toList();
 
         return ReceivedMindRecordListResponse.from(responses);
+    }
+
+    /**
+     * 타임레터에 수신자 등록
+     */
+    @Transactional
+    public List<Long> createTimeLetterReceivers(Long userId, CreateTimeLetterReceiverRequest request) {
+        TimeLetter timeLetter = timeLetterRepository.findByIdAndUserId(request.getTimeLetterID(), userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.TIME_LETTER_NOT_FOUND));
+
+        List<Receiver> receivers = receiverRepository.findAllById(request.getReceiverIds());
+        if (receivers.size() != request.getReceiverIds().size()) {
+            throw new CustomException(ErrorCode.RECEIVER_NOT_FOUND);
+        }
+
+        LocalDateTime deliveredAt = request.getDeliveredAt() != null
+                ? request.getDeliveredAt()
+                : timeLetter.getSendAt();
+
+        List<TimeLetterReceiver> timeLetterReceivers = receivers.stream()
+                .map(receiver -> TimeLetterReceiver.builder()
+                        .timeLetter(timeLetter)
+                        .receiver(receiver)
+                        .deliveredAt(deliveredAt)
+                        .build())
+                .toList();
+
+        return timeLetterReceiverRepository.saveAll(timeLetterReceivers).stream()
+                .map(TimeLetterReceiver::getId)
+                .toList();
+    }
+
+    /**
+     * 마인드레코드에 수신자 등록
+     */
+    @Transactional
+    public List<Long> createMindRecordReceivers(Long userId, CreateMindRecordReceiverRequest request) {
+        MindRecord mindRecord = mindRecordRepository.findById(request.getMindRecordId())
+                .orElseThrow(() -> new CustomException(ErrorCode.INVALID_INPUT_VALUE));
+
+        // 본인의 마인드레코드인지 확인
+        if (!mindRecord.getUser().getId().equals(userId)) {
+            throw new CustomException(ErrorCode.NOT_ENOUGH_PERMISSION);
+        }
+
+        List<Receiver> receivers = receiverRepository.findAllById(request.getReceiverIds());
+        if (receivers.size() != request.getReceiverIds().size()) {
+            throw new CustomException(ErrorCode.RECEIVER_NOT_FOUND);
+        }
+
+        List<MindRecordReceiver> mindRecordReceivers = receivers.stream()
+                .map(receiver -> MindRecordReceiver.builder()
+                        .mindRecord(mindRecord)
+                        .receiver(receiver)
+                        .build())
+                .toList();
+
+        return mindRecordReceiverRepository.saveAll(mindRecordReceivers).stream()
+                .map(MindRecordReceiver::getId)
+                .toList();
     }
 
     /**
