@@ -44,7 +44,11 @@ public class MindRecordController {
             @Valid @RequestBody PostMindRecordRequest request
     ) {
         Long recordId = mindRecordService.createMindRecord(userId, request);
-        return ApiResponse.success(new PostMindRecordResponse(recordId));
+        return ApiResponse.success(
+                PostMindRecordResponse.builder()
+                        .recordId(recordId)
+                        .build()
+        );
     }
 
     /**
