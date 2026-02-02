@@ -21,9 +21,6 @@ public class PatchMindRecordRequest {
     @Schema(description = "임시저장 여부", example = "false", nullable = false)
     private Boolean isDraft;
 
-    @Schema(description = "데일리 질문 ID (DAILY_QUESTION 타입일 때만)", example = "3", nullable = true)
-    private Long questionId;
-
     @Schema(description = "깊은 생각 카테고리 (DEEP_THOUGHT 타입일 때만)", example = "새로운 관점", nullable = true)
     private String category;
 }

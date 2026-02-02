@@ -39,6 +39,8 @@ public class DailyQuestionService {
         DailyQuestionAnswer answer = dailyQuestionAnswerRepository.findByMindRecord(record)
                 .orElseThrow(() -> new CustomException(ErrorCode.MIND_RECORD_NOT_FOUND));
 
-        answer.updateContent(request.getContent());
+        if (request.getContent() != null) {
+            answer.updateContent(request.getContent());
+        }
     }
 }
