@@ -1,43 +1,58 @@
 package com.example.afternote.domain.receiver.model;
 
+import com.example.afternote.domain.afternote.model.AfternoteReceiver;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "receiver")
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED) // JPA 사용 시 기본 생성자 필수 (보안상 PROTECTED 권장)
-@EntityListeners(AuditingEntityListener.class) // 생성일자 자동 주입을 위해 필요
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class Receiver {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 50)
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
+
+    @Column(nullable = false, length = 100)
     private String name;
 
-    @Column(nullable = false, length = 50)
-    private String relation;
+    @Column(length = 50)
+    private String relation;  // 관계 (친구, 가족 등)
 
     @Column(length = 20)
-    private String phone;
+    private String phone;  // 전화번호
+
+    @Column(length = 50)
+    private String email;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @Builder
-    public Receiver(String name, String relation, String phone) {
+    public Receiver(String name, String relation, String phone, String email) {
         this.name = name;
         this.relation = relation;
         this.phone = phone;
+        this.email = email;
     }
+
+    @Column(name = "sort_order", nullable = false)
+    private Integer sortOrder;
+
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<AfternoteReceiver> afternoteReceivers = new ArrayList<>();
 }
