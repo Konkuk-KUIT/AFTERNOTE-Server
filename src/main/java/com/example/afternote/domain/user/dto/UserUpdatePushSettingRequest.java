@@ -16,4 +16,5 @@ public class UserUpdatePushSettingRequest {
 
     @Schema(description = "애프터노트 푸시 알림 수신 여부", example = "false")
     private Boolean afterNote;
+
 }
