@@ -19,10 +19,6 @@ public class AfternoteValidator {
     private final AfternoteRepository afternoteRepository;
     private final UserRepository userRepository;
 
-    public void validate(Long userId, Long afternoteId){
-
-    }
-
     /**
      * POST 요청 검증
      * - 있어야 하는 필드: 무조건 있어야 함
