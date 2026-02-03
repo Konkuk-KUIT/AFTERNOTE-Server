@@ -22,7 +22,6 @@ public interface DailyQuestionRepository extends JpaRepository<DailyQuestion, Lo
 """)
     // 해당 사용자에게 한번도 노출되지 않은 질문 중 하나를 랜덤으로 조회
     List<DailyQuestion> findRandomUnexposedQuestion(Long userId);
-    List<DailyQuestion> findUnexposedQuestions(Long userId);
 
     // 과거에 노출된 질문 (fallback용)
     @Query("""
@@ -38,5 +37,4 @@ public interface DailyQuestionRepository extends JpaRepository<DailyQuestion, Lo
 """)
     // 이미 사용자에게 노출된 적이 있는 질문 중 하나를 랜덤으로 조회 (신규 질문 모두 소진될 때)
     List<DailyQuestion> findRandomExposedQuestion(Long userId);
-    List<DailyQuestion> findExposedQuestions(Long userId);
 }
