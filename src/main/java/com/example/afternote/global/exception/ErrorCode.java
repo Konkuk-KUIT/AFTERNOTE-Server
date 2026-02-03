@@ -111,6 +111,7 @@ public enum ErrorCode {
     SOCIAL_ACCOUNT_PASSWORD_REQUIRED(HttpStatus.BAD_REQUEST, 465, "계정 비밀번호는 필수입니다."),                                                                                                           
     GALLERY_RECEIVERS_REQUIRED(HttpStatus.BAD_REQUEST, 466, "GALLERY 카테고리는 수신자(receivers)가 필수입니다."),                                                                                          
     GALLERY_RECEIVER_ID_REQUIRED(HttpStatus.BAD_REQUEST, 467, "수신자 ID는 필수입니다."),                                                                                                                   
+    RECEIVER_NOT_FOUND(HttpStatus.NOT_FOUND, 468, "수신자를 찾을 수 없습니다."),
     PLAYLIST_REQUIRED(HttpStatus.BAD_REQUEST, 469, "PLAYLIST 카테고리는 플레이리스트(playlist)가 필수입니다."),                                                                                             
     PLAYLIST_SONGS_REQUIRED(HttpStatus.BAD_REQUEST, 470, "플레이리스트에는 최소 1곡 이상이 필요합니다."),                                                                                                   
     PLAYLIST_SONG_TITLE_REQUIRED(HttpStatus.BAD_REQUEST, 471, "곡 제목은 필수입니다."),                                                                                                                     
