@@ -74,4 +74,22 @@ public class MindRecord {
         record.isDraft = isDraft;
         return record;
     }
+
+    public void updateCommon(
+            String title,
+            LocalDate recordDate,
+            Boolean isDraft
+    ) {
+        if (title != null && !title.isBlank()) {
+            this.title = title;
+        }
+
+        if (recordDate != null) {
+            this.recordDate = recordDate;
+        }
+
+        if (isDraft != null) {
+            this.isDraft = isDraft;
+        }
+    }
 }
