@@ -5,10 +5,8 @@ import com.example.afternote.domain.mindrecord.diary.repository.DiaryRepository;
 import com.example.afternote.domain.mindrecord.dto.*;
 import com.example.afternote.domain.mindrecord.model.MindRecord;
 import com.example.afternote.domain.mindrecord.model.MindRecordType;
-import com.example.afternote.domain.mindrecord.question.model.DailyQuestion;
 import com.example.afternote.domain.mindrecord.question.model.DailyQuestionAnswer;
 import com.example.afternote.domain.mindrecord.question.repository.DailyQuestionAnswerRepository;
-import com.example.afternote.domain.mindrecord.question.repository.DailyQuestionRepository;
 import com.example.afternote.domain.mindrecord.repository.MindRecordRepository;
 import com.example.afternote.domain.mindrecord.thought.model.DeepThought;
 import com.example.afternote.domain.mindrecord.thought.repository.DeepThoughtRepository;
@@ -36,7 +34,7 @@ public class MindRecordService {
     private final DeepThoughtRepository deepThoughtRepository;
 
     private final DiaryService diaryService;
-    private final DailyQuestionService dailyQuestionService;
+    private final DailyQuestionAnswerService dailyQuestionAnswerService;
     private final DeepThoughtService deepThoughtService;
 
     /**
@@ -136,7 +134,7 @@ public class MindRecordService {
 
         switch (record.getType()) {
             case DIARY -> diaryService.create(record, request);
-            case DAILY_QUESTION -> dailyQuestionService.create(record, request);
+            case DAILY_QUESTION -> dailyQuestionAnswerService.create(record, request);
             case DEEP_THOUGHT -> deepThoughtService.create(record, request);
         }
 
@@ -208,7 +206,7 @@ public class MindRecordService {
 
         switch (record.getType()) {
             case DIARY -> diaryService.update(record, request);
-            case DAILY_QUESTION -> dailyQuestionService.update(record, request);
+            case DAILY_QUESTION -> dailyQuestionAnswerService.update(record, request);
             case DEEP_THOUGHT -> deepThoughtService.update(record, request);
         }
 

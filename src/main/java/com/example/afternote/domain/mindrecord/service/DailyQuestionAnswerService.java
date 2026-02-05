@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class DailyQuestionService {
+public class DailyQuestionAnswerService {
 
     private final DailyQuestionAnswerRepository dailyQuestionAnswerRepository;
     private final DailyQuestionRepository dailyQuestionRepository;
