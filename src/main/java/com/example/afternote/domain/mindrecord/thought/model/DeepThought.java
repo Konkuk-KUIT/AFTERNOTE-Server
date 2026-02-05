@@ -1,6 +1,8 @@
 package com.example.afternote.domain.mindrecord.thought.model;
 
 import com.example.afternote.domain.mindrecord.model.MindRecord;
+import com.example.afternote.global.exception.CustomException;
+import com.example.afternote.global.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,5 +40,19 @@ public class DeepThought {
         record.category = category;
         record.content = content;
         return record;
+    }
+
+    public void updateCategory(String category) {
+        if (category == null || category.isBlank()) {
+            throw new CustomException(ErrorCode.DEEP_THOUGHT_CATEGORY_REQUIRED);
+        }
+        this.category = category;
+    }
+
+    public void updateContent(String content) {
+        if (content == null) {
+            throw new CustomException(ErrorCode.MIND_RECORD_CONTENT_REQUIRED);
+        }
+        this.content = content;
     }
 }

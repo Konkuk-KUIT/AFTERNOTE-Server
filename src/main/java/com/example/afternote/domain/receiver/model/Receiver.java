@@ -15,7 +15,6 @@ import java.util.List;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Builder
 public class Receiver {
 
     @Id
@@ -37,22 +36,23 @@ public class Receiver {
     @Column(length = 50)
     private String email;
 
-    @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @Builder
-    public Receiver(String name, String relation, String phone, String email) {
+    public Receiver(String name, String relation, String phone, String email, Long userId) {
         this.name = name;
         this.relation = relation;
         this.phone = phone;
         this.email = email;
+        this.userId = userId;
+        this.sortOrder = 0;
+        this.createdAt = LocalDateTime.now();
     }
 
     @Column(name = "sort_order", nullable = false)
     private Integer sortOrder;
 
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
     private List<AfternoteReceiver> afternoteReceivers = new ArrayList<>();
 }
