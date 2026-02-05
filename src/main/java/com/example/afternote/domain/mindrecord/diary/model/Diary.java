@@ -1,6 +1,8 @@
 package com.example.afternote.domain.mindrecord.diary.model;
 
 import com.example.afternote.domain.mindrecord.model.MindRecord;
+import com.example.afternote.global.exception.CustomException;
+import com.example.afternote.global.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,5 +31,12 @@ public class Diary {
         record.mindRecord = mindRecord;
         record.content = content;
         return record;
+    }
+
+    public void updateContent(String content) {
+        if (content == null) {
+            throw new CustomException(ErrorCode.MIND_RECORD_CONTENT_REQUIRED);
+        }
+        this.content = content;
     }
 }
