@@ -41,61 +41,7 @@ public class AfternotedetailResponse {
     @Schema(description = "플레이리스트 정보 (Playlist 전용)")
     private AfternoteCreateRequest.PlaylistRequest playlist;
 
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class CredentialsRequest {
-        @Schema(description = "아이디", example = "my_insta_id")
-        private String id;
 
-        @Schema(description = "비밀번호", example = "password123")
-        private String password;
-    }
 
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class ReceiverRequest {
-        @Schema(description = "수신자 ID", example = "1")
-        private Long receiverId;
-    }
 
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class PlaylistRequest {
-        @Schema(description = "분위기 설명", example = "차분하고 조용하게 보내주세요.")
-        private String atmosphere;
-
-        @Schema(description = "노래 목록")
-        private List<AfternoteCreateRequest.SongRequest> songs;
-
-        @Schema(description = "추모 영상")
-        private AfternoteCreateRequest.MemorialVideoRequest memorialVideo;
-    }
-
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class SongRequest {
-        @Schema(description = "곡 제목", example = "보고싶다")
-        private String title;
-
-        @Schema(description = "아티스트", example = "김범수")
-        private String artist;
-
-        @Schema(description = "커버 이미지 URL")
-        private String coverUrl;
-    }
-
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class MemorialVideoRequest {
-        @Schema(description = "영상 URL")
-        private String videoUrl;
-
-        @Schema(description = "썸네일 URL")
-        private String thumbnailUrl;
-    }
 }

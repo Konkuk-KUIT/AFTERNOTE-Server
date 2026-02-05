@@ -47,7 +47,6 @@ public class AfternotePlaylist {
     public void update(String atmosphere, MemorialVideo memorialVideo) {
         if (atmosphere != null) {
             this.atmosphere = atmosphere;
-            this.title = title;
         }
         if (memorialVideo != null) {
             this.memorialVideo = memorialVideo;
