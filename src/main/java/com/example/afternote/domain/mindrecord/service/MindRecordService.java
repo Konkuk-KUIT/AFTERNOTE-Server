@@ -1,11 +1,17 @@
 package com.example.afternote.domain.mindrecord.service;
 
-import com.example.afternote.domain.mindrecord.dto.GetMindRecordListRequest;
-import com.example.afternote.domain.mindrecord.dto.GetMindRecordListResponse;
-import com.example.afternote.domain.mindrecord.dto.MindRecordListItemDto;
+import com.example.afternote.domain.mindrecord.diary.model.Diary;
+import com.example.afternote.domain.mindrecord.diary.repository.DiaryRepository;
+import com.example.afternote.domain.mindrecord.dto.*;
 import com.example.afternote.domain.mindrecord.model.MindRecord;
 import com.example.afternote.domain.mindrecord.model.MindRecordType;
+import com.example.afternote.domain.mindrecord.question.model.DailyQuestion;
+import com.example.afternote.domain.mindrecord.question.model.DailyQuestionAnswer;
+import com.example.afternote.domain.mindrecord.question.repository.DailyQuestionAnswerRepository;
+import com.example.afternote.domain.mindrecord.question.repository.DailyQuestionRepository;
 import com.example.afternote.domain.mindrecord.repository.MindRecordRepository;
+import com.example.afternote.domain.mindrecord.thought.model.DeepThought;
+import com.example.afternote.domain.mindrecord.thought.repository.DeepThoughtRepository;
 import com.example.afternote.domain.user.model.User;
 import com.example.afternote.domain.user.repository.UserRepository;
 import com.example.afternote.global.exception.CustomException;
@@ -14,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
 
@@ -24,6 +31,13 @@ public class MindRecordService {
 
     private final MindRecordRepository mindRecordRepository;
     private final UserRepository userRepository;
+    private final DiaryRepository diaryRepository;
+    private final DailyQuestionAnswerRepository dailyQuestionAnswerRepository;
+    private final DeepThoughtRepository deepThoughtRepository;
+
+    private final DiaryService diaryService;
+    private final DailyQuestionService dailyQuestionService;
+    private final DeepThoughtService deepThoughtService;
 
     /**
      * 마음의 기록 목록 조회 (LIST / CALENDAR 공통)
@@ -94,5 +108,138 @@ public class MindRecordService {
                 .map(record -> record.getRecordDate().toString())
                 .distinct()
                 .toList();
+    }
+
+    /**
+     * 마음의 기록 생성 (POST)
+     */
+    @Transactional
+    public Long createMindRecord(Long userId, PostMindRecordRequest request) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        validateCommonFields(request);
+
+        LocalDate recordDate;
+        try {
+            recordDate = LocalDate.parse(request.getDate());
+        } catch (Exception e) {
+            throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
+        }
+
+        MindRecord record = MindRecord.create(
+                user, request.getType(), request.getTitle(), recordDate, request.getIsDraft()
+        );
+
+        mindRecordRepository.save(record);
+
+        switch (record.getType()) {
+            case DIARY -> diaryService.create(record, request);
+            case DAILY_QUESTION -> dailyQuestionService.create(record, request);
+            case DEEP_THOUGHT -> deepThoughtService.create(record, request);
+        }
+
+        return record.getId();
+    }
+
+    private void validateCommonFields(PostMindRecordRequest request) {
+        if (request.getType() == null ||
+                request.getDate() == null ||
+                request.getIsDraft() == null) {
+            throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
+        }
+    }
+
+    /**
+     * 마음의 기록 단건 수정 화면 조회
+     */
+    /* ================= 단건 조회 ================= */
+    public GetMindRecordDetailResponse getMindRecordDetail(Long userId, Long recordId) {
+        MindRecord record = findRecord(recordId, userId);
+
+        return switch (record.getType()) {
+            case DIARY -> {
+                Diary diary = diaryRepository.findByMindRecord(record)
+                        .orElseThrow(() -> new CustomException(ErrorCode.MIND_RECORD_NOT_FOUND));
+                yield GetMindRecordDetailResponse.from(record, diary);
+            }
+
+            case DAILY_QUESTION -> {
+                DailyQuestionAnswer answer = dailyQuestionAnswerRepository.findByMindRecord(record)
+                        .orElseThrow(() -> new CustomException(ErrorCode.MIND_RECORD_NOT_FOUND));
+                yield GetMindRecordDetailResponse.from(record, answer);
+            }
+
+            case DEEP_THOUGHT -> {
+                DeepThought thought = deepThoughtRepository.findByMindRecord(record)
+                        .orElseThrow(() -> new CustomException(ErrorCode.MIND_RECORD_NOT_FOUND));
+                yield GetMindRecordDetailResponse.from(record, thought);
+            }
+        };
+    }
+
+
+    /**
+     * 마음의 기록 수정 (PATCH)
+     */
+    @Transactional
+    public Long updateMindRecord(Long userId, Long recordId, PatchMindRecordRequest request) {
+
+        MindRecord record = findRecord(recordId, userId);
+
+        if (request.getTitle() != null && request.getTitle().isBlank()) {
+            throw new CustomException(ErrorCode.MIND_RECORD_TITLE_REQUIRED);
+        }
+
+        LocalDate recordDate = null;
+        if (request.getDate() != null) {
+            try {
+                recordDate = LocalDate.parse(request.getDate());
+            } catch (Exception e) {
+                throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
+            }
+        }
+        record.updateCommon(
+                request.getTitle(),
+                recordDate,
+                request.getIsDraft()
+        );
+
+        switch (record.getType()) {
+            case DIARY -> diaryService.update(record, request);
+            case DAILY_QUESTION -> dailyQuestionService.update(record, request);
+            case DEEP_THOUGHT -> deepThoughtService.update(record, request);
+        }
+
+        return record.getId();
+    }
+
+    private MindRecord findRecord(Long recordId, Long userId) {
+        MindRecord record = mindRecordRepository.findById(recordId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MIND_RECORD_NOT_FOUND));
+
+        if (!record.getUser().getId().equals(userId)) {
+            throw new CustomException(ErrorCode.MIND_RECORD_FORBIDDEN);
+        }
+
+        return record;
+    }
+
+    /**
+     * 마음의 기록 삭제 (DELETE)
+     */
+    @Transactional
+    public void deleteMindRecord(Long userId, Long recordId) {
+
+        MindRecord record = findRecord(recordId, userId);
+
+        switch (record.getType()) {
+            case DIARY -> diaryRepository.deleteByMindRecord(record);
+            case DAILY_QUESTION -> dailyQuestionAnswerRepository.deleteByMindRecord(record);
+            case DEEP_THOUGHT -> deepThoughtRepository.deleteByMindRecord(record);
+        }
+
+        mindRecordRepository.delete(record);
     }
 }

@@ -2,6 +2,8 @@ package com.example.afternote.domain.mindrecord.question.model;
 
 import com.example.afternote.domain.mindrecord.model.MindRecord;
 import com.example.afternote.domain.user.model.User;
+import com.example.afternote.global.exception.CustomException;
+import com.example.afternote.global.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -41,4 +43,9 @@ public class DailyQuestionAnswer {
         answer.content = content;
         return answer;
     }
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
+
 }
