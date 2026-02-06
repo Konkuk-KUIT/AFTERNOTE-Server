@@ -26,7 +26,7 @@ public class User {
     @Column(nullable = false, unique = true) // 이메일은 중복 방지
     private String email;
 
-    @Column(nullable = false) // 카카오 로그인만 쓸 경우 nullable = true로 변경 고려
+    @Column // 소셜 로그인 사용자는 비밀번호가 없을 수 있음
     private String password;
 
     @Column(nullable = false, length = 50)

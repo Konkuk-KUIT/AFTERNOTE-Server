@@ -74,6 +74,12 @@ public enum ErrorCode {
 
     INVALID_EMAIL_VERIFICATION(HttpStatus.BAD_REQUEST, 417, "인증번호가 유효하지 않습니다."),
 
+    // 소셜 로그인 실패
+    SOCIAL_LOGIN_FAILED(HttpStatus.BAD_REQUEST, 418, "소셜 로그인에 실패했습니다."),
+
+    // 지원하지 않는 소셜 로그인 제공자
+    UNSUPPORTED_SOCIAL_LOGIN(HttpStatus.BAD_REQUEST, 419, "지원하지 않는 소셜 로그인 제공자입니다."),
+
     // ======================================
     // 4. 타임레터 관련 오류 (code: 420 ~ 429)
     // ======================================

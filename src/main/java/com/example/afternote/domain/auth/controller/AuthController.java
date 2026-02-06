@@ -84,6 +84,38 @@ public class AuthController {
         return ApiResponse.success(null);
     }
 
+    @Operation(
+        summary = "통합 소셜 로그인 API 🎯", 
+        description = """
+            모든 소셜 로그인 제공자를 통합한 API입니다.
+            
+            **사용 방법:**
+            - provider: KAKAO, GOOGLE, NAVER 등
+            - accessToken: 소셜 로그인 제공자로부터 받은 Access Token
+            
+            **응답:**
+            - accessToken: 서비스 JWT Access Token
+            - refreshToken: 서비스 JWT Refresh Token
+            - isNewUser: 신규 회원 여부 (true/false)
+            
+            **예시:**
+            ```json
+            {
+              "provider": "KAKAO",
+              "accessToken": "ya29.a0AfH6..."
+            }
+            ```
+            """
+    )
+    @PostMapping("/social/login")
+    public ApiResponse<SocialLoginResponse> socialLogin(
+            @Valid @RequestBody SocialLoginRequest socialLoginRequest
+    ) {
+        SocialLoginResponse response = authService.socialLogin(socialLoginRequest);
+        return ApiResponse.success(response);
+    }
+
+
 
 
 

@@ -2,6 +2,8 @@ package com.example.afternote.domain.auth.service;
 
 
 import com.example.afternote.domain.auth.dto.*;
+import com.example.afternote.domain.auth.service.social.SocialLoginFactory;
+import com.example.afternote.domain.auth.service.social.SocialLoginService;
 import com.example.afternote.domain.user.model.AuthProvider;
 import com.example.afternote.domain.user.model.User;
 import com.example.afternote.domain.user.model.UserStatus;
@@ -24,6 +26,9 @@ public class AuthService {
 
     private final TokenService tokenService;
     private final EmailService emailService;
+    
+    // 🎯 핵심: SocialLoginFactory 주입
+    private final SocialLoginFactory socialLoginFactory;
 
     @Transactional
     public User signup(SignupRequest request) {
@@ -46,6 +51,11 @@ public class AuthService {
     public LoginResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        // 소셜 로그인 사용자는 일반 로그인 불가
+        if (user.getPassword() == null) {
+            throw new CustomException(ErrorCode.SOCIAL_LOGIN_USER);
+        }
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new CustomException(ErrorCode.PASSWORD_MISMATCH);
@@ -95,6 +105,12 @@ public class AuthService {
         }
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        
+        // 소셜 로그인 사용자는 비밀번호 변경 불가
+        if (user.getPassword() == null) {
+            throw new CustomException(ErrorCode.SOCIAL_LOGIN_USER);
+        }
+        
         if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
             throw new CustomException(ErrorCode.PASSWORD_MISMATCH); // 현재 비번 틀림 예외
         }
@@ -126,4 +142,48 @@ public class AuthService {
             throw new CustomException(ErrorCode.INVALID_EMAIL_VERIFICATION);
         }
     }
+
+    /**
+     * 🎯 통합 소셜 로그인 (전략 패턴 적용)
+     * 
+     * 새로운 소셜 로그인 제공자를 추가할 때:
+     * 1. SocialLoginService 인터페이스를 구현한 클래스 하나만 만들면 끝!
+     * 2. 이 메서드는 1줄도 수정할 필요 없음 (OCP 원칙)
+     * 
+     * @param request 소셜 로그인 요청 (provider, accessToken)
+     * @return JWT 토큰 정보와 신규 회원 여부
+     */
+    @Transactional
+    public SocialLoginResponse socialLogin(SocialLoginRequest request) {
+
+        SocialLoginService socialLoginService = socialLoginFactory.getService(request.getProvider());
+        SocialUserInfo socialUserInfo = socialLoginService.getUserInfo(request.getAccessToken());
+
+        User user = userRepository.findByEmail(socialUserInfo.getEmail())
+                .orElse(null);
+        boolean isNewUser = false;
+        
+        if (user == null) {
+            user = User.builder()
+                    .email(socialUserInfo.getEmail())
+                    .name(socialUserInfo.getName())
+                    .status(UserStatus.ACTIVE)
+                    .provider(socialUserInfo.getProvider())
+                    .build();
+            user = userRepository.save(user);
+            isNewUser = true;
+        }
+        
+        // 5. JWT 토큰 생성
+        String accessToken = jwtTokenProvider.generateAccessToken(user.getId());
+        String refreshToken = jwtTokenProvider.generateRefreshToken(user.getId());
+        tokenService.saveToken(refreshToken, user.getId());
+        
+        return SocialLoginResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .isNewUser(isNewUser)
+                .build();
+    }
+
 }
