@@ -34,7 +34,7 @@ public class AfternotePlaylist {
     private MemorialVideo memorialVideo;
     
     @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "DATETIME")
     private LocalDateTime createdAt;
     
     @OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -47,7 +47,6 @@ public class AfternotePlaylist {
     public void update(String atmosphere, MemorialVideo memorialVideo) {
         if (atmosphere != null) {
             this.atmosphere = atmosphere;
-            this.title = title;
         }
         if (memorialVideo != null) {
             this.memorialVideo = memorialVideo;

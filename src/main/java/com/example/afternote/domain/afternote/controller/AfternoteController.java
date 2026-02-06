@@ -3,6 +3,7 @@ package com.example.afternote.domain.afternote.controller;
 import com.example.afternote.domain.afternote.dto.AfternoteCreateRequest;
 import com.example.afternote.domain.afternote.dto.AfternoteCreateResponse;
 import com.example.afternote.domain.afternote.dto.AfternotePageResponse;
+import com.example.afternote.domain.afternote.dto.AfternotedetailResponse;
 import com.example.afternote.domain.afternote.model.AfternoteCategoryType;
 import com.example.afternote.domain.afternote.service.AfternoteService;
 import com.example.afternote.global.common.ApiResponse;
@@ -42,6 +43,19 @@ public class AfternoteController {
         return ApiResponse.success(response);
     }
 
+    @Operation(
+            summary = "애프터노트 상세 목록 조회 API",
+            description = "애프터노트 상세목록을 가져옵니다. path variable로 afternote_id를 보내주시면 됩니다."
+    )
+    @GetMapping("/{afternoteId}")
+    public ApiResponse<AfternotedetailResponse> getDetailAfternote(
+            @Parameter(hidden = true) @UserId Long userId,
+            @Parameter(description = "afternote_id를 입력해주세요!", example = "1")
+            @PathVariable Long afternoteId
+    ) {
+         AfternotedetailResponse afternotedetailResponse = afternoteService.getDetailAfternote(userId, afternoteId);
+        return ApiResponse.success(afternotedetailResponse);
+    }
     @Operation(
             summary = "애프터노트 생성 API",
             description = "새로운 애프터노트를 생성합니다. 카테고리에 따라 다른 필드를 전달해야 합니다."

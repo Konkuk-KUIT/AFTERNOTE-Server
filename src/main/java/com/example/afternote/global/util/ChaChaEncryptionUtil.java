@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.Cipher;
-import javax.crypto.spec.ChaCha20ParameterSpec;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
@@ -21,7 +20,7 @@ import java.util.Base64;
  * 모바일 환경에 최적화된 암호화 방식 (ARM 프로세서에서 AES보다 빠름)
  */
 @Component
-public class AesEncryptionUtil {
+public class ChaChaEncryptionUtil {
 
     private static final String ALGORITHM = "ChaCha20-Poly1305";
     private static final int NONCE_LENGTH = 12; // ChaCha20-Poly1305는 96-bit nonce 사용
