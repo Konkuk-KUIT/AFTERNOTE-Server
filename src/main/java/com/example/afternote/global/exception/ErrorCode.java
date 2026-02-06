@@ -99,6 +99,7 @@ public enum ErrorCode {
     MIND_RECORD_CONTENT_REQUIRED(HttpStatus.BAD_REQUEST, 444, "마음의 기록 내용은 필수입니다."),                                                                                                            
     DAILY_QUESTION_REQUIRED(HttpStatus.BAD_REQUEST, 445, "데일리 질문 ID는 필수입니다."),
     MIND_RECORD_TITLE_REQUIRED(HttpStatus.BAD_REQUEST, 446, "마음의 기록 제목은 필수입니다."),
+    RECEIVER_FORBIDDEN(HttpStatus.FORBIDDEN, 448, "해당 수신인에 대한 접근 권한이 없습니다."),
 
     // ======================================                                                                                                                                                               
     // 7. 애프터노트 관련 오류 (code: 460 ~ 479)                                                                                                                                                            
