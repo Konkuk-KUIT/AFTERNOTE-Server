@@ -134,7 +134,6 @@ public enum ErrorCode {
     DECRYPTION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, 491, "복호화 처리 중 오류가 발생했습니다.");
 
 
-
     private final HttpStatus httpStatus;
     private final int code;
     private final String message;
