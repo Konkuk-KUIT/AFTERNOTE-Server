@@ -37,16 +37,16 @@ public class Afternote {
     
     @Column(columnDefinition = "TEXT")
     private String leaveMessage;
-    
+
     @Column(name = "sort_order")
     private Integer sortOrder;
     
     @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "DATETIME")
     private LocalDateTime createdAt;
     
     @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at", nullable = false, columnDefinition = "DATETIME")
     private LocalDateTime updatedAt;
     
     @OneToMany(mappedBy = "afternote", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -66,7 +66,7 @@ public class Afternote {
     @OneToMany(mappedBy = "afternote", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<AfternotePlaylist> playlists = new ArrayList<>();
-    
+
     // 업데이트 메서드
     public void update(String title, Integer sortOrder, String leaveMessage, ProcessMethod processMethod, List<String> actions) {
         this.title = title;
@@ -78,10 +78,6 @@ public class Afternote {
             this.actions.addAll(actions);
         }
     }
-    
-    public void clearRelations() {
-        this.secureContents.clear();
-        this.receivers.clear();
-        this.playlists.clear();
-    }
+
+
 }

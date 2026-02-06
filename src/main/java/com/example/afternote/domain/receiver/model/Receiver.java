@@ -3,7 +3,6 @@ package com.example.afternote.domain.receiver.model;
 import com.example.afternote.domain.afternote.model.AfternoteReceiver;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;

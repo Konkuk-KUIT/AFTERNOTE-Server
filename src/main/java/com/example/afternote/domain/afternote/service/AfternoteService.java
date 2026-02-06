@@ -1,15 +1,11 @@
 package com.example.afternote.domain.afternote.service;
 
-import com.example.afternote.domain.afternote.dto.AfternoteCreateRequest;
-import com.example.afternote.domain.afternote.dto.AfternoteCreateResponse;
-import com.example.afternote.domain.afternote.dto.AfternotePageResponse;
-import com.example.afternote.domain.afternote.dto.AfternoteResponse;
+import com.example.afternote.domain.afternote.dto.*;
 import com.example.afternote.domain.afternote.model.*;
 import com.example.afternote.domain.afternote.repository.AfternoteRepository;
-import com.example.afternote.domain.receiver.model.Receiver;
-import com.example.afternote.domain.receiver.repository.ReceivedRepository;
 import com.example.afternote.global.exception.CustomException;
 import com.example.afternote.global.exception.ErrorCode;
+import com.example.afternote.global.util.ChaChaEncryptionUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,6 +25,7 @@ public class AfternoteService {
     private final AfternoteRepository afternoteRepository;
     private final AfternoteRelationService relationService;
     private final AfternoteValidator validator;
+    private final ChaChaEncryptionUtil chaChaEncryptionUtil;
 
     public AfternotePageResponse getAfternotes(Long userId, AfternoteCategoryType category, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -42,7 +39,7 @@ public class AfternoteService {
         
         List<AfternoteResponse> content = afternotePage.getContent().stream()
                 .map(afternote -> AfternoteResponse.builder()
-                        .noteId(afternote.getId())
+                        .afternoteId(afternote.getId())
                         .title(afternote.getTitle())
                         .category(afternote.getCategoryType())
                         .createdAt(afternote.getCreatedAt())
@@ -55,6 +52,131 @@ public class AfternoteService {
                 .size(size)
                 .hasNext(afternotePage.hasNext())
                 .build();
+    }
+
+    public AfternotedetailResponse getDetailAfternote(Long userId, Long afternoteId) {
+        Afternote afternote = afternoteRepository.findById(afternoteId)
+                .orElseThrow(() -> new CustomException(ErrorCode.AFTERNOTE_NOT_FOUND));
+        if(!afternote.getUserId().equals(userId)) {
+            throw new CustomException(ErrorCode.AFTERNOTE_NOT_FOUND);
+        }
+        
+        AfternotedetailResponse response;
+        
+        // 카테고리별 데이터 조회 및 응답 생성
+        switch (afternote.getCategoryType()) {
+            case SOCIAL:
+                // secureContents에서 credentials 가져오고 복호화
+                AfternoteCreateRequest.CredentialsRequest credentials = null;
+                
+                String accountId = afternote.getSecureContents().stream()
+                        .filter(sc -> "account_id".equals(sc.getKeyName()))
+                        .findFirst()
+                        .map(sc -> chaChaEncryptionUtil.decrypt(sc.getEncryptedValue()))
+                        .orElse(null);
+                
+                String accountPassword = afternote.getSecureContents().stream()
+                        .filter(sc -> "account_password".equals(sc.getKeyName()))
+                        .findFirst()
+                        .map(sc -> chaChaEncryptionUtil.decrypt(sc.getEncryptedValue()))
+                        .orElse(null);
+                
+                if (accountId != null || accountPassword != null) {
+                    credentials = new AfternoteCreateRequest.CredentialsRequest(accountId, accountPassword);
+                }
+                
+                response = new AfternotedetailResponse(
+                        afternote.getId(),
+                        afternote.getCategoryType(),
+                        afternote.getTitle(),
+                        afternote.getProcessMethod(),
+                        afternote.getActions(),
+                        afternote.getLeaveMessage(),
+                        credentials,
+                        null,
+                        null
+                );
+                break;
+                
+            case GALLERY:
+                // receivers 매핑
+                List<AfternoteCreateRequest.ReceiverRequest> receivers = afternote.getReceivers().stream()
+                        .map(ar -> new AfternoteCreateRequest.ReceiverRequest(ar.getReceiver().getId()))
+                        .collect(Collectors.toList());
+                
+                response = new AfternotedetailResponse(
+                        afternote.getId(),
+                        afternote.getCategoryType(),
+                        afternote.getTitle(),
+                        afternote.getProcessMethod(),
+                        afternote.getActions(),
+                        afternote.getLeaveMessage(),
+                        null,
+                        receivers,
+                        null
+                );
+                break;
+                
+            case PLAYLIST:
+                // playlist 매핑
+                AfternoteCreateRequest.PlaylistRequest playlistRequest = null;
+                
+                if (!afternote.getPlaylists().isEmpty()) {
+                    AfternotePlaylist playlist = afternote.getPlaylists().get(0);
+                    
+                    // songs 매핑
+                    List<AfternoteCreateRequest.SongRequest> songs = playlist.getItems().stream()
+                            .map(item -> new AfternoteCreateRequest.SongRequest(
+                                    item.getSongTitle(),
+                                    item.getArtist(),
+                                    item.getCoverUrl()
+                            ))
+                            .collect(Collectors.toList());
+                    
+                    // memorialVideo 매핑
+                    AfternoteCreateRequest.MemorialVideoRequest memorialVideo = null;
+                    if (playlist.getMemorialVideo() != null) {
+                        memorialVideo = new AfternoteCreateRequest.MemorialVideoRequest(
+                                playlist.getMemorialVideo().getVideoUrl(),
+                                playlist.getMemorialVideo().getThumbnailUrl()
+                        );
+                    }
+                    
+                    playlistRequest = new AfternoteCreateRequest.PlaylistRequest(
+                            playlist.getAtmosphere(),
+                            songs,
+                            memorialVideo
+                    );
+                }
+                
+                response = new AfternotedetailResponse(
+                        afternote.getId(),
+                        afternote.getCategoryType(),
+                        afternote.getTitle(),
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        playlistRequest
+                );
+                break;
+                
+            default:
+                response = new AfternotedetailResponse(
+                        afternote.getId(),
+                        afternote.getCategoryType(),
+                        afternote.getTitle(),
+                        afternote.getProcessMethod(),
+                        afternote.getActions(),
+                        afternote.getLeaveMessage(),
+                        null,
+                        null,
+                        null
+                );
+        }
+        
+        return response;
     }
 
     @Transactional
