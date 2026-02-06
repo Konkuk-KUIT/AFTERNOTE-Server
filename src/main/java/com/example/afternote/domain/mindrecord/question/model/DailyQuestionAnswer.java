@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "daily_question_answers")
+@Table(name = "daily_question_answer")
 @Getter
 @NoArgsConstructor
 public class DailyQuestionAnswer {
@@ -29,16 +29,22 @@ public class DailyQuestionAnswer {
     @JoinColumn(name = "question_id", nullable = false)
     private DailyQuestion dailyQuestion;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
     public static DailyQuestionAnswer create(
             MindRecord mindRecord,
+            User user,
             DailyQuestion dailyQuestion,
             String content
     ) {
         DailyQuestionAnswer answer = new DailyQuestionAnswer();
         answer.mindRecord = mindRecord;
+        answer.user = user;
         answer.dailyQuestion = dailyQuestion;
         answer.content = content;
         return answer;
