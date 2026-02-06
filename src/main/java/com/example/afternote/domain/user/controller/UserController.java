@@ -5,6 +5,7 @@ import com.example.afternote.domain.user.service.UserService;
 import com.example.afternote.global.common.ApiResponse;
 import com.example.afternote.global.resolver.UserId;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class UserController {
     )
     @GetMapping("/me")
     public ApiResponse<UserResponse> getMyProfile(
-            @UserId Long userId
+            @Parameter(hidden = true) @UserId Long userId
     ) {
         return ApiResponse.success(
                 userService.getMyProfile(userId)
@@ -39,7 +40,7 @@ public class UserController {
     )
     @PatchMapping("/me")
     public ApiResponse<UserResponse> updateMyProfile(
-            @UserId Long userId,
+            @Parameter(hidden = true) @UserId Long userId,
             @Valid @RequestBody UserUpdateProfileRequest request
     ) {
         return ApiResponse.success(
@@ -53,7 +54,7 @@ public class UserController {
     )
     @GetMapping("/push-settings")
     public ApiResponse<UserPushSettingResponse> getMyPushSettings(
-            @UserId Long userId
+            @Parameter(hidden = true) @UserId Long userId
     ) {
         return ApiResponse.success(
                 userService.getMyPushSettings(userId)
@@ -66,7 +67,7 @@ public class UserController {
     )
     @PatchMapping("/push-settings")
     public ApiResponse<UserPushSettingResponse> updateMyPushSettings(
-            @UserId Long userId,
+            @Parameter(hidden = true) @UserId Long userId,
             @Valid @RequestBody UserUpdatePushSettingRequest request
     ) {
         return ApiResponse.success(
@@ -80,7 +81,7 @@ public class UserController {
     )
     @GetMapping("/receivers")
     public ApiResponse<List<ReceiverListResponse>> getReceivers(
-            @UserId Long userId
+            @Parameter(hidden = true) @UserId Long userId
     ) {
         return ApiResponse.success(
                 userService.getReceivers(userId)
@@ -93,7 +94,7 @@ public class UserController {
     )
     @PostMapping("/receivers")
     public ApiResponse<UserCreateReceiverResponse> createReceiver(
-            @UserId Long userId,
+            @Parameter(hidden = true) @UserId Long userId,
             @Valid @RequestBody UserCreateReceiverRequest request
     ) {
         return ApiResponse.success(
@@ -107,7 +108,7 @@ public class UserController {
     )
     @GetMapping("/receivers/{receiverId}")
     public ApiResponse<ReceiverDetailResponse> getReceiverDetail(
-            @UserId Long userId,
+            @Parameter(hidden = true) @UserId Long userId,
             @PathVariable Long receiverId
     ) {
         return ApiResponse.success(
