@@ -83,6 +83,9 @@ public class MindRecordService {
     private List<MindRecord> findListRecords(
             User user, MindRecordType type
     ) {
+        if (type == null) {
+            return mindRecordRepository.findByUser(user);
+        }
         return mindRecordRepository.findByUserAndType(user, type);
     }
 

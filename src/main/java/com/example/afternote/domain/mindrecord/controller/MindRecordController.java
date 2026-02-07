@@ -1,6 +1,7 @@
 package com.example.afternote.domain.mindrecord.controller;
 
 import com.example.afternote.domain.mindrecord.dto.*;
+import com.example.afternote.domain.mindrecord.service.MindRecordReceiverService;
 import com.example.afternote.domain.mindrecord.service.MindRecordService;
 import com.example.afternote.global.common.ApiResponse;
 import com.example.afternote.global.resolver.UserId;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class MindRecordController {
 
     private final MindRecordService mindRecordService;
+    private final MindRecordReceiverService mindRecordReceiverService;
 
     @Operation(
             summary = "마음의 기록 목록 조회 API",
@@ -95,5 +97,25 @@ public class MindRecordController {
             @PathVariable Long recordId
     ) {
         mindRecordService.deleteMindRecord(userId, recordId);
+    }
+
+    @Operation(
+            summary = "마음의 기록 수신인 전달 설정 API",
+            description = "특정 마음의 기록을 특정 수신인에게 전달할지 여부를 설정합니다."
+    )
+    @PatchMapping("/{recordId}/receivers/{receiverId}")
+    public ApiResponse<Void> toggleMindRecordReceiver(
+            @Parameter(hidden = true) @UserId Long userId,
+            @PathVariable Long recordId,
+            @PathVariable Long receiverId,
+            @Valid @RequestBody PatchMindRecordReceiverRequest request
+    ) {
+        mindRecordReceiverService.toggleReceiver(
+                userId,
+                recordId,
+                receiverId,
+                request.getEnabled()
+        );
+        return ApiResponse.success(null);
     }
 }

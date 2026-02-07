@@ -12,6 +12,9 @@ import java.util.List;
 @Repository
 public interface MindRecordRepository extends JpaRepository<MindRecord, Long> {
 
+    // LIST - 전체 타입
+    List<MindRecord> findByUser(User user);
+
     // 날짜 범위 조회 (CALENDAR)
     List<MindRecord> findByUserAndTypeAndRecordDateBetween(
             User user,
@@ -20,6 +23,6 @@ public interface MindRecordRepository extends JpaRepository<MindRecord, Long> {
             LocalDate endDate
     );
 
-    // 날짜 조건 없는 전체 조회 (LIST 기본)
+    // 날짜 조건 없는 전체 조회 (LIST 기본) - 특정 타입
     List<MindRecord> findByUserAndType(User user, MindRecordType type);
 }
