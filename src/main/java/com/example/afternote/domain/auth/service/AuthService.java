@@ -54,7 +54,7 @@ public class AuthService {
 
         // 소셜 로그인 사용자는 일반 로그인 불가
         if (user.getPassword() == null) {
-            throw new CustomException(ErrorCode.SOCIAL_LOGIN_USER);
+            throw new CustomException(ErrorCode.SOCIAL_CREDENTIALS_REQUIRED);
         }
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {

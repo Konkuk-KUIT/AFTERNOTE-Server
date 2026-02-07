@@ -137,7 +137,10 @@ public enum ErrorCode {
     // 8. 암호화 관련 오류 (code: 490 ~)                                                                                                                                                                    
     // ======================================                                                                                                                                                               
     ENCRYPTION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, 490, "암호화 처리 중 오류가 발생했습니다."),                                                                                                        
-    DECRYPTION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, 491, "복호화 처리 중 오류가 발생했습니다.");
+    DECRYPTION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, 491, "복호화 처리 중 오류가 발생했습니다."),
+
+    // 소셜 로그인 사용자의 일반 로그인 시도
+    SOCIAL_LOGIN_USER(HttpStatus.BAD_REQUEST, 492, "소셜 로그인으로 가입한 계정입니다. 소셜 로그인을 이용해주세요.");
 
 
     private final HttpStatus httpStatus;

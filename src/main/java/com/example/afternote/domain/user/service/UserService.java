@@ -106,8 +106,6 @@ public class UserService {
 
         Receiver receiver = Receiver.builder()
                 .name(request.getName())
-                .createdAt(LocalDateTime.now())
-                .sortOrder(1) // 확인해주세요
                 .relation(request.getRelation())
                 .phone(request.getPhone())
                 .email(request.getEmail())

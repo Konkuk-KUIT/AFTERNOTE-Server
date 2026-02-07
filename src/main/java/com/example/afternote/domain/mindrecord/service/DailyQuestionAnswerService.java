@@ -30,7 +30,7 @@ public class DailyQuestionAnswerService {
                 .orElseThrow(() -> new CustomException(ErrorCode.DAILY_QUESTION_NOT_FOUND));
 
         DailyQuestionAnswer answer =
-                DailyQuestionAnswer.create(record, question, request.getContent());
+                DailyQuestionAnswer.create(record, record.getUser(),question, request.getContent());
 
         dailyQuestionAnswerRepository.save(answer);
     }
