@@ -30,7 +30,7 @@ public class S3Service {
     private String region;
 
     private static final Set<String> ALLOWED_EXTENSIONS = Set.of("jpg", "jpeg", "png", "gif", "webp");
-    private static final Set<String> ALLOWED_DIRECTORIES = Set.of("profiles", "timeletters", "afternotes");
+    private static final Set<String> ALLOWED_DIRECTORIES = Set.of("profiles", "timeletters", "afternotes", "mindrecords");
     private static final Duration PRESIGNED_URL_EXPIRATION = Duration.ofMinutes(10);
 
     public PresignedUrlResponse generatePresignedUrl(String directory, String extension) {
