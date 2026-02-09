@@ -140,7 +140,7 @@ public class ReceivedService {
     @Transactional
     public List<Long> createMindRecordReceivers(Long userId, CreateMindRecordReceiverRequest request) {
         MindRecord mindRecord = mindRecordRepository.findById(request.getMindRecordId())
-                .orElseThrow(() -> new CustomException(ErrorCode.INVALID_INPUT_VALUE));
+                .orElseThrow(() -> new CustomException(ErrorCode.MIND_RECORD_NOT_FOUND));
 
         // 본인의 마인드레코드인지 확인
         if (!mindRecord.getUser().getId().equals(userId)) {

@@ -140,7 +140,14 @@ public enum ErrorCode {
     DECRYPTION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, 491, "복호화 처리 중 오류가 발생했습니다."),
 
     // 소셜 로그인 사용자의 일반 로그인 시도
-    SOCIAL_LOGIN_USER(HttpStatus.BAD_REQUEST, 492, "소셜 로그인으로 가입한 계정입니다. 소셜 로그인을 이용해주세요.");
+    SOCIAL_LOGIN_USER(HttpStatus.BAD_REQUEST, 492, "소셜 로그인으로 가입한 계정입니다. 소셜 로그인을 이용해주세요."),
+
+    // ======================================
+    // 9. S3/이미지 관련 오류 (code: 493 ~)
+    // ======================================
+    PRESIGNED_URL_GENERATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, 493, "Presigned URL 생성에 실패했습니다."),
+    INVALID_FILE_EXTENSION(HttpStatus.BAD_REQUEST, 494, "허용되지 않는 파일 확장자입니다. (jpg, jpeg, png, gif, webp만 허용)"),
+    INVALID_DIRECTORY(HttpStatus.BAD_REQUEST, 495, "허용되지 않는 디렉토리입니다.");
 
 
     private final HttpStatus httpStatus;
