@@ -1,8 +1,12 @@
 package com.example.afternote.domain.mindrecord.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -23,4 +27,9 @@ public class PatchMindRecordRequest {
 
     @Schema(description = "깊은 생각 카테고리 (DEEP_THOUGHT 타입일 때만)", example = "새로운 관점", nullable = true)
     private String category;
+
+    @Schema(description = "이미지 URL 목록 (null이면 기존 유지, 빈 배열이면 전체 삭제)", nullable = true)
+    @Valid
+    @Size(max = 10, message = "이미지는 최대 10개까지 첨부할 수 있습니다.")
+    private List<MindRecordImageRequest> imageList;
 }

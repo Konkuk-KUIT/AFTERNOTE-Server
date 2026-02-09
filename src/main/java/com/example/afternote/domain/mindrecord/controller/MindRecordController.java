@@ -63,8 +63,6 @@ public class MindRecordController {
             @Parameter(hidden = true) @UserId Long userId,
             @PathVariable Long recordId
     ) {
-        System.out.println("userId = " + userId + ", recordId = " + recordId);
-
         return ApiResponse.success(
                 mindRecordService.getMindRecordDetail(userId, recordId)
         );

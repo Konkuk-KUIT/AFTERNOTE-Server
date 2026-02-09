@@ -1,6 +1,7 @@
 package com.example.afternote.domain.mindrecord.dto;
 
 import com.example.afternote.domain.mindrecord.diary.model.Diary;
+import com.example.afternote.domain.mindrecord.image.model.MindRecordImage;
 import com.example.afternote.domain.mindrecord.model.MindRecord;
 import com.example.afternote.domain.mindrecord.model.MindRecordType;
 import com.example.afternote.domain.mindrecord.question.model.DailyQuestionAnswer;
@@ -9,6 +10,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.util.List;
 
 @Getter
 @Builder
@@ -39,23 +42,29 @@ public class GetMindRecordDetailResponse {
     @Schema(description = "깊은 생각 카테고리 (DEEP_THOUGHT 타입일 때)", nullable = true, example = "자아성찰")
     private String category;
 
-    public static GetMindRecordDetailResponse from(MindRecord record, Diary diary) {
+    @Schema(description = "이미지 목록")
+    private List<MindRecordImageResponse> imageList;
+
+    public static GetMindRecordDetailResponse from(MindRecord record, Diary diary, List<MindRecordImage> images) {
         return base(record)
                 .content(diary.getContent())
+                .imageList(images.stream().map(MindRecordImageResponse::from).toList())
                 .build();
     }
 
-    public static GetMindRecordDetailResponse from(MindRecord record, DailyQuestionAnswer answer) {
+    public static GetMindRecordDetailResponse from(MindRecord record, DailyQuestionAnswer answer, List<MindRecordImage> images) {
         return base(record)
                 .content(answer.getContent())
                 .questionId(answer.getDailyQuestion().getId())
+                .imageList(images.stream().map(MindRecordImageResponse::from).toList())
                 .build();
     }
 
-    public static GetMindRecordDetailResponse from(MindRecord record, DeepThought thought) {
+    public static GetMindRecordDetailResponse from(MindRecord record, DeepThought thought, List<MindRecordImage> images) {
         return base(record)
                 .content(thought.getContent())
                 .category(thought.getCategory())
+                .imageList(images.stream().map(MindRecordImageResponse::from).toList())
                 .build();
     }
 
