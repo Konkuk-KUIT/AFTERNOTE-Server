@@ -7,7 +7,7 @@ import com.example.afternote.domain.receiver.repository.UserReceiverRepository;
 import com.example.afternote.domain.user.dto.*;
 import com.example.afternote.domain.user.model.User;
 import com.example.afternote.domain.user.repository.UserRepository;
-import com.example.afternote.domain.receiver.service.KakaoMessageService;
+import com.example.afternote.domain.receiver.service.AuthCodeMessageService;
 import com.example.afternote.global.exception.CustomException;
 import com.example.afternote.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserReceiverRepository userReceiverRepository;
     private final ReceiverRepository receiverRepository;
-    private final KakaoMessageService kakaoMessageService;
+    private final AuthCodeMessageService authCodeMessageService;
 
     public UserResponse getMyProfile(Long userId) {
 
@@ -125,16 +125,16 @@ public class UserService {
 
         userReceiverRepository.save(userReceiver);
 
-        if (receiver.getPhone() != null && !receiver.getPhone().isBlank()) {
+        if (receiver.getEmail() != null && !receiver.getEmail().isBlank()) {
             try {
-                kakaoMessageService.sendAuthCode(
-                        receiver.getPhone(),
+                authCodeMessageService.sendAuthCode(
+                        receiver.getEmail(),
                         receiver.getAuthCode(),
                         user.getName(),
                         receiver.getName()
                 );
             } catch (Exception e) {
-                log.warn("Failed to send auth code via KakaoTalk for receiver {}: {}", receiver.getId(), e.getMessage());
+                log.warn("Failed to send auth code via email for receiver {}: {}", receiver.getId(), e.getMessage());
             }
         }
 
