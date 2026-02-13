@@ -7,15 +7,18 @@ import com.example.afternote.domain.receiver.repository.UserReceiverRepository;
 import com.example.afternote.domain.user.dto.*;
 import com.example.afternote.domain.user.model.User;
 import com.example.afternote.domain.user.repository.UserRepository;
+import com.example.afternote.domain.receiver.service.KakaoMessageService;
 import com.example.afternote.global.exception.CustomException;
 import com.example.afternote.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -23,6 +26,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserReceiverRepository userReceiverRepository;
     private final ReceiverRepository receiverRepository;
+    private final KakaoMessageService kakaoMessageService;
 
     public UserResponse getMyProfile(Long userId) {
 
@@ -121,7 +125,20 @@ public class UserService {
 
         userReceiverRepository.save(userReceiver);
 
-        return UserCreateReceiverResponse.from(receiver.getId());
+        if (receiver.getPhone() != null && !receiver.getPhone().isBlank()) {
+            try {
+                kakaoMessageService.sendAuthCode(
+                        receiver.getPhone(),
+                        receiver.getAuthCode(),
+                        user.getName(),
+                        receiver.getName()
+                );
+            } catch (Exception e) {
+                log.warn("Failed to send auth code via KakaoTalk for receiver {}: {}", receiver.getId(), e.getMessage());
+            }
+        }
+
+        return UserCreateReceiverResponse.from(receiver.getId(), receiver.getAuthCode());
     }
 
     private User findUserById(Long userId) {

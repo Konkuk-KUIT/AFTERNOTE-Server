@@ -4,7 +4,7 @@ import com.example.afternote.domain.afternote.model.AfternoteReceiver;
 import com.example.afternote.domain.mindrecord.model.MindRecord;
 import com.example.afternote.domain.mindrecord.repository.MindRecordRepository;
 import com.example.afternote.domain.receiver.dto.*;
-import com.example.afternote.domain.receiver.model.MindRecordReceiver;
+import com.example.afternote.domain.mindrecord.model.MindRecordReceiver;
 import com.example.afternote.domain.receiver.model.Receiver;
 import com.example.afternote.domain.receiver.model.TimeLetterReceiver;
 import com.example.afternote.domain.receiver.repository.AfternoteReceiverRepository;
