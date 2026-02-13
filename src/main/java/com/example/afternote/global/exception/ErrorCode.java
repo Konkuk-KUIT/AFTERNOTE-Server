@@ -155,6 +155,9 @@ public enum ErrorCode {
     // ======================================
     INVALID_AUTH_CODE(HttpStatus.NOT_FOUND, 496, "유효하지 않은 인증번호입니다."),
 
+    //gemini api
+    GEMINI_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, 497, "LLM API 가 실패하였습니다. 원인은 토큰 만료, 시간 초과 등이 있습니다."),
+
     // ======================================
     // 11. 전달 조건/인증 관련 오류 (code: 600 ~)
     // ======================================
