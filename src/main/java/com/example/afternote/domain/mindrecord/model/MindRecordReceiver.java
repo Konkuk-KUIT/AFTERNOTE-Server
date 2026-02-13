@@ -2,33 +2,46 @@ package com.example.afternote.domain.mindrecord.model;
 
 import com.example.afternote.domain.receiver.model.Receiver;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "mind_record_receiver", uniqueConstraints = {
                 @UniqueConstraint(columnNames = {"mind_record_id", "receiver_id"})})
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MindRecordReceiver {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 연결된 마음의 기록
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mind_record_id", nullable = false)
     private MindRecord mindRecord;
 
-    // 전달 대상 수신인
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "receiver_id", nullable = false)
     private Receiver receiver;
 
-    // 수신 여부 토글 (on/off)
     @Column(nullable = false)
-    private boolean enabled;
+    private boolean enabled = true;
+
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @Builder
+    public MindRecordReceiver(MindRecord mindRecord, Receiver receiver) {
+        this.mindRecord = mindRecord;
+        this.receiver = receiver;
+        this.enabled = true;
+    }
 
     public static MindRecordReceiver create(MindRecord mindRecord, Receiver receiver) {
         MindRecordReceiver link = new MindRecordReceiver();

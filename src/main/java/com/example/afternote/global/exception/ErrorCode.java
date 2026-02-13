@@ -148,7 +148,12 @@ public enum ErrorCode {
     // ======================================
     PRESIGNED_URL_GENERATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, 493, "Presigned URL 생성에 실패했습니다."),
     INVALID_FILE_EXTENSION(HttpStatus.BAD_REQUEST, 494, "허용되지 않는 파일 확장자입니다. (jpg, jpeg, png, gif, webp만 허용)"),
-    INVALID_DIRECTORY(HttpStatus.BAD_REQUEST, 495, "허용되지 않는 디렉토리입니다.");
+    INVALID_DIRECTORY(HttpStatus.BAD_REQUEST, 495, "허용되지 않는 디렉토리입니다."),
+
+    // ======================================
+    // 10. 수신자 인증 관련 오류 (code: 496 ~)
+    // ======================================
+    INVALID_AUTH_CODE(HttpStatus.NOT_FOUND, 496, "유효하지 않은 인증번호입니다.");
 
 
     private final HttpStatus httpStatus;

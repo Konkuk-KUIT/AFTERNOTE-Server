@@ -20,11 +20,15 @@ public class ReceiverListResponse {
     @Schema(description = "수신인과의 관계", example = "딸")
     private String relation;
 
+    @Schema(description = "수신자 인증번호", example = "550e8400-e29b-41d4-a716-446655440000")
+    private String authCode;
+
     public static ReceiverListResponse from(Receiver receiver) {
         return ReceiverListResponse.builder()
                 .receiverId(receiver.getId())
                 .name(receiver.getName())
                 .relation(receiver.getRelation())
+                .authCode(receiver.getAuthCode())
                 .build();
     }
 }

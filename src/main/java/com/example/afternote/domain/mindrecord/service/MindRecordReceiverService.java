@@ -2,7 +2,7 @@ package com.example.afternote.domain.mindrecord.service;
 
 import com.example.afternote.domain.mindrecord.model.MindRecord;
 import com.example.afternote.domain.mindrecord.model.MindRecordReceiver;
-import com.example.afternote.domain.mindrecord.repository.MindRecordReceiverRepository;
+import com.example.afternote.domain.receiver.repository.MindRecordReceiverRepository;
 import com.example.afternote.domain.mindrecord.repository.MindRecordRepository;
 import com.example.afternote.domain.receiver.model.Receiver;
 import com.example.afternote.domain.receiver.repository.ReceiverRepository;
