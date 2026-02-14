@@ -10,7 +10,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class GetMindRecordListRequest {
 
-    @Schema(description = "기록 유형", example = "DIARY", nullable = false)
+    @Schema(description = "기록 유형, 없으면 전체", example = "DIARY", nullable = true)
     private MindRecordType type;
 
     @Schema(description = "조회 화면 타입", example = "LIST", nullable = true)
@@ -26,4 +26,7 @@ public class GetMindRecordListRequest {
         return view == ViewType.CALENDAR;
     }
 
+    public boolean isAllType() {
+        return type == null;
+    }
 }
