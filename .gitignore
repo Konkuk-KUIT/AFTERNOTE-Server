@@ -54,10 +54,3 @@ db_data/
 
 ### certbot (인증서 폴더)
 data/
-
-### Claude Code & BMAD ###
-.claude/
-CLAUDE.md
-_bmad/
-_bmad-output/
-docs/
