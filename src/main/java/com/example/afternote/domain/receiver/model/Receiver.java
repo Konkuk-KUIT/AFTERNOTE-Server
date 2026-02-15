@@ -8,6 +8,7 @@ import org.springframework.data.annotation.CreatedDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "receiver")
@@ -35,6 +36,9 @@ public class Receiver {
     @Column(length = 50)
     private String email;
 
+    @Column(name = "auth_code", unique = true, length = 36)
+    private String authCode;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -47,6 +51,7 @@ public class Receiver {
         this.userId = userId;
         this.sortOrder = 0;
         this.createdAt = LocalDateTime.now();
+        this.authCode = UUID.randomUUID().toString();
     }
 
     @Column(name = "sort_order", nullable = false)

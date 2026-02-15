@@ -2,7 +2,7 @@ package com.example.afternote.domain.receiver.dto;
 
 import com.example.afternote.domain.mindrecord.model.MindRecord;
 import com.example.afternote.domain.mindrecord.model.MindRecordType;
-import com.example.afternote.domain.receiver.model.MindRecordReceiver;
+import com.example.afternote.domain.mindrecord.model.MindRecordReceiver;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

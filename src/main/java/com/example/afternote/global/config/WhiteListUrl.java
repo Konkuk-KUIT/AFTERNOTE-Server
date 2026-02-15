@@ -17,7 +17,10 @@ public enum WhiteListUrl {
     //회원가입, 로그인, 토큰 재발급
     AUTH_SIGNUP("/auth/sign-up"),
     AUTH_LOGIN("/auth/login"),
-    AUTH_REISSUE("/auth/reissue");
+    AUTH_REISSUE("/auth/reissue"),
+
+    // 수신자 인증
+    RECEIVER_AUTH("/api/receiver-auth/**");
 
     private final String url;
 
