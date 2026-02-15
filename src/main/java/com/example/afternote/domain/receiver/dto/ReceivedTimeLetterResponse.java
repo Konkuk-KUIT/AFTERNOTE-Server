@@ -12,6 +12,7 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.function.Function;
 
 @Schema(description = "수신한 타임레터 응답")
 @Getter
@@ -66,6 +67,25 @@ public class ReceivedTimeLetterResponse {
                 .createdAt(timeLetter.getCreatedAt())
                 .mediaList(mediaList.stream()
                         .map(TimeLetterMediaResponse::from)
+                        .toList())
+                .isRead(timeLetterReceiver.getReadAt() != null)
+                .build();
+    }
+
+    public static ReceivedTimeLetterResponse from(TimeLetterReceiver timeLetterReceiver, List<TimeLetterMedia> mediaList, Function<String, String> urlResolver) {
+        TimeLetter timeLetter = timeLetterReceiver.getTimeLetter();
+        return ReceivedTimeLetterResponse.builder()
+                .id(timeLetter.getId())
+                .timeLetterReceiverId(timeLetterReceiver.getId())
+                .title(timeLetter.getTitle())
+                .content(timeLetter.getContent())
+                .sendAt(timeLetter.getSendAt())
+                .status(timeLetter.getStatus())
+                .senderName(timeLetter.getUser().getName())
+                .deliveredAt(timeLetterReceiver.getDeliveredAt())
+                .createdAt(timeLetter.getCreatedAt())
+                .mediaList(mediaList.stream()
+                        .map(m -> TimeLetterMediaResponse.from(m, urlResolver))
                         .toList())
                 .isRead(timeLetterReceiver.getReadAt() != null)
                 .build();

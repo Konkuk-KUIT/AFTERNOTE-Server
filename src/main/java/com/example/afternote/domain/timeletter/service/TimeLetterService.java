@@ -1,5 +1,6 @@
 package com.example.afternote.domain.timeletter.service;
 
+import com.example.afternote.domain.image.service.S3Service;
 import com.example.afternote.domain.receiver.service.ReceivedService;
 import com.example.afternote.domain.timeletter.dto.*;
 import com.example.afternote.domain.timeletter.model.TimeLetter;
@@ -28,6 +29,7 @@ public class TimeLetterService {
     private final TimeLetterMediaRepository timeLetterMediaRepository;
     private final UserRepository userRepository;
     private final ReceivedService receivedService;
+    private final S3Service s3Service;
 
     /**
      * 정식 등록된 타임레터 전체 조회 (SCHEDULED 상태만)
@@ -39,7 +41,7 @@ public class TimeLetterService {
         List<TimeLetterResponse> responses = timeLetters.stream()
                 .map(timeLetter -> {
                     List<TimeLetterMedia> mediaList = timeLetterMediaRepository.findByTimeLetterId(timeLetter.getId());
-                    return TimeLetterResponse.from(timeLetter, mediaList);
+                    return TimeLetterResponse.from(timeLetter, mediaList, s3Service::generateGetPresignedUrl);
                 })
                 .collect(Collectors.toList());
 
@@ -53,7 +55,7 @@ public class TimeLetterService {
     public TimeLetterResponse getTimeLetter(Long userId, Long timeLetterId) {
         TimeLetter timeLetter = findTimeLetterWithOwnership(userId, timeLetterId);
         List<TimeLetterMedia> mediaList = timeLetterMediaRepository.findByTimeLetterId(timeLetterId);
-        return TimeLetterResponse.from(timeLetter, mediaList);
+        return TimeLetterResponse.from(timeLetter, mediaList, s3Service::generateGetPresignedUrl);
     }
 
     /**
@@ -88,7 +90,7 @@ public class TimeLetterService {
                     savedTimeLetter, userId, request.getReceiverIds(), request.getDeliveredAt());
         }
 
-        return TimeLetterResponse.from(savedTimeLetter, savedMediaList);
+        return TimeLetterResponse.from(savedTimeLetter, savedMediaList, s3Service::generateGetPresignedUrl);
     }
 
     /**
@@ -102,7 +104,7 @@ public class TimeLetterService {
         List<TimeLetterResponse> responses = timeLetters.stream()
                 .map(timeLetter -> {
                     List<TimeLetterMedia> mediaList = timeLetterMediaRepository.findByTimeLetterId(timeLetter.getId());
-                    return TimeLetterResponse.from(timeLetter, mediaList);
+                    return TimeLetterResponse.from(timeLetter, mediaList, s3Service::generateGetPresignedUrl);
                 })
                 .collect(Collectors.toList());
 
@@ -186,7 +188,7 @@ public class TimeLetterService {
             updatedMediaList = timeLetterMediaRepository.findByTimeLetterId(timeLetterId);
         }
 
-        return TimeLetterResponse.from(timeLetter, updatedMediaList);
+        return TimeLetterResponse.from(timeLetter, updatedMediaList, s3Service::generateGetPresignedUrl);
     }
 
     /**

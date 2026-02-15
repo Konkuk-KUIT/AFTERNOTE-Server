@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.function.Function;
+
 @Getter
 @Builder
 @AllArgsConstructor
@@ -29,6 +31,15 @@ public class UserResponse {
                 .email(user.getEmail())
                 .phone(user.getPhone())
                 .profileImageUrl(user.getProfileImageUrl())
+                .build();
+    }
+
+    public static UserResponse from(User user, Function<String, String> urlResolver) {
+        return UserResponse.builder()
+                .name(user.getName())
+                .email(user.getEmail())
+                .phone(user.getPhone())
+                .profileImageUrl(urlResolver.apply(user.getProfileImageUrl()))
                 .build();
     }
 }

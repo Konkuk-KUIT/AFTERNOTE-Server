@@ -1,6 +1,7 @@
 package com.example.afternote.domain.receiver.service;
 
 import com.example.afternote.domain.afternote.model.AfternoteReceiver;
+import com.example.afternote.domain.image.service.S3Service;
 import com.example.afternote.domain.mindrecord.model.MindRecord;
 import com.example.afternote.domain.mindrecord.repository.MindRecordRepository;
 import com.example.afternote.domain.receiver.dto.*;
@@ -46,6 +47,7 @@ public class ReceivedService {
     private final TimeLetterMediaRepository timeLetterMediaRepository;
     private final MindRecordRepository mindRecordRepository;
     private final UserRepository userRepository;
+    private final S3Service s3Service;
 
     /**
      * 수신자가 받은 타임레터 목록 조회 (미디어 포함)
@@ -69,7 +71,8 @@ public class ReceivedService {
         List<ReceivedTimeLetterResponse> responses = timeLetterReceivers.stream()
                 .map(tlr -> ReceivedTimeLetterResponse.from(
                         tlr,
-                        mediaMap.getOrDefault(tlr.getTimeLetter().getId(), List.of())))
+                        mediaMap.getOrDefault(tlr.getTimeLetter().getId(), List.of()),
+                        s3Service::generateGetPresignedUrl))
                 .toList();
 
         return ReceivedTimeLetterListResponse.from(responses);
@@ -91,7 +94,7 @@ public class ReceivedService {
         List<TimeLetterMedia> mediaList = timeLetterMediaRepository
                 .findByTimeLetterId(timeLetterReceiver.getTimeLetter().getId());
 
-        return ReceivedTimeLetterResponse.from(timeLetterReceiver, mediaList);
+        return ReceivedTimeLetterResponse.from(timeLetterReceiver, mediaList, s3Service::generateGetPresignedUrl);
     }
 
     /**
