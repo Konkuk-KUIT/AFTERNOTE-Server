@@ -54,26 +54,14 @@ public class ReceivedTimeLetterResponse {
     private Boolean isRead;
 
     public static ReceivedTimeLetterResponse from(TimeLetterReceiver timeLetterReceiver, List<TimeLetterMedia> mediaList) {
-        TimeLetter timeLetter = timeLetterReceiver.getTimeLetter();
-        return ReceivedTimeLetterResponse.builder()
-                .id(timeLetter.getId())
-                .timeLetterReceiverId(timeLetterReceiver.getId())
-                .title(timeLetter.getTitle())
-                .content(timeLetter.getContent())
-                .sendAt(timeLetter.getSendAt())
-                .status(timeLetter.getStatus())
-                .senderName(timeLetter.getUser().getName())
-                .deliveredAt(timeLetterReceiver.getDeliveredAt())
-                .createdAt(timeLetter.getCreatedAt())
-                .mediaList(mediaList.stream()
-                        .map(TimeLetterMediaResponse::from)
-                        .toList())
-                .isRead(timeLetterReceiver.getReadAt() != null)
-                .build();
+        return from(timeLetterReceiver, mediaList, null);
     }
 
     public static ReceivedTimeLetterResponse from(TimeLetterReceiver timeLetterReceiver, List<TimeLetterMedia> mediaList, Function<String, String> urlResolver) {
         TimeLetter timeLetter = timeLetterReceiver.getTimeLetter();
+        List<TimeLetterMediaResponse> mediaResponses = (mediaList == null ? List.<TimeLetterMedia>of() : mediaList).stream()
+                .map(m -> urlResolver != null ? TimeLetterMediaResponse.from(m, urlResolver) : TimeLetterMediaResponse.from(m))
+                .toList();
         return ReceivedTimeLetterResponse.builder()
                 .id(timeLetter.getId())
                 .timeLetterReceiverId(timeLetterReceiver.getId())
@@ -84,9 +72,7 @@ public class ReceivedTimeLetterResponse {
                 .senderName(timeLetter.getUser().getName())
                 .deliveredAt(timeLetterReceiver.getDeliveredAt())
                 .createdAt(timeLetter.getCreatedAt())
-                .mediaList(mediaList.stream()
-                        .map(m -> TimeLetterMediaResponse.from(m, urlResolver))
-                        .toList())
+                .mediaList(mediaResponses)
                 .isRead(timeLetterReceiver.getReadAt() != null)
                 .build();
     }

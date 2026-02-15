@@ -35,11 +35,12 @@ public class UserResponse {
     }
 
     public static UserResponse from(User user, Function<String, String> urlResolver) {
+        String profileImageUrl = user.getProfileImageUrl();
         return UserResponse.builder()
                 .name(user.getName())
                 .email(user.getEmail())
                 .phone(user.getPhone())
-                .profileImageUrl(urlResolver.apply(user.getProfileImageUrl()))
+                .profileImageUrl(profileImageUrl != null ? urlResolver.apply(profileImageUrl) : null)
                 .build();
     }
 }

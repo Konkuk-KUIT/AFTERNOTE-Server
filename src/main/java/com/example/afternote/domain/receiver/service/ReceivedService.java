@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -83,6 +84,8 @@ public class ReceivedService {
      */
     @Transactional
     public ReceivedTimeLetterResponse getTimeLetter(Long receiverId, Long timeLetterReceiverId) {
+        validateReceiver(receiverId);
+
         TimeLetterReceiver timeLetterReceiver = timeLetterReceiverRepository
                 .findByIdAndReceiverIdWithTimeLetter(timeLetterReceiverId, receiverId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TIME_LETTER_NOT_FOUND));
@@ -182,7 +185,7 @@ public class ReceivedService {
     public List<Long> createTimeLetterReceivers(TimeLetter timeLetter, Long userId, List<Long> receiverIds, LocalDateTime deliveredAt) {
         // null 원소 필터링 + 중복 제거
         List<Long> uniqueIds = new ArrayList<>(new LinkedHashSet<>(
-                receiverIds.stream().filter(id -> id != null).toList()));
+                receiverIds.stream().filter(Objects::nonNull).toList()));
 
         List<Receiver> receivers = receiverRepository.findAllById(uniqueIds);
         if (receivers.size() != uniqueIds.size()) {
