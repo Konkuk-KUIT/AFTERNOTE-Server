@@ -1,6 +1,7 @@
 package com.example.afternote.domain.mindrecord.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -14,5 +15,6 @@ public class PatchMindRecordReceiverRequest {
             example = "true",
             nullable = false
     )
+    @NotNull(message = "전달 여부는 필수입니다.")
     private Boolean enabled;
 }
