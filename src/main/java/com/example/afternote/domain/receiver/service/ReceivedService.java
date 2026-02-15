@@ -263,8 +263,15 @@ public class ReceivedService {
      * 수신자 존재 여부 검증
      */
     private void validateReceiver(Long receiverId) {
-        if (!receiverRepository.existsById(receiverId)) {
-            throw new CustomException(ErrorCode.RECEIVER_NOT_FOUND);
+        Receiver receiver = receiverRepository.findById(receiverId)
+                .orElseThrow(() -> new CustomException(ErrorCode.RECEIVER_NOT_FOUND));
+
+        User sender = userRepository.findById(receiver.getUserId())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        if (!sender.isDeliveryConditionMet()) {
+            throw new CustomException(ErrorCode.DELIVERY_CONDITION_NOT_MET);
         }
+
     }
 }

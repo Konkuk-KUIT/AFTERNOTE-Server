@@ -1,6 +1,8 @@
 package com.example.afternote.domain.receiver.service;
 
 import com.example.afternote.domain.receiver.dto.ReceivedAfternoteListResponse;
+import com.example.afternote.domain.receiver.dto.DeliveryVerificationRequest;
+import com.example.afternote.domain.receiver.dto.DeliveryVerificationResponse;
 import com.example.afternote.domain.receiver.dto.ReceivedMindRecordListResponse;
 import com.example.afternote.domain.receiver.dto.ReceivedTimeLetterListResponse;
 import com.example.afternote.domain.receiver.dto.ReceiverAuthVerifyResponse;
@@ -27,6 +29,7 @@ public class ReceiverAuthService {
     private final ReceiverRepository receiverRepository;
     private final UserRepository userRepository;
     private final ReceivedService receivedService;
+    private final DeliveryVerificationService deliveryVerificationService;
 
     public ReceiverAuthVerifyResponse verifyAuthCode(String authCode) {
         Receiver receiver = findReceiverByAuthCode(authCode);
@@ -37,17 +40,39 @@ public class ReceiverAuthService {
 
     public ReceivedTimeLetterListResponse getTimeLettersByAuthCode(String authCode) {
         Receiver receiver = findReceiverByAuthCode(authCode);
+        validateDeliveryCondition(receiver);
         return receivedService.getTimeLetters(receiver.getId());
     }
 
     public ReceivedAfternoteListResponse getAfternotesByAuthCode(String authCode) {
         Receiver receiver = findReceiverByAuthCode(authCode);
+        validateDeliveryCondition(receiver);
         return receivedService.getAfternotes(receiver.getId());
     }
 
     public ReceivedMindRecordListResponse getMindRecordsByAuthCode(String authCode) {
         Receiver receiver = findReceiverByAuthCode(authCode);
+        validateDeliveryCondition(receiver);
         return receivedService.getMindRecords(receiver.getId());
+    }
+
+    @Transactional
+    public DeliveryVerificationResponse submitDeliveryVerification(String authCode, DeliveryVerificationRequest request) {
+        findReceiverByAuthCode(authCode);
+        return DeliveryVerificationResponse.from(
+                deliveryVerificationService.submitVerification(
+                        authCode,
+                        request.getDeathCertificateUrl(),
+                        request.getFamilyRelationCertificateUrl()
+                )
+        );
+    }
+
+    public DeliveryVerificationResponse getDeliveryVerificationStatus(String authCode) {
+        findReceiverByAuthCode(authCode);
+        return DeliveryVerificationResponse.from(
+                deliveryVerificationService.getVerificationStatus(authCode)
+        );
     }
 
     private Receiver findReceiverByAuthCode(String authCode) {
@@ -56,5 +81,14 @@ public class ReceiverAuthService {
         }
         return receiverRepository.findByAuthCode(authCode.toLowerCase())
                 .orElseThrow(() -> new CustomException(ErrorCode.INVALID_AUTH_CODE));
+    }
+
+    private void validateDeliveryCondition(Receiver receiver) {
+        User sender = userRepository.findById(receiver.getUserId())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        if (!sender.isDeliveryConditionMet()) {
+            throw new CustomException(ErrorCode.DELIVERY_CONDITION_NOT_MET);
+        }
     }
 }
