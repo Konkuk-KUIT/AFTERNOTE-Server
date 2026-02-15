@@ -37,10 +37,10 @@ public class ReceiverAuthController {
             summary = "인증번호로 타임레터 목록 조회",
             description = "인증번호를 통해 수신자에게 배달된 타임레터 목록을 조회합니다."
     )
-    @GetMapping("/{authCode}/time-letters")
+    @GetMapping("/time-letters")
     public ApiResponse<ReceivedTimeLetterListResponse> getTimeLetters(
-            @Parameter(description = "수신자 인증번호 (UUID)")
-            @PathVariable String authCode
+            @Parameter(description = "수신자 인증번호 (UUID)", required = true)
+            @RequestHeader("X-Auth-Code") String authCode
     ) {
         return ApiResponse.success(receiverAuthService.getTimeLettersByAuthCode(authCode));
     }
@@ -49,10 +49,10 @@ public class ReceiverAuthController {
             summary = "인증번호로 애프터노트 목록 조회",
             description = "인증번호를 통해 수신자에게 전달된 애프터노트 목록을 조회합니다."
     )
-    @GetMapping("/{authCode}/after-notes")
+    @GetMapping("/after-notes")
     public ApiResponse<ReceivedAfternoteListResponse> getAfternotes(
-            @Parameter(description = "수신자 인증번호 (UUID)")
-            @PathVariable String authCode
+            @Parameter(description = "수신자 인증번호 (UUID)", required = true)
+            @RequestHeader("X-Auth-Code") String authCode
     ) {
         return ApiResponse.success(receiverAuthService.getAfternotesByAuthCode(authCode));
     }
@@ -61,10 +61,10 @@ public class ReceiverAuthController {
             summary = "인증번호로 마인드레코드 목록 조회",
             description = "인증번호를 통해 수신자에게 공유된 마인드레코드 목록을 조회합니다."
     )
-    @GetMapping("/{authCode}/mind-records")
+    @GetMapping("/mind-records")
     public ApiResponse<ReceivedMindRecordListResponse> getMindRecords(
-            @Parameter(description = "수신자 인증번호 (UUID)")
-            @PathVariable String authCode
+            @Parameter(description = "수신자 인증번호 (UUID)", required = true)
+            @RequestHeader("X-Auth-Code") String authCode
     ) {
         return ApiResponse.success(receiverAuthService.getMindRecordsByAuthCode(authCode));
     }
