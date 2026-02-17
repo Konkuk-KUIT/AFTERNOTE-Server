@@ -107,7 +107,7 @@ public enum ErrorCode {
     MIND_RECORD_TITLE_REQUIRED(HttpStatus.BAD_REQUEST, 446, "마음의 기록 제목은 필수입니다."),
     RECEIVER_FORBIDDEN(HttpStatus.FORBIDDEN, 448, "해당 수신인에 대한 접근 권한이 없습니다."),
 
-    // ======================================                                                                                                                                                               
+    // ======================================
     // 7. 애프터노트 관련 오류 (code: 460 ~ 479)                                                                                                                                                            
     // ======================================                                                                                                                                                               
     AFTERNOTE_NOT_FOUND(HttpStatus.NOT_FOUND, 460, "애프터노트를 찾을 수 없습니다."),                                                                                                                       
