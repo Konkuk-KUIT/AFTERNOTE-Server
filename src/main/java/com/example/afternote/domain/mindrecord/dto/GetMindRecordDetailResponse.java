@@ -12,6 +12,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.function.Function;
 
 @Getter
 @Builder
@@ -65,6 +66,29 @@ public class GetMindRecordDetailResponse {
                 .content(thought.getContent())
                 .category(thought.getCategory())
                 .imageList(images.stream().map(MindRecordImageResponse::from).toList())
+                .build();
+    }
+
+    public static GetMindRecordDetailResponse from(MindRecord record, Diary diary, List<MindRecordImage> images, Function<String, String> urlResolver) {
+        return base(record)
+                .content(diary.getContent())
+                .imageList(images.stream().map(img -> MindRecordImageResponse.from(img, urlResolver)).toList())
+                .build();
+    }
+
+    public static GetMindRecordDetailResponse from(MindRecord record, DailyQuestionAnswer answer, List<MindRecordImage> images, Function<String, String> urlResolver) {
+        return base(record)
+                .content(answer.getContent())
+                .questionId(answer.getDailyQuestion().getId())
+                .imageList(images.stream().map(img -> MindRecordImageResponse.from(img, urlResolver)).toList())
+                .build();
+    }
+
+    public static GetMindRecordDetailResponse from(MindRecord record, DeepThought thought, List<MindRecordImage> images, Function<String, String> urlResolver) {
+        return base(record)
+                .content(thought.getContent())
+                .category(thought.getCategory())
+                .imageList(images.stream().map(img -> MindRecordImageResponse.from(img, urlResolver)).toList())
                 .build();
     }
 

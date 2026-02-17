@@ -1,5 +1,6 @@
 package com.example.afternote.domain.mindrecord.service;
 
+import com.example.afternote.domain.image.service.S3Service;
 import com.example.afternote.domain.mindrecord.diary.model.Diary;
 import com.example.afternote.domain.mindrecord.diary.repository.DiaryRepository;
 import com.example.afternote.domain.mindrecord.dto.*;
@@ -35,6 +36,7 @@ public class MindRecordService {
     private final DailyQuestionAnswerRepository dailyQuestionAnswerRepository;
     private final DeepThoughtRepository deepThoughtRepository;
     private final MindRecordImageRepository mindRecordImageRepository;
+    private final S3Service s3Service;
 
     private final DiaryService diaryService;
     private final DailyQuestionAnswerService dailyQuestionAnswerService;
@@ -169,19 +171,19 @@ public class MindRecordService {
             case DIARY -> {
                 Diary diary = diaryRepository.findByMindRecord(record)
                         .orElseThrow(() -> new CustomException(ErrorCode.MIND_RECORD_NOT_FOUND));
-                yield GetMindRecordDetailResponse.from(record, diary, images);
+                yield GetMindRecordDetailResponse.from(record, diary, images, s3Service::generateGetPresignedUrl);
             }
 
             case DAILY_QUESTION -> {
                 DailyQuestionAnswer answer = dailyQuestionAnswerRepository.findByMindRecord(record)
                         .orElseThrow(() -> new CustomException(ErrorCode.MIND_RECORD_NOT_FOUND));
-                yield GetMindRecordDetailResponse.from(record, answer, images);
+                yield GetMindRecordDetailResponse.from(record, answer, images, s3Service::generateGetPresignedUrl);
             }
 
             case DEEP_THOUGHT -> {
                 DeepThought thought = deepThoughtRepository.findByMindRecord(record)
                         .orElseThrow(() -> new CustomException(ErrorCode.MIND_RECORD_NOT_FOUND));
-                yield GetMindRecordDetailResponse.from(record, thought, images);
+                yield GetMindRecordDetailResponse.from(record, thought, images, s3Service::generateGetPresignedUrl);
             }
         };
     }

@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TimeLetterReceiverRepository extends JpaRepository<TimeLetterReceiver, Long> {
@@ -19,4 +20,12 @@ public interface TimeLetterReceiverRepository extends JpaRepository<TimeLetterRe
             ORDER BY tlr.createdAt DESC
             """)
     List<TimeLetterReceiver> findByReceiverIdWithTimeLetter(@Param("receiverId") Long receiverId);
+
+    @Query("""
+            SELECT tlr FROM TimeLetterReceiver tlr
+            JOIN FETCH tlr.timeLetter tl
+            JOIN FETCH tl.user
+            WHERE tlr.id = :id AND tlr.receiver.id = :receiverId
+            """)
+    Optional<TimeLetterReceiver> findByIdAndReceiverIdWithTimeLetter(@Param("id") Long id, @Param("receiverId") Long receiverId);
 }

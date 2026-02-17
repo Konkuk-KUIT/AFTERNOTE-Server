@@ -31,4 +31,10 @@ public class TimeLetterCreateRequest {
     @Schema(description = "미디어 목록")
     @Valid
     private List<TimeLetterMediaRequest> mediaList;
+
+    @Schema(description = "수신자 ID 목록", example = "[1, 2, 3]")
+    private List<Long> receiverIds;
+
+    @Schema(description = "배달 예정 시간", example = "2025-12-31T23:59:59")
+    private LocalDateTime deliveredAt;
 }

@@ -5,6 +5,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.function.Function;
+
 @Schema(description = "마음의 기록 이미지 응답")
 @Getter
 @Builder
@@ -20,6 +22,13 @@ public class MindRecordImageResponse {
         return MindRecordImageResponse.builder()
                 .id(image.getId())
                 .imageUrl(image.getImageUrl())
+                .build();
+    }
+
+    public static MindRecordImageResponse from(MindRecordImage image, Function<String, String> urlResolver) {
+        return MindRecordImageResponse.builder()
+                .id(image.getId())
+                .imageUrl(urlResolver.apply(image.getImageUrl()))
                 .build();
     }
 }

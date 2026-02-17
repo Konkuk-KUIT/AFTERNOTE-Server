@@ -1,6 +1,7 @@
 package com.example.afternote.domain.receiver.service;
 
 import com.example.afternote.domain.afternote.model.AfternoteReceiver;
+import com.example.afternote.domain.image.service.S3Service;
 import com.example.afternote.domain.mindrecord.model.MindRecord;
 import com.example.afternote.domain.mindrecord.repository.MindRecordRepository;
 import com.example.afternote.domain.receiver.dto.*;
@@ -12,6 +13,8 @@ import com.example.afternote.domain.receiver.repository.MindRecordReceiverReposi
 import com.example.afternote.domain.receiver.repository.ReceiverRepository;
 import com.example.afternote.domain.receiver.repository.TimeLetterReceiverRepository;
 import com.example.afternote.domain.timeletter.model.TimeLetter;
+import com.example.afternote.domain.timeletter.model.TimeLetterMedia;
+import com.example.afternote.domain.timeletter.repository.TimeLetterMediaRepository;
 import com.example.afternote.domain.timeletter.repository.TimeLetterRepository;
 import com.example.afternote.domain.user.model.User;
 import com.example.afternote.domain.user.repository.UserRepository;
@@ -22,8 +25,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -38,11 +45,13 @@ public class ReceivedService {
     private final AfternoteReceiverRepository afternoteReceiverRepository;
     private final MindRecordReceiverRepository mindRecordReceiverRepository;
     private final TimeLetterRepository timeLetterRepository;
+    private final TimeLetterMediaRepository timeLetterMediaRepository;
     private final MindRecordRepository mindRecordRepository;
     private final UserRepository userRepository;
+    private final S3Service s3Service;
 
     /**
-     * 수신자가 받은 타임레터 목록 조회
+     * 수신자가 받은 타임레터 목록 조회 (미디어 포함)
      */
     public ReceivedTimeLetterListResponse getTimeLetters(Long receiverId) {
         validateReceiver(receiverId);
@@ -50,11 +59,45 @@ public class ReceivedService {
         List<TimeLetterReceiver> timeLetterReceivers =
                 timeLetterReceiverRepository.findByReceiverIdWithTimeLetter(receiverId);
 
+        // 타임레터 ID 수집 후 미디어 일괄 조회 (N+1 방지)
+        List<Long> timeLetterIds = timeLetterReceivers.stream()
+                .map(tlr -> tlr.getTimeLetter().getId())
+                .toList();
+
+        Map<Long, List<TimeLetterMedia>> mediaMap = timeLetterIds.isEmpty()
+                ? Collections.emptyMap()
+                : timeLetterMediaRepository.findByTimeLetterIdIn(timeLetterIds).stream()
+                        .collect(Collectors.groupingBy(media -> media.getTimeLetter().getId()));
+
         List<ReceivedTimeLetterResponse> responses = timeLetterReceivers.stream()
-                .map(ReceivedTimeLetterResponse::from)
+                .map(tlr -> ReceivedTimeLetterResponse.from(
+                        tlr,
+                        mediaMap.getOrDefault(tlr.getTimeLetter().getId(), List.of()),
+                        s3Service::generateGetPresignedUrl))
                 .toList();
 
         return ReceivedTimeLetterListResponse.from(responses);
+    }
+
+    /**
+     * 수신한 타임레터 상세 조회 (읽음 처리 포함)
+     */
+    @Transactional
+    public ReceivedTimeLetterResponse getTimeLetter(Long receiverId, Long timeLetterReceiverId) {
+        validateReceiver(receiverId);
+
+        TimeLetterReceiver timeLetterReceiver = timeLetterReceiverRepository
+                .findByIdAndReceiverIdWithTimeLetter(timeLetterReceiverId, receiverId)
+                .orElseThrow(() -> new CustomException(ErrorCode.TIME_LETTER_NOT_FOUND));
+
+        // 읽음 처리 (멱등성 보장 — dirty checking으로 자동 UPDATE)
+        timeLetterReceiver.markAsRead();
+
+        // 미디어 조회
+        List<TimeLetterMedia> mediaList = timeLetterMediaRepository
+                .findByTimeLetterId(timeLetterReceiver.getTimeLetter().getId());
+
+        return ReceivedTimeLetterResponse.from(timeLetterReceiver, mediaList, s3Service::generateGetPresignedUrl);
     }
 
     /**
@@ -126,6 +169,43 @@ public class ReceivedService {
                         .timeLetter(timeLetter)
                         .receiver(receiver)
                         .deliveredAt(deliveredAt)
+                        .build())
+                .toList();
+
+        return timeLetterReceiverRepository.saveAll(timeLetterReceivers).stream()
+                .map(TimeLetterReceiver::getId)
+                .toList();
+    }
+
+    /**
+     * 타임레터 생성 시 수신자 등록 (오버로드 - TimeLetterService에서 호출)
+     * 전제조건: 호출자가 TimeLetter의 소유권(userId 일치)을 이미 검증한 상태에서 호출해야 함.
+     */
+    @Transactional
+    public List<Long> createTimeLetterReceivers(TimeLetter timeLetter, Long userId, List<Long> receiverIds, LocalDateTime deliveredAt) {
+        // null 원소 필터링 + 중복 제거
+        List<Long> uniqueIds = new ArrayList<>(new LinkedHashSet<>(
+                receiverIds.stream().filter(Objects::nonNull).toList()));
+
+        List<Receiver> receivers = receiverRepository.findAllById(uniqueIds);
+        if (receivers.size() != uniqueIds.size()) {
+            throw new CustomException(ErrorCode.RECEIVER_NOT_FOUND);
+        }
+
+        // 본인이 등록한 수신자인지 검증
+        validateReceiversOwnership(userId, receivers);
+
+        // deliveredAt이 null이면 timeLetter의 sendAt으로 폴백
+        LocalDateTime effectiveDeliveredAt = deliveredAt != null ? deliveredAt : timeLetter.getSendAt();
+        if (effectiveDeliveredAt == null) {
+            throw new CustomException(ErrorCode.TIME_LETTER_REQUIRED_FIELDS);
+        }
+
+        List<TimeLetterReceiver> timeLetterReceivers = receivers.stream()
+                .map(receiver -> TimeLetterReceiver.builder()
+                        .timeLetter(timeLetter)
+                        .receiver(receiver)
+                        .deliveredAt(effectiveDeliveredAt)
                         .build())
                 .toList();
 

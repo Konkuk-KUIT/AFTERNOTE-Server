@@ -7,8 +7,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
@@ -32,6 +35,7 @@ public class S3Service {
     private static final Set<String> ALLOWED_EXTENSIONS = Set.of("jpg", "jpeg", "png", "gif", "webp");
     private static final Set<String> ALLOWED_DIRECTORIES = Set.of("profiles", "timeletters", "afternotes", "mindrecords");
     private static final Duration PRESIGNED_URL_EXPIRATION = Duration.ofMinutes(10);
+    private static final Duration GET_PRESIGNED_URL_EXPIRATION = Duration.ofHours(1);
 
     public PresignedUrlResponse generatePresignedUrl(String directory, String extension) {
         String normalizedDir = directory.toLowerCase();
@@ -70,6 +74,43 @@ public class S3Service {
             log.error("Presigned URL generation failed for key: {}", key, e);
             throw new CustomException(ErrorCode.PRESIGNED_URL_GENERATION_FAILED);
         }
+    }
+
+    public String generateGetPresignedUrl(String rawUrl) {
+        if (rawUrl == null || rawUrl.isBlank()) {
+            return null;
+        }
+
+        String key = extractKeyFromUrl(rawUrl);
+        if (key == null) {
+            return rawUrl;
+        }
+
+        try {
+            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                    .bucket(bucket)
+                    .key(key)
+                    .build();
+
+            GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                    .signatureDuration(GET_PRESIGNED_URL_EXPIRATION)
+                    .getObjectRequest(getObjectRequest)
+                    .build();
+
+            PresignedGetObjectRequest presignedRequest = s3Presigner.presignGetObject(presignRequest);
+            return presignedRequest.url().toString();
+        } catch (Exception e) {
+            log.error("GET Presigned URL generation failed for rawUrl: {}", rawUrl, e);
+            throw new CustomException(ErrorCode.PRESIGNED_URL_GENERATION_FAILED);
+        }
+    }
+
+    private String extractKeyFromUrl(String rawUrl) {
+        String prefix = String.format("https://%s.s3.%s.amazonaws.com/", bucket, region);
+        if (rawUrl.startsWith(prefix)) {
+            return rawUrl.substring(prefix.length());
+        }
+        return null;
     }
 
     private void validateExtension(String extension) {

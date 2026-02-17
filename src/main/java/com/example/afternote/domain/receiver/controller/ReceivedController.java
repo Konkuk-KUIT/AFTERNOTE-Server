@@ -34,6 +34,20 @@ public class ReceivedController {
     }
 
     @Operation(
+            summary = "수신한 타임레터 상세 조회",
+            description = "수신한 타임레터의 상세 정보를 조회합니다. 최초 조회 시 읽음 처리됩니다."
+    )
+    @GetMapping("/{receiverId}/time-letters/{timeLetterReceiverId}")
+    public ApiResponse<ReceivedTimeLetterResponse> getTimeLetter(
+            @Parameter(description = "수신자 ID", example = "1")
+            @PathVariable Long receiverId,
+            @Parameter(description = "수신 타임레터 ID", example = "1")
+            @PathVariable Long timeLetterReceiverId
+    ) {
+        return ApiResponse.success(receivedService.getTimeLetter(receiverId, timeLetterReceiverId));
+    }
+
+    @Operation(
             summary = "수신한 애프터노트 목록 조회",
             description = "수신자에게 전달된 애프터노트 목록을 조회합니다."
     )

@@ -1,5 +1,6 @@
 package com.example.afternote.domain.user.service;
 
+import com.example.afternote.domain.image.service.S3Service;
 import com.example.afternote.domain.receiver.model.Receiver;
 import com.example.afternote.domain.receiver.model.UserReceiver;
 import com.example.afternote.domain.receiver.repository.ReceiverRepository;
@@ -27,11 +28,12 @@ public class UserService {
     private final UserReceiverRepository userReceiverRepository;
     private final ReceiverRepository receiverRepository;
     private final AuthCodeMessageService authCodeMessageService;
+    private final S3Service s3Service;
 
     public UserResponse getMyProfile(Long userId) {
 
         User user = findUserById(userId);
-        return UserResponse.from(user);
+        return UserResponse.from(user, s3Service::generateGetPresignedUrl);
     }
 
     @Transactional
@@ -45,7 +47,7 @@ public class UserService {
                 request.getProfileImageUrl()
         );
 
-        return UserResponse.from(user);
+        return UserResponse.from(user, s3Service::generateGetPresignedUrl);
     }
 
 
