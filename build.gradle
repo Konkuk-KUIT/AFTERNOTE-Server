@@ -63,6 +63,9 @@ dependencies {
     //email
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
+    // WebClient
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
     //gemini-api
     implementation 'org.springframework.ai:spring-ai-starter-model-google-genai'
 
