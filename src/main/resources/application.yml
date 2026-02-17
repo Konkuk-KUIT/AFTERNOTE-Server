@@ -32,9 +32,6 @@ spring:
           auth: true
           starttls:
             enable: true
-          connectiontimeout: 5000
-          timeout: 5000
-          writetimeout: 5000
 
 jwt:
   secret: ${JWT_SECRET}
@@ -56,15 +53,6 @@ kakao:
   api:
     user-info-url: https://kapi.kakao.com/v2/user/me
 
-cloud:
-  aws:
-    s3:
-      bucket: ${AWS_S3_BUCKET}
-      region: ${AWS_REGION:ap-northeast-2}
-    credentials:
-      access-key: ${AWS_ACCESS_KEY}
-      secret-key: ${AWS_SECRET_KEY}
-
 server:
   port: ${SERVER_PORT:8080}
 
@@ -81,8 +69,3 @@ springdoc:
   api-docs:
     path: /v3/api-docs
     enabled: true
-
-app:
-  auth-code:
-    email:
-      enabled: false

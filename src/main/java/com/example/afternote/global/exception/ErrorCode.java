@@ -107,7 +107,7 @@ public enum ErrorCode {
     MIND_RECORD_TITLE_REQUIRED(HttpStatus.BAD_REQUEST, 446, "마음의 기록 제목은 필수입니다."),
     RECEIVER_FORBIDDEN(HttpStatus.FORBIDDEN, 448, "해당 수신인에 대한 접근 권한이 없습니다."),
 
-    // ======================================                                                                                                                                                               
+    // ======================================
     // 7. 애프터노트 관련 오류 (code: 460 ~ 479)                                                                                                                                                            
     // ======================================                                                                                                                                                               
     AFTERNOTE_NOT_FOUND(HttpStatus.NOT_FOUND, 460, "애프터노트를 찾을 수 없습니다."),                                                                                                                       
@@ -154,6 +154,9 @@ public enum ErrorCode {
     // 10. 수신자 인증 관련 오류 (code: 496 ~)
     // ======================================
     INVALID_AUTH_CODE(HttpStatus.NOT_FOUND, 496, "유효하지 않은 인증번호입니다."),
+
+    //gemini api
+    GEMINI_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, 497, "LLM API 가 실패하였습니다. 원인은 토큰 만료, 시간 초과 등이 있습니다."),
 
     // ======================================
     // 11. 전달 조건/인증 관련 오류 (code: 600 ~)
