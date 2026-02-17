@@ -121,8 +121,8 @@ public class AfternoteService {
                 // playlist 매핑
                 AfternoteCreateRequest.PlaylistRequest playlistRequest = null;
                 
-                if (!afternote.getPlaylists().isEmpty()) {
-                    AfternotePlaylist playlist = afternote.getPlaylists().get(0);
+                if (afternote.getPlaylist() != null) {
+                    AfternotePlaylist playlist = afternote.getPlaylist();
                     
                     // songs 매핑
                     List<AfternoteCreateRequest.SongRequest> songs = playlist.getItems().stream()
@@ -206,10 +206,11 @@ public class AfternoteService {
         
         Afternote afternote = builder.build();
 
-        // 카테고리별 관계 데이터 저장
-        relationService.saveRelationsByCategory(afternote, request);
-
+        // ✅ 먼저 Afternote 저장 (ID 생성)
         Afternote saved = afternoteRepository.save(afternote);
+        
+        // ✅ 그 다음 카테고리별 관계 데이터 저장 (저장된 afternote 참조)
+        relationService.saveRelationsByCategory(saved, request);
         
         return AfternoteCreateResponse.builder()
                 .afternoteId(saved.getId())
