@@ -1,8 +1,11 @@
 package com.example.afternote.domain.mindrecord.service;
 
+import com.example.afternote.domain.image.service.S3Service;
 import com.example.afternote.domain.mindrecord.diary.model.Diary;
 import com.example.afternote.domain.mindrecord.diary.repository.DiaryRepository;
 import com.example.afternote.domain.mindrecord.dto.*;
+import com.example.afternote.domain.mindrecord.image.model.MindRecordImage;
+import com.example.afternote.domain.mindrecord.image.repository.MindRecordImageRepository;
 import com.example.afternote.domain.mindrecord.model.MindRecord;
 import com.example.afternote.domain.mindrecord.model.MindRecordType;
 import com.example.afternote.domain.mindrecord.question.model.DailyQuestionAnswer;
@@ -12,9 +15,11 @@ import com.example.afternote.domain.mindrecord.thought.model.DeepThought;
 import com.example.afternote.domain.mindrecord.thought.repository.DeepThoughtRepository;
 import com.example.afternote.domain.user.model.User;
 import com.example.afternote.domain.user.repository.UserRepository;
+import com.example.afternote.domain.mindrecord.event.MindRecordCreatedEvent;
 import com.example.afternote.global.exception.CustomException;
 import com.example.afternote.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +37,9 @@ public class MindRecordService {
     private final DiaryRepository diaryRepository;
     private final DailyQuestionAnswerRepository dailyQuestionAnswerRepository;
     private final DeepThoughtRepository deepThoughtRepository;
+    private final ApplicationEventPublisher eventPublisher;
+    private final MindRecordImageRepository mindRecordImageRepository;
+    private final S3Service s3Service;
 
     private final DiaryService diaryService;
     private final DailyQuestionAnswerService dailyQuestionAnswerService;
@@ -83,6 +91,9 @@ public class MindRecordService {
     private List<MindRecord> findListRecords(
             User user, MindRecordType type
     ) {
+        if (type == null) {
+            return mindRecordRepository.findByUser(user);
+        }
         return mindRecordRepository.findByUserAndType(user, type);
     }
 
@@ -138,6 +149,9 @@ public class MindRecordService {
             case DEEP_THOUGHT -> deepThoughtService.create(record, request);
         }
 
+        saveImageList(record, request.getImageList());
+
+        eventPublisher.publishEvent(new MindRecordCreatedEvent(record.getId()));
         return record.getId();
     }
 
@@ -155,24 +169,25 @@ public class MindRecordService {
     /* ================= 단건 조회 ================= */
     public GetMindRecordDetailResponse getMindRecordDetail(Long userId, Long recordId) {
         MindRecord record = findRecord(recordId, userId);
+        List<MindRecordImage> images = mindRecordImageRepository.findByMindRecordIdOrderByIdAsc(recordId);
 
         return switch (record.getType()) {
             case DIARY -> {
                 Diary diary = diaryRepository.findByMindRecord(record)
                         .orElseThrow(() -> new CustomException(ErrorCode.MIND_RECORD_NOT_FOUND));
-                yield GetMindRecordDetailResponse.from(record, diary);
+                yield GetMindRecordDetailResponse.from(record, diary, images, s3Service::generateGetPresignedUrl);
             }
 
             case DAILY_QUESTION -> {
                 DailyQuestionAnswer answer = dailyQuestionAnswerRepository.findByMindRecord(record)
                         .orElseThrow(() -> new CustomException(ErrorCode.MIND_RECORD_NOT_FOUND));
-                yield GetMindRecordDetailResponse.from(record, answer);
+                yield GetMindRecordDetailResponse.from(record, answer, images, s3Service::generateGetPresignedUrl);
             }
 
             case DEEP_THOUGHT -> {
                 DeepThought thought = deepThoughtRepository.findByMindRecord(record)
                         .orElseThrow(() -> new CustomException(ErrorCode.MIND_RECORD_NOT_FOUND));
-                yield GetMindRecordDetailResponse.from(record, thought);
+                yield GetMindRecordDetailResponse.from(record, thought, images, s3Service::generateGetPresignedUrl);
             }
         };
     }
@@ -210,6 +225,13 @@ public class MindRecordService {
             case DEEP_THOUGHT -> deepThoughtService.update(record, request);
         }
 
+        if (request.getImageList() != null) {
+            mindRecordImageRepository.deleteByMindRecordId(recordId);
+            if (!request.getImageList().isEmpty()) {
+                saveImageList(record, request.getImageList());
+            }
+        }
+
         return record.getId();
     }
 
@@ -232,6 +254,8 @@ public class MindRecordService {
 
         MindRecord record = findRecord(recordId, userId);
 
+        mindRecordImageRepository.deleteByMindRecordId(recordId);
+
         switch (record.getType()) {
             case DIARY -> diaryRepository.deleteByMindRecord(record);
             case DAILY_QUESTION -> dailyQuestionAnswerRepository.deleteByMindRecord(record);
@@ -239,5 +263,19 @@ public class MindRecordService {
         }
 
         mindRecordRepository.delete(record);
+    }
+
+    private void saveImageList(MindRecord mindRecord, List<MindRecordImageRequest> imageRequests) {
+        if (imageRequests == null || imageRequests.isEmpty()) {
+            return;
+        }
+        List<MindRecordImage> images = imageRequests.stream()
+                .map(req -> MindRecordImage.builder()
+                        .mindRecord(mindRecord)
+                        .mediaType(req.getMediaType())
+                        .imageUrl(req.getImageUrl())
+                        .build())
+                .toList();
+        mindRecordImageRepository.saveAll(images);
     }
 }

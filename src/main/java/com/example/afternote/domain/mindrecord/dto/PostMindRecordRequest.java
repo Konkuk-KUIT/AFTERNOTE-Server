@@ -2,10 +2,14 @@ package com.example.afternote.domain.mindrecord.dto;
 
 import com.example.afternote.domain.mindrecord.model.MindRecordType;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -36,4 +40,9 @@ public class PostMindRecordRequest {
 
     @Schema(description = "깊은 생각 카테고리 (DEEP_THOUGHT일 때만)", example = "나의 가치관", nullable = true)
     private String category;
+
+    @Schema(description = "미디어 목록 (이미지, 영상, 음성, 문서)", nullable = true)
+    @Valid
+    @Size(max = 10, message = "미디어는 최대 10개까지 첨부할 수 있습니다.")
+    private List<MindRecordImageRequest> imageList;
 }
