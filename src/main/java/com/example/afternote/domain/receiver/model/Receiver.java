@@ -36,6 +36,9 @@ public class Receiver {
     @Column(length = 50)
     private String email;
 
+    @Column(columnDefinition = "TEXT")
+    private String message;
+
     @Column(name = "auth_code", unique = true, length = 36)
     private String authCode;
 
@@ -43,15 +46,20 @@ public class Receiver {
     private LocalDateTime createdAt;
 
     @Builder
-    public Receiver(String name, String relation, String phone, String email, Long userId) {
+    public Receiver(String name, String relation, String phone, String email, String message, Long userId) {
         this.name = name;
         this.relation = relation;
         this.phone = phone;
         this.email = email;
+        this.message = message;
         this.userId = userId;
         this.sortOrder = 0;
         this.createdAt = LocalDateTime.now();
         this.authCode = UUID.randomUUID().toString();
+    }
+
+    public void updateMessage(String message) {
+        this.message = message;
     }
 
     @Column(name = "sort_order", nullable = false)

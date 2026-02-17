@@ -22,4 +22,7 @@ public class UserCreateReceiverRequest {
 
     @Schema(description = "이메일", example = "jieun@naver.com", nullable = true)
     private String email;
+
+    @Schema(description = "수신자에게 남길 메시지", example = "사랑하는 딸에게...", nullable = true)
+    private String message;
 }
