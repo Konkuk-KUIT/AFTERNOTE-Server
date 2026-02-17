@@ -105,8 +105,9 @@ public enum ErrorCode {
     MIND_RECORD_CONTENT_REQUIRED(HttpStatus.BAD_REQUEST, 444, "마음의 기록 내용은 필수입니다."),                                                                                                            
     DAILY_QUESTION_REQUIRED(HttpStatus.BAD_REQUEST, 445, "데일리 질문 ID는 필수입니다."),
     MIND_RECORD_TITLE_REQUIRED(HttpStatus.BAD_REQUEST, 446, "마음의 기록 제목은 필수입니다."),
+    RECEIVER_FORBIDDEN(HttpStatus.FORBIDDEN, 448, "해당 수신인에 대한 접근 권한이 없습니다."),
 
-    // ======================================                                                                                                                                                               
+    // ======================================
     // 7. 애프터노트 관련 오류 (code: 460 ~ 479)                                                                                                                                                            
     // ======================================                                                                                                                                                               
     AFTERNOTE_NOT_FOUND(HttpStatus.NOT_FOUND, 460, "애프터노트를 찾을 수 없습니다."),                                                                                                                       
@@ -140,7 +141,33 @@ public enum ErrorCode {
     DECRYPTION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, 491, "복호화 처리 중 오류가 발생했습니다."),
 
     // 소셜 로그인 사용자의 일반 로그인 시도
-    SOCIAL_LOGIN_USER(HttpStatus.BAD_REQUEST, 492, "소셜 로그인으로 가입한 계정입니다. 소셜 로그인을 이용해주세요.");
+    SOCIAL_LOGIN_USER(HttpStatus.BAD_REQUEST, 492, "소셜 로그인으로 가입한 계정입니다. 소셜 로그인을 이용해주세요."),
+
+    // ======================================
+    // 9. S3/이미지 관련 오류 (code: 493 ~)
+    // ======================================
+    PRESIGNED_URL_GENERATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, 493, "Presigned URL 생성에 실패했습니다."),
+    INVALID_FILE_EXTENSION(HttpStatus.BAD_REQUEST, 494, "허용되지 않는 파일 확장자입니다. (jpg, jpeg, png, gif, webp, heic, mp4, mov, mp3, m4a, wav, pdf 허용)"),
+    INVALID_DIRECTORY(HttpStatus.BAD_REQUEST, 495, "허용되지 않는 디렉토리입니다."),
+
+    // ======================================
+    // 10. 수신자 인증 관련 오류 (code: 496 ~)
+    // ======================================
+    INVALID_AUTH_CODE(HttpStatus.NOT_FOUND, 496, "유효하지 않은 인증번호입니다."),
+
+    //gemini api
+    GEMINI_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, 497, "LLM API 가 실패하였습니다. 원인은 토큰 만료, 시간 초과 등이 있습니다."),
+
+    // ======================================
+    // 11. 전달 조건/인증 관련 오류 (code: 600 ~)
+    // ======================================
+    VERIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, 602, "인증 요청을 찾을 수 없습니다."),
+    VERIFICATION_ALREADY_PROCESSED(HttpStatus.BAD_REQUEST, 604, "이미 처리된 인증 요청입니다."),
+    ADMIN_REQUIRED(HttpStatus.FORBIDDEN, 605, "관리자 권한이 필요합니다."),
+    CONDITION_TYPE_MISMATCH(HttpStatus.BAD_REQUEST, 606, "설정된 전달 조건과 요청이 일치하지 않습니다."),
+    INVALID_DELIVERY_CONDITION(HttpStatus.BAD_REQUEST, 607, "전달 조건 요청이 올바르지 않습니다."),
+    VERIFICATION_ALREADY_SUBMITTED(HttpStatus.CONFLICT, 608, "이미 대기 중인 인증 요청이 존재합니다."),
+    DELIVERY_CONDITION_NOT_MET(HttpStatus.FORBIDDEN, 609, "아직 전달 조건이 충족되지 않았습니다.");
 
 
     private final HttpStatus httpStatus;

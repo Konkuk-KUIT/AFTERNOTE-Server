@@ -35,6 +35,12 @@ public class ReceiverDetailResponse {
     @Schema(description = "애프터노트 개수", example = "4")
     private Integer afterNoteCount;
 
+    @Schema(description = "수신자에게 남긴 메시지", example = "사랑하는 딸에게...", nullable = true)
+    private String message;
+
+    @Schema(description = "수신자 인증번호", example = "550e8400-e29b-41d4-a716-446655440000")
+    private String authCode;
+
     public static ReceiverDetailResponse from(
             Receiver receiver,
             int dailyQuestionCount,
@@ -47,9 +53,11 @@ public class ReceiverDetailResponse {
                 .relation(receiver.getRelation())
                 .phone(receiver.getPhone())
                 .email(receiver.getEmail())
+                .message(receiver.getMessage())
                 .dailyQuestionCount(dailyQuestionCount)
                 .timeLetterCount(timeLetterCount)
                 .afterNoteCount(afterNoteCount)
+                .authCode(receiver.getAuthCode())
                 .build();
     }
 }

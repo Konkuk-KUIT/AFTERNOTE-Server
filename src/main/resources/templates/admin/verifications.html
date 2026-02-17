@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AfterNote Admin - Verifications</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; }
+        .header { background: #4a90d9; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { font-size: 20px; }
+        .logout-btn { background: rgba(255,255,255,0.2); color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; }
+        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+        .card { background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); overflow: hidden; }
+        .card-header { padding: 20px; border-bottom: 1px solid #eee; }
+        .card-header h2 { color: #333; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f8f9fa; color: #555; font-weight: 600; }
+        tr:hover { background: #f8f9fa; }
+        .badge { padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+        .badge-pending { background: #fff3cd; color: #856404; }
+        .btn-detail { color: #4a90d9; text-decoration: none; font-weight: 600; }
+        .btn-detail:hover { text-decoration: underline; }
+        .empty { text-align: center; padding: 40px; color: #999; }
+        .loading { text-align: center; padding: 40px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>AfterNote Admin - Verification Requests</h1>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h2>Pending Verifications</h2>
+            </div>
+            <div id="content">
+                <p class="loading">Loading...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+            return null;
+        }
+
+        function logout() {
+            document.cookie = 'accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+            document.cookie = 'refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+            window.location.href = '/admin/login';
+        }
+
+        async function loadVerifications() {
+            const token = getCookie('accessToken');
+            if (!token) {
+                window.location.href = '/admin/login';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/admin/verifications', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+
+                if (response.status === 401 || response.status === 403) {
+                    window.location.href = '/admin/login';
+                    return;
+                }
+
+                const data = await response.json();
+                const contentDiv = document.getElementById('content');
+
+                if (!data.data || data.data.length === 0) {
+                    contentDiv.innerHTML = '<p class="empty">No pending verifications.</p>';
+                    return;
+                }
+
+                const table = document.createElement('table');
+                table.innerHTML = '<thead><tr><th>ID</th><th>Sender</th><th>Sender Email</th><th>Receiver</th><th>Status</th><th>Created</th><th>Action</th></tr></thead>';
+                const tbody = document.createElement('tbody');
+                data.data.forEach(v => {
+                    const tr = document.createElement('tr');
+                    const cells = [v.id, v.senderName, v.senderEmail, v.receiverName];
+                    cells.forEach(val => {
+                        const td = document.createElement('td');
+                        td.textContent = val || '';
+                        tr.appendChild(td);
+                    });
+                    const statusTd = document.createElement('td');
+                    const badge = document.createElement('span');
+                    badge.className = 'badge badge-pending';
+                    badge.textContent = v.status;
+                    statusTd.appendChild(badge);
+                    tr.appendChild(statusTd);
+                    const dateTd = document.createElement('td');
+                    dateTd.textContent = new Date(v.createdAt).toLocaleString('ko-KR');
+                    tr.appendChild(dateTd);
+                    const actionTd = document.createElement('td');
+                    const link = document.createElement('a');
+                    link.href = `/admin/verifications/${v.id}`;
+                    link.className = 'btn-detail';
+                    link.textContent = 'Detail';
+                    actionTd.appendChild(link);
+                    tr.appendChild(actionTd);
+                    tbody.appendChild(tr);
+                });
+                table.appendChild(tbody);
+                contentDiv.innerHTML = '';
+                contentDiv.appendChild(table);
+            } catch (error) {
+                document.getElementById('content').innerHTML = '<p class="empty">Failed to load verifications.</p>';
+            }
+        }
+
+        loadVerifications();
+    </script>
+</body>
+</html>
