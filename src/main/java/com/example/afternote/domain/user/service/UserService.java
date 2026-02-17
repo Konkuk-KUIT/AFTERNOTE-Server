@@ -142,6 +142,7 @@ public class UserService {
                 .relation(request.getRelation())
                 .phone(request.getPhone())
                 .email(request.getEmail())
+                .message(request.getMessage())
                 .userId(user.getId())
                 .build();
 
@@ -168,6 +169,18 @@ public class UserService {
         }
 
         return UserCreateReceiverResponse.from(receiver.getId(), receiver.getAuthCode());
+    }
+
+    @Transactional
+    public void updateReceiverMessage(Long userId, Long receiverId, UserUpdateReceiverMessageRequest request) {
+        User user = findUserById(userId);
+
+        UserReceiver userReceiver =
+                userReceiverRepository.findByUserAndReceiverId(user, receiverId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.RECEIVER_NOT_FOUND));
+
+        Receiver receiver = userReceiver.getReceiver();
+        receiver.updateMessage(request.getMessage());
     }
 
     private User findUserById(Long userId) {
