@@ -21,6 +21,12 @@ repositories {
     mavenCentral()
 }
 
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.ai:spring-ai-bom:1.1.2"
+    }
+}
+
 dependencies {
     // Spring Boot Starters
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -48,7 +54,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
 
-    //swaager
+    //스웨거
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
 
     //redis
@@ -56,6 +62,12 @@ dependencies {
 
     //email
     implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+    // WebClient
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    //gemini-api
+    implementation 'org.springframework.ai:spring-ai-starter-model-google-genai'
 
     // AWS S3
     implementation platform('software.amazon.awssdk:bom:2.25.16')

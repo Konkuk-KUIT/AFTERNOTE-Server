@@ -23,6 +23,17 @@ public interface MindRecordReceiverRepository extends JpaRepository<MindRecordRe
             """)
     List<MindRecordReceiver> findByReceiverIdWithMindRecord(@Param("receiverId") Long receiverId);
 
+    @Query("""
+            SELECT mrr FROM MindRecordReceiver mrr
+            JOIN FETCH mrr.mindRecord mr
+            JOIN FETCH mr.user
+            WHERE mr.id = :mindRecordId AND mrr.receiver.id = :receiverId
+            AND mrr.enabled = true
+            """)
+    Optional<MindRecordReceiver> findByMindRecordIdAndReceiverIdWithMindRecord(
+            @Param("mindRecordId") Long mindRecordId,
+            @Param("receiverId") Long receiverId);
+
     Optional<MindRecordReceiver> findByMindRecordAndReceiver(MindRecord mindRecord, Receiver receiver);
 
     boolean existsByMindRecordAndReceiver(MindRecord mindRecord, Receiver receiver);

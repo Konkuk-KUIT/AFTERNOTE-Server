@@ -9,6 +9,7 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Schema(description = "타임레터 응답")
@@ -49,6 +50,21 @@ public class TimeLetterResponse {
                 .status(timeLetter.getStatus())
                 .mediaList(mediaList == null ? List.of() : mediaList.stream()
                         .map(TimeLetterMediaResponse::from)
+                        .collect(Collectors.toList()))
+                .createdAt(timeLetter.getCreatedAt())
+                .updatedAt(timeLetter.getUpdatedAt())
+                .build();
+    }
+
+    public static TimeLetterResponse from(TimeLetter timeLetter, List<TimeLetterMedia> mediaList, Function<String, String> urlResolver) {
+        return TimeLetterResponse.builder()
+                .id(timeLetter.getId())
+                .title(timeLetter.getTitle())
+                .content(timeLetter.getContent())
+                .sendAt(timeLetter.getSendAt())
+                .status(timeLetter.getStatus())
+                .mediaList(mediaList == null ? List.of() : mediaList.stream()
+                        .map(m -> TimeLetterMediaResponse.from(m, urlResolver))
                         .collect(Collectors.toList()))
                 .createdAt(timeLetter.getCreatedAt())
                 .updatedAt(timeLetter.getUpdatedAt())

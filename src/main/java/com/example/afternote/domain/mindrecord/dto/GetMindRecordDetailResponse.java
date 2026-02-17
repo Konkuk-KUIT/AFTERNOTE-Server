@@ -12,6 +12,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.function.Function;
 
 @Getter
 @Builder
@@ -42,7 +43,7 @@ public class GetMindRecordDetailResponse {
     @Schema(description = "깊은 생각 카테고리 (DEEP_THOUGHT 타입일 때)", nullable = true, example = "자아성찰")
     private String category;
 
-    @Schema(description = "이미지 목록")
+    @Schema(description = "미디어 목록")
     private List<MindRecordImageResponse> imageList;
 
     public static GetMindRecordDetailResponse from(MindRecord record, Diary diary, List<MindRecordImage> images) {
@@ -65,6 +66,29 @@ public class GetMindRecordDetailResponse {
                 .content(thought.getContent())
                 .category(thought.getCategory())
                 .imageList(images.stream().map(MindRecordImageResponse::from).toList())
+                .build();
+    }
+
+    public static GetMindRecordDetailResponse from(MindRecord record, Diary diary, List<MindRecordImage> images, Function<String, String> urlResolver) {
+        return base(record)
+                .content(diary.getContent())
+                .imageList(images.stream().map(img -> MindRecordImageResponse.from(img, urlResolver)).toList())
+                .build();
+    }
+
+    public static GetMindRecordDetailResponse from(MindRecord record, DailyQuestionAnswer answer, List<MindRecordImage> images, Function<String, String> urlResolver) {
+        return base(record)
+                .content(answer.getContent())
+                .questionId(answer.getDailyQuestion().getId())
+                .imageList(images.stream().map(img -> MindRecordImageResponse.from(img, urlResolver)).toList())
+                .build();
+    }
+
+    public static GetMindRecordDetailResponse from(MindRecord record, DeepThought thought, List<MindRecordImage> images, Function<String, String> urlResolver) {
+        return base(record)
+                .content(thought.getContent())
+                .category(thought.getCategory())
+                .imageList(images.stream().map(img -> MindRecordImageResponse.from(img, urlResolver)).toList())
                 .build();
     }
 

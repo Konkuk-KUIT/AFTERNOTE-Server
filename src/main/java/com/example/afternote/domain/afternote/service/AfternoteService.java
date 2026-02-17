@@ -3,6 +3,7 @@ package com.example.afternote.domain.afternote.service;
 import com.example.afternote.domain.afternote.dto.*;
 import com.example.afternote.domain.afternote.model.*;
 import com.example.afternote.domain.afternote.repository.AfternoteRepository;
+import com.example.afternote.domain.image.service.S3Service;
 import com.example.afternote.global.exception.CustomException;
 import com.example.afternote.global.exception.ErrorCode;
 import com.example.afternote.global.util.ChaChaEncryptionUtil;
@@ -26,6 +27,7 @@ public class AfternoteService {
     private final AfternoteRelationService relationService;
     private final AfternoteValidator validator;
     private final ChaChaEncryptionUtil chaChaEncryptionUtil;
+    private final S3Service s3Service;
 
     public AfternotePageResponse getAfternotes(Long userId, AfternoteCategoryType category, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -129,19 +131,19 @@ public class AfternoteService {
                             .map(item -> new AfternoteCreateRequest.SongRequest(
                                     item.getSongTitle(),
                                     item.getArtist(),
-                                    item.getCoverUrl()
+                                    s3Service.generateGetPresignedUrl(item.getCoverUrl())
                             ))
                             .collect(Collectors.toList());
-                    
-                    // memorialVideo 매핑
+
+                    // memorialVideo 매핑 (videoUrl, thumbnailUrl presigned GET 변환)
                     AfternoteCreateRequest.MemorialVideoRequest memorialVideo = null;
                     if (playlist.getMemorialVideo() != null) {
                         memorialVideo = new AfternoteCreateRequest.MemorialVideoRequest(
-                                playlist.getMemorialVideo().getVideoUrl(),
-                                playlist.getMemorialVideo().getThumbnailUrl()
+                                s3Service.generateGetPresignedUrl(playlist.getMemorialVideo().getVideoUrl()),
+                                s3Service.generateGetPresignedUrl(playlist.getMemorialVideo().getThumbnailUrl())
                         );
                     }
-                    
+
                     playlistRequest = new AfternoteCreateRequest.PlaylistRequest(
                             playlist.getAtmosphere(),
                             songs,

@@ -1,5 +1,7 @@
 package com.example.afternote.domain.timeletter.service;
 
+import com.example.afternote.domain.image.service.S3Service;
+import com.example.afternote.domain.receiver.service.ReceivedService;
 import com.example.afternote.domain.timeletter.dto.TimeLetterCreateRequest;
 import com.example.afternote.domain.timeletter.dto.TimeLetterDeleteRequest;
 import com.example.afternote.domain.timeletter.dto.TimeLetterListResponse;
@@ -49,6 +51,12 @@ class TimeLetterServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private ReceivedService receivedService;
+
+    @Mock
+    private S3Service s3Service;
 
     private User testUser;
     private TimeLetter testTimeLetter;
@@ -256,7 +264,7 @@ class TimeLetterServiceTest {
         List<TimeLetter> scheduledLetters = List.of(testTimeLetter);
         given(timeLetterRepository.findByUserIdAndStatusOrderByCreatedAtDesc(1L, TimeLetterStatus.SCHEDULED))
                 .willReturn(scheduledLetters);
-        given(timeLetterMediaRepository.findByTimeLetterId(anyLong())).willReturn(new ArrayList<>());
+        given(timeLetterMediaRepository.findByTimeLetterIdIn(anyList())).willReturn(new ArrayList<>());
 
         // when
         TimeLetterListResponse response = timeLetterService.getTimeLetters(1L);
@@ -281,7 +289,7 @@ class TimeLetterServiceTest {
 
         given(timeLetterRepository.findByUserIdAndStatusOrderByCreatedAtDesc(1L, TimeLetterStatus.DRAFT))
                 .willReturn(List.of(draftLetter));
-        given(timeLetterMediaRepository.findByTimeLetterId(anyLong())).willReturn(new ArrayList<>());
+        given(timeLetterMediaRepository.findByTimeLetterIdIn(anyList())).willReturn(new ArrayList<>());
 
         // when
         TimeLetterListResponse response = timeLetterService.getTemporaryTimeLetters(1L);
