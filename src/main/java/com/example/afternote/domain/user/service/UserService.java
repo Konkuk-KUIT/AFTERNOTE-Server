@@ -33,6 +33,7 @@ public class UserService {
     private final AuthCodeMessageService authCodeMessageService;
     private final S3Service s3Service;
     private final DeliveryVerificationService deliveryVerificationService;
+    private final com.example.afternote.domain.auth.service.TokenService tokenService;
 
     public UserResponse getMyProfile(Long userId) {
 
@@ -194,6 +195,17 @@ public class UserService {
 
         Receiver receiver = userReceiver.getReceiver();
         receiver.updateMessage(request.getMessage());
+    }
+
+    @Transactional
+    public void deleteAccount(Long userId) {
+        User user = findUserById(userId);
+        
+        // 1. Redis에서 해당 유저의 모든 refresh token 삭제
+        tokenService.deleteAllUserTokens(userId);
+        
+        // 2. User 엔티티 삭제 (cascade로 providers도 자동 삭제됨)
+        userRepository.delete(user);
     }
 
     private User findUserById(Long userId) {
