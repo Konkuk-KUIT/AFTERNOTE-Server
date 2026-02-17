@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class PresignedUrlRequest {
 
     @Schema(description = "업로드 디렉토리", example = "profiles",
-            allowableValues = {"profiles", "timeletters", "afternotes"})
+            allowableValues = {"profiles", "timeletters", "afternotes", "mindrecords", "documents"})
     @NotBlank(message = "디렉토리는 필수입니다.")
     private String directory;
 

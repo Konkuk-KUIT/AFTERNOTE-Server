@@ -59,21 +59,26 @@ public class ReceivedTimeLetterResponse {
 
     public static ReceivedTimeLetterResponse from(TimeLetterReceiver timeLetterReceiver, List<TimeLetterMedia> mediaList, Function<String, String> urlResolver) {
         TimeLetter timeLetter = timeLetterReceiver.getTimeLetter();
+
+        // sendAt이 아직 지나지 않은 경우 컨텐츠 숨김
+        boolean isAvailable = timeLetter.getSendAt() != null
+                && !timeLetter.getSendAt().isAfter(LocalDateTime.now());
+
         List<TimeLetterMediaResponse> mediaResponses = (mediaList == null ? List.<TimeLetterMedia>of() : mediaList).stream()
                 .map(m -> urlResolver != null ? TimeLetterMediaResponse.from(m, urlResolver) : TimeLetterMediaResponse.from(m))
                 .toList();
         return ReceivedTimeLetterResponse.builder()
                 .id(timeLetter.getId())
                 .timeLetterReceiverId(timeLetterReceiver.getId())
-                .title(timeLetter.getTitle())
-                .content(timeLetter.getContent())
+                .title(isAvailable ? timeLetter.getTitle() : null)
+                .content(isAvailable ? timeLetter.getContent() : null)
                 .sendAt(timeLetter.getSendAt())
                 .status(timeLetter.getStatus())
-                .senderName(timeLetter.getUser().getName())
+                .senderName(isAvailable ? timeLetter.getUser().getName() : null)
                 .deliveredAt(timeLetterReceiver.getDeliveredAt())
-                .createdAt(timeLetter.getCreatedAt())
-                .mediaList(mediaResponses)
-                .isRead(timeLetterReceiver.getReadAt() != null)
+                .createdAt(isAvailable ? timeLetter.getCreatedAt() : null)
+                .mediaList(isAvailable ? mediaResponses : List.of())
+                .isRead(isAvailable ? (timeLetterReceiver.getReadAt() != null) : null)
                 .build();
     }
 }

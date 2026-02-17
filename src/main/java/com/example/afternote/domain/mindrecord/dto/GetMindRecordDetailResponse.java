@@ -43,7 +43,7 @@ public class GetMindRecordDetailResponse {
     @Schema(description = "깊은 생각 카테고리 (DEEP_THOUGHT 타입일 때)", nullable = true, example = "자아성찰")
     private String category;
 
-    @Schema(description = "이미지 목록")
+    @Schema(description = "미디어 목록")
     private List<MindRecordImageResponse> imageList;
 
     public static GetMindRecordDetailResponse from(MindRecord record, Diary diary, List<MindRecordImage> images) {

@@ -115,4 +115,41 @@ public class UserController {
                 userService.getReceiverDetail(userId, receiverId)
         );
     }
+
+    @Operation(
+            summary = "수신자 메시지 수정 API",
+            description = "특정 수신자에게 남길 메시지를 등록하거나 수정합니다."
+    )
+    @PatchMapping("/receivers/{receiverId}/message")
+    public ApiResponse<Void> updateReceiverMessage(
+            @Parameter(hidden = true) @UserId Long userId,
+            @PathVariable Long receiverId,
+            @Valid @RequestBody UserUpdateReceiverMessageRequest request
+    ) {
+        userService.updateReceiverMessage(userId, receiverId, request);
+        return ApiResponse.success(null);
+    }
+
+    @Operation(
+            summary = "전달 조건 조회 API",
+            description = "로그인한 사용자의 전달 조건 설정을 조회합니다."
+    )
+    @GetMapping("/delivery-condition")
+    public ApiResponse<DeliveryConditionResponse> getDeliveryCondition(
+            @Parameter(hidden = true) @UserId Long userId
+    ) {
+        return ApiResponse.success(userService.getDeliveryCondition(userId));
+    }
+
+    @Operation(
+            summary = "전달 조건 수정 API",
+            description = "로그인한 사용자의 전달 조건을 설정하거나 변경합니다."
+    )
+    @PatchMapping("/delivery-condition")
+    public ApiResponse<DeliveryConditionResponse> updateDeliveryCondition(
+            @Parameter(hidden = true) @UserId Long userId,
+            @Valid @RequestBody DeliveryConditionRequest request
+    ) {
+        return ApiResponse.success(userService.updateDeliveryCondition(userId, request));
+    }
 }

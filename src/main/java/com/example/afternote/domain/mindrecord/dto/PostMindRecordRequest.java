@@ -41,8 +41,8 @@ public class PostMindRecordRequest {
     @Schema(description = "깊은 생각 카테고리 (DEEP_THOUGHT일 때만)", example = "나의 가치관", nullable = true)
     private String category;
 
-    @Schema(description = "이미지 URL 목록", nullable = true)
+    @Schema(description = "미디어 목록 (이미지, 영상, 음성, 문서)", nullable = true)
     @Valid
-    @Size(max = 10, message = "이미지는 최대 10개까지 첨부할 수 있습니다.")
+    @Size(max = 10, message = "미디어는 최대 10개까지 첨부할 수 있습니다.")
     private List<MindRecordImageRequest> imageList;
 }
