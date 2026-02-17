@@ -2,6 +2,7 @@ package com.example.afternote.domain.afternote.service;
 
 import com.example.afternote.domain.afternote.dto.AfternoteCreateRequest;
 import com.example.afternote.domain.afternote.model.*;
+import com.example.afternote.domain.afternote.repository.AfternotePlaylistRepository;
 import com.example.afternote.domain.receiver.model.Receiver;
 import com.example.afternote.domain.receiver.repository.ReceivedRepository;
 import com.example.afternote.global.exception.CustomException;
@@ -19,6 +20,7 @@ public class AfternoteRelationService {
 
     private final ReceivedRepository receiverRepository;
     private final ChaChaEncryptionUtil chaChaEncryptionUtil;
+    private final AfternotePlaylistRepository playlistRepository;
 
     /**
      * 카테고리별 관계 데이터 저장
@@ -118,6 +120,9 @@ public class AfternoteRelationService {
 
         AfternotePlaylist.MemorialVideo memorialVideo = createMemorialVideo(request.getPlaylist().getMemorialVideo());
         AfternotePlaylist playlist = createPlaylist(afternote, request.getPlaylist().getAtmosphere(), memorialVideo);
+        
+        // playlist를 먼저 저장 (ID 생성)
+        playlist = playlistRepository.save(playlist);
 
         // 플레이리스트 곡 추가
         if (request.getPlaylist().getSongs() != null) {
@@ -125,9 +130,9 @@ public class AfternoteRelationService {
             for (AfternoteCreateRequest.SongRequest songReq : request.getPlaylist().getSongs()) {
                 playlist.getItems().add(createPlaylistItem(playlist, songReq, sortOrder++));
             }
+            // items 추가 후 다시 저장
+            playlistRepository.save(playlist);
         }
-
-        afternote.getPlaylists().add(playlist);
     }
     
     /**
@@ -136,13 +141,29 @@ public class AfternoteRelationService {
     public void updatePlaylist(Afternote afternote, AfternoteCreateRequest request) {
         if (request.getPlaylist() == null) return;
         
-        // 첫 번째 playlist 가져오기 (현재 구조상 하나만 존재)
-        AfternotePlaylist playlist = afternote.getPlaylists().isEmpty() 
-            ? null : afternote.getPlaylists().get(0);
+        AfternotePlaylist playlist = afternote.getPlaylist();
         
         if (playlist == null) {
             // playlist가 없으면 새로 생성
-            savePlaylist(afternote, request);
+            AfternotePlaylist newPlaylist = createPlaylist(
+                    afternote,
+                    request.getPlaylist().getAtmosphere(),
+                    request.getPlaylist().getMemorialVideo() != null
+                            ? createMemorialVideo(request.getPlaylist().getMemorialVideo())
+                            : null
+            );
+            
+            // 먼저 저장하여 ID 생성
+            newPlaylist = playlistRepository.save(newPlaylist);
+            
+            if (request.getPlaylist().getSongs() != null) {
+                int sortOrder = 1;
+                for (AfternoteCreateRequest.SongRequest songReq : request.getPlaylist().getSongs()) {
+                    newPlaylist.getItems().add(createPlaylistItem(newPlaylist, songReq, sortOrder++));
+                }
+                // items 추가 후 다시 저장
+                playlistRepository.save(newPlaylist);
+            }
             return;
         }
         
@@ -160,6 +181,9 @@ public class AfternoteRelationService {
                 playlist.getItems().add(createPlaylistItem(playlist, songReq, sortOrder++));
             }
         }
+        
+        // 명시적 저장
+        playlistRepository.save(playlist);
     }
 
     // ========== Builder Helper Methods ==========

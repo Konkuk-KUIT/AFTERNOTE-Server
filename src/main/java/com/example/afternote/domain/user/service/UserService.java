@@ -7,6 +7,7 @@ import com.example.afternote.domain.receiver.service.DeliveryVerificationService
 import com.example.afternote.domain.receiver.repository.ReceiverRepository;
 import com.example.afternote.domain.receiver.repository.UserReceiverRepository;
 import com.example.afternote.domain.user.dto.*;
+import com.example.afternote.domain.user.model.AuthProvider;
 import com.example.afternote.domain.user.model.DeliveryConditionType;
 import com.example.afternote.domain.user.model.User;
 import com.example.afternote.domain.user.repository.UserRepository;
@@ -50,7 +51,7 @@ public class UserService {
                 request.getProfileImageUrl()
         );
 
-        return UserResponse.from(user, s3Service::generateGetPresignedUrl);
+        return UserResponse.from(user);
     }
 
 
@@ -58,6 +59,18 @@ public class UserService {
         User user = findUserById(userId);
 
         return UserPushSettingResponse.from(user);
+    }
+
+    public UserConnectedAccountResponse getConnectedAccounts(Long userId) {
+        User user = findUserById(userId);
+
+        boolean local = user.hasProvider(AuthProvider.LOCAL);
+        boolean google = user.hasProvider(AuthProvider.GOOGLE);
+        boolean naver = user.hasProvider(AuthProvider.NAVER);
+        boolean kakao = user.hasProvider(AuthProvider.KAKAO);
+        boolean apple = false;
+
+        return new UserConnectedAccountResponse(local, google, naver, kakao, apple);
     }
 
     @Transactional
