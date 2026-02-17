@@ -110,8 +110,8 @@ public class ReceivedAfternoteDetailResponse {
     public static ReceivedAfternoteDetailResponse fromPlaylist(Afternote afternote, String senderName) {
         PlaylistInfo playlistInfo = null;
 
-        if (!afternote.getPlaylists().isEmpty()) {
-            AfternotePlaylist pl = afternote.getPlaylists().get(0);
+        if (afternote.getPlaylist() != null) {
+            AfternotePlaylist pl = afternote.getPlaylist();
 
             List<SongInfo> songs = pl.getItems().stream()
                     .map(item -> SongInfo.builder()
