@@ -90,8 +90,11 @@ public class ReceivedService {
                 .findByIdAndReceiverIdWithTimeLetter(timeLetterReceiverId, receiverId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TIME_LETTER_NOT_FOUND));
 
-        // 읽음 처리 (멱등성 보장 — dirty checking으로 자동 UPDATE)
-        timeLetterReceiver.markAsRead();
+        // sendAt이 지난 경우에만 읽음 처리
+        if (timeLetterReceiver.getTimeLetter().getSendAt() != null
+                && !timeLetterReceiver.getTimeLetter().getSendAt().isAfter(LocalDateTime.now())) {
+            timeLetterReceiver.markAsRead();
+        }
 
         // 미디어 조회
         List<TimeLetterMedia> mediaList = timeLetterMediaRepository
