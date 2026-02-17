@@ -268,6 +268,7 @@ public class MindRecordService {
         List<MindRecordImage> images = imageRequests.stream()
                 .map(req -> MindRecordImage.builder()
                         .mindRecord(mindRecord)
+                        .mediaType(req.getMediaType())
                         .imageUrl(req.getImageUrl())
                         .build())
                 .toList();

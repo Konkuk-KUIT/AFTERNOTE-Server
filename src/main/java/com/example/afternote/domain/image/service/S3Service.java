@@ -32,8 +32,13 @@ public class S3Service {
     @Value("${cloud.aws.s3.region}")
     private String region;
 
-    private static final Set<String> ALLOWED_EXTENSIONS = Set.of("jpg", "jpeg", "png", "gif", "webp");
-    private static final Set<String> ALLOWED_DIRECTORIES = Set.of("profiles", "timeletters", "afternotes", "mindrecords");
+    private static final Set<String> ALLOWED_EXTENSIONS = Set.of(
+            "jpg", "jpeg", "png", "gif", "webp", "heic",   // 이미지
+            "mp4", "mov",                                    // 영상
+            "mp3", "m4a", "wav",                             // 음성
+            "pdf"                                            // 문서
+    );
+    private static final Set<String> ALLOWED_DIRECTORIES = Set.of("profiles", "timeletters", "afternotes", "mindrecords", "documents");
     private static final Duration PRESIGNED_URL_EXPIRATION = Duration.ofMinutes(10);
     private static final Duration GET_PRESIGNED_URL_EXPIRATION = Duration.ofHours(1);
 
@@ -131,6 +136,13 @@ public class S3Service {
             case "png" -> "image/png";
             case "gif" -> "image/gif";
             case "webp" -> "image/webp";
+            case "heic" -> "image/heic";
+            case "mp4" -> "video/mp4";
+            case "mov" -> "video/quicktime";
+            case "mp3" -> "audio/mpeg";
+            case "m4a" -> "audio/mp4";
+            case "wav" -> "audio/wav";
+            case "pdf" -> "application/pdf";
             default -> throw new CustomException(ErrorCode.INVALID_FILE_EXTENSION);
         };
     }

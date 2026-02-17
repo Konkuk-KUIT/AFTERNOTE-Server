@@ -3,9 +3,11 @@ package com.example.afternote.domain.user.service;
 import com.example.afternote.domain.image.service.S3Service;
 import com.example.afternote.domain.receiver.model.Receiver;
 import com.example.afternote.domain.receiver.model.UserReceiver;
+import com.example.afternote.domain.receiver.service.DeliveryVerificationService;
 import com.example.afternote.domain.receiver.repository.ReceiverRepository;
 import com.example.afternote.domain.receiver.repository.UserReceiverRepository;
 import com.example.afternote.domain.user.dto.*;
+import com.example.afternote.domain.user.model.DeliveryConditionType;
 import com.example.afternote.domain.user.model.User;
 import com.example.afternote.domain.user.repository.UserRepository;
 import com.example.afternote.domain.receiver.service.AuthCodeMessageService;
@@ -29,6 +31,7 @@ public class UserService {
     private final ReceiverRepository receiverRepository;
     private final AuthCodeMessageService authCodeMessageService;
     private final S3Service s3Service;
+    private final DeliveryVerificationService deliveryVerificationService;
 
     public UserResponse getMyProfile(Long userId) {
 
@@ -103,6 +106,30 @@ public class UserService {
         );
     }
 
+    public DeliveryConditionResponse getDeliveryCondition(Long userId) {
+        User user = findUserById(userId);
+        return DeliveryConditionResponse.from(user);
+    }
+
+    @Transactional
+    public DeliveryConditionResponse updateDeliveryCondition(Long userId, DeliveryConditionRequest request) {
+        User user = findUserById(userId);
+        DeliveryConditionType previousConditionType = user.getDeliveryConditionType();
+
+        user.updateDeliveryCondition(
+                request.getConditionType(),
+                request.getInactivityPeriodDays(),
+                request.getSpecificDate()
+        );
+
+        if (previousConditionType == DeliveryConditionType.DEATH_CERTIFICATE
+                && user.getDeliveryConditionType() != DeliveryConditionType.DEATH_CERTIFICATE) {
+            deliveryVerificationService.cancelPendingVerifications(user.getId());
+        }
+
+        return DeliveryConditionResponse.from(user);
+    }
+
     @Transactional
     public UserCreateReceiverResponse createReceiver(
             Long userId,
@@ -115,6 +142,7 @@ public class UserService {
                 .relation(request.getRelation())
                 .phone(request.getPhone())
                 .email(request.getEmail())
+                .message(request.getMessage())
                 .userId(user.getId())
                 .build();
 
@@ -141,6 +169,18 @@ public class UserService {
         }
 
         return UserCreateReceiverResponse.from(receiver.getId(), receiver.getAuthCode());
+    }
+
+    @Transactional
+    public void updateReceiverMessage(Long userId, Long receiverId, UserUpdateReceiverMessageRequest request) {
+        User user = findUserById(userId);
+
+        UserReceiver userReceiver =
+                userReceiverRepository.findByUserAndReceiverId(user, receiverId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.RECEIVER_NOT_FOUND));
+
+        Receiver receiver = userReceiver.getReceiver();
+        receiver.updateMessage(request.getMessage());
     }
 
     private User findUserById(Long userId) {

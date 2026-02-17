@@ -13,65 +13,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "Received API", description = "수신자용 콘텐츠 조회 API")
+@Tag(name = "Received API", description = "수신자 등록 API")
 @RestController
 @RequestMapping("/api/received")
 @RequiredArgsConstructor
 public class ReceivedController {
 
     private final ReceivedService receivedService;
-
-    @Operation(
-            summary = "수신한 타임레터 목록 조회",
-            description = "수신자에게 배달된 타임레터 목록을 조회합니다."
-    )
-    @GetMapping("/{receiverId}/time-letters")
-    public ApiResponse<ReceivedTimeLetterListResponse> getTimeLetters(
-            @Parameter(description = "수신자 ID", example = "1")
-            @PathVariable Long receiverId
-    ) {
-        return ApiResponse.success(receivedService.getTimeLetters(receiverId));
-    }
-
-    @Operation(
-            summary = "수신한 타임레터 상세 조회",
-            description = "수신한 타임레터의 상세 정보를 조회합니다. 최초 조회 시 읽음 처리됩니다."
-    )
-    @GetMapping("/{receiverId}/time-letters/{timeLetterReceiverId}")
-    public ApiResponse<ReceivedTimeLetterResponse> getTimeLetter(
-            @Parameter(description = "수신자 ID", example = "1")
-            @PathVariable Long receiverId,
-            @Parameter(description = "수신 타임레터 ID", example = "1")
-            @PathVariable Long timeLetterReceiverId
-    ) {
-        return ApiResponse.success(receivedService.getTimeLetter(receiverId, timeLetterReceiverId));
-    }
-
-    @Operation(
-            summary = "수신한 애프터노트 목록 조회",
-            description = "수신자에게 전달된 애프터노트 목록을 조회합니다."
-    )
-    @GetMapping("/{receiverId}/after-notes")
-    public ApiResponse<ReceivedAfternoteListResponse> getAfternotes(
-            @Parameter(description = "수신자 ID", example = "1")
-            @PathVariable Long receiverId
-    ) {
-        return ApiResponse.success(receivedService.getAfternotes(receiverId));
-    }
-
-    @Operation(
-            summary = "수신한 마인드레코드 목록 조회",
-            description = "수신자에게 공유된 마인드레코드(일기, 질문답변, 깊은생각) 목록을 조회합니다."
-    )
-    @GetMapping("/{receiverId}/mind-records")
-    public ApiResponse<ReceivedMindRecordListResponse> getMindRecords(
-            @Parameter(description = "수신자 ID", example = "1")
-            @PathVariable Long receiverId
-    ) {
-        return ApiResponse.success(receivedService.getMindRecords(receiverId));
-    }
-
-    // ==================== 수신자 등록 API ====================
 
     @Operation(
             summary = "타임레터 수신자 등록",

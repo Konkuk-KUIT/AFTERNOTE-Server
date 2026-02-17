@@ -10,11 +10,11 @@ import lombok.Getter;
 @AllArgsConstructor
 public class PresignedUrlResponse {
 
-    @Schema(description = "S3 Presigned PUT URL (이미지 업로드용)",
+    @Schema(description = "S3 Presigned PUT URL (파일 업로드용)",
             example = "https://afternote-bucket.s3.ap-northeast-2.amazonaws.com/profiles/...")
     private String presignedUrl;
 
-    @Schema(description = "업로드 완료 후 사용할 이미지 URL",
+    @Schema(description = "업로드 완료 후 사용할 파일 URL",
             example = "https://afternote-bucket.s3.ap-northeast-2.amazonaws.com/profiles/uuid.jpg")
     private String imageUrl;
 

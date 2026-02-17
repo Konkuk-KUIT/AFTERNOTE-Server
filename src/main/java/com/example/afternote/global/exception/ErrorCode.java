@@ -147,13 +147,24 @@ public enum ErrorCode {
     // 9. S3/이미지 관련 오류 (code: 493 ~)
     // ======================================
     PRESIGNED_URL_GENERATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, 493, "Presigned URL 생성에 실패했습니다."),
-    INVALID_FILE_EXTENSION(HttpStatus.BAD_REQUEST, 494, "허용되지 않는 파일 확장자입니다. (jpg, jpeg, png, gif, webp만 허용)"),
+    INVALID_FILE_EXTENSION(HttpStatus.BAD_REQUEST, 494, "허용되지 않는 파일 확장자입니다. (jpg, jpeg, png, gif, webp, heic, mp4, mov, mp3, m4a, wav, pdf 허용)"),
     INVALID_DIRECTORY(HttpStatus.BAD_REQUEST, 495, "허용되지 않는 디렉토리입니다."),
 
     // ======================================
     // 10. 수신자 인증 관련 오류 (code: 496 ~)
     // ======================================
-    INVALID_AUTH_CODE(HttpStatus.NOT_FOUND, 496, "유효하지 않은 인증번호입니다.");
+    INVALID_AUTH_CODE(HttpStatus.NOT_FOUND, 496, "유효하지 않은 인증번호입니다."),
+
+    // ======================================
+    // 11. 전달 조건/인증 관련 오류 (code: 600 ~)
+    // ======================================
+    VERIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, 602, "인증 요청을 찾을 수 없습니다."),
+    VERIFICATION_ALREADY_PROCESSED(HttpStatus.BAD_REQUEST, 604, "이미 처리된 인증 요청입니다."),
+    ADMIN_REQUIRED(HttpStatus.FORBIDDEN, 605, "관리자 권한이 필요합니다."),
+    CONDITION_TYPE_MISMATCH(HttpStatus.BAD_REQUEST, 606, "설정된 전달 조건과 요청이 일치하지 않습니다."),
+    INVALID_DELIVERY_CONDITION(HttpStatus.BAD_REQUEST, 607, "전달 조건 요청이 올바르지 않습니다."),
+    VERIFICATION_ALREADY_SUBMITTED(HttpStatus.CONFLICT, 608, "이미 대기 중인 인증 요청이 존재합니다."),
+    DELIVERY_CONDITION_NOT_MET(HttpStatus.FORBIDDEN, 609, "아직 전달 조건이 충족되지 않았습니다.");
 
 
     private final HttpStatus httpStatus;
