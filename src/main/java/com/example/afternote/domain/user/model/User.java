@@ -39,7 +39,7 @@ public class User {
     @Column
     private String phone; // 연락처 (선택)
 
-    @Column
+    @Column(length = 1000)
     private String profileImageUrl; // 프로필 이미지 URL (선택)
 
     @Enumerated(EnumType.STRING) // DB에 숫자가 아닌 텍스트(ACTIVE)로 저장

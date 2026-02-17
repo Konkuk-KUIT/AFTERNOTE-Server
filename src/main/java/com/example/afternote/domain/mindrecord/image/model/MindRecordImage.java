@@ -31,7 +31,7 @@ public class MindRecordImage {
     @Column(name = "media_type", nullable = false, length = 20)
     private MediaType mediaType;
 
-    @Column(name = "image_url", nullable = false, length = 500)
+    @Column(name = "image_url", nullable = false, length = 1000)
     private String imageUrl;
 
     @CreatedDate
