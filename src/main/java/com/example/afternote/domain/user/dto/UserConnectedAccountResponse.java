@@ -7,6 +7,9 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class UserConnectedAccountResponse {
+    @Schema(description = "일반(로컬) 계정 연결 여부", example = "true")
+    private boolean local;
+
     @Schema(description = "구글 계정 연결 여부", example = "false")
     private boolean google;
 

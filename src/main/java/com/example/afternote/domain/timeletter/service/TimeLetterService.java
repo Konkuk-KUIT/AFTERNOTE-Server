@@ -1,5 +1,7 @@
 package com.example.afternote.domain.timeletter.service;
 
+import com.example.afternote.domain.image.service.S3Service;
+import com.example.afternote.domain.receiver.service.ReceivedService;
 import com.example.afternote.domain.timeletter.dto.*;
 import com.example.afternote.domain.timeletter.model.TimeLetter;
 import com.example.afternote.domain.timeletter.model.TimeLetterMedia;
@@ -16,7 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,6 +30,8 @@ public class TimeLetterService {
     private final TimeLetterRepository timeLetterRepository;
     private final TimeLetterMediaRepository timeLetterMediaRepository;
     private final UserRepository userRepository;
+    private final ReceivedService receivedService;
+    private final S3Service s3Service;
 
     /**
      * 정식 등록된 타임레터 전체 조회 (SCHEDULED 상태만)
@@ -34,11 +40,14 @@ public class TimeLetterService {
     public TimeLetterListResponse getTimeLetters(Long userId) {
         List<TimeLetter> timeLetters = timeLetterRepository
                 .findByUserIdAndStatusOrderByCreatedAtDesc(userId, TimeLetterStatus.SCHEDULED);
+
+        Map<Long, List<TimeLetterMedia>> mediaMap = fetchMediaMap(timeLetters);
+
         List<TimeLetterResponse> responses = timeLetters.stream()
-                .map(timeLetter -> {
-                    List<TimeLetterMedia> mediaList = timeLetterMediaRepository.findByTimeLetterId(timeLetter.getId());
-                    return TimeLetterResponse.from(timeLetter, mediaList);
-                })
+                .map(timeLetter -> TimeLetterResponse.from(
+                        timeLetter,
+                        mediaMap.getOrDefault(timeLetter.getId(), List.of()),
+                        s3Service::generateGetPresignedUrl))
                 .collect(Collectors.toList());
 
         return TimeLetterListResponse.from(responses);
@@ -51,7 +60,7 @@ public class TimeLetterService {
     public TimeLetterResponse getTimeLetter(Long userId, Long timeLetterId) {
         TimeLetter timeLetter = findTimeLetterWithOwnership(userId, timeLetterId);
         List<TimeLetterMedia> mediaList = timeLetterMediaRepository.findByTimeLetterId(timeLetterId);
-        return TimeLetterResponse.from(timeLetter, mediaList);
+        return TimeLetterResponse.from(timeLetter, mediaList, s3Service::generateGetPresignedUrl);
     }
 
     /**
@@ -80,7 +89,13 @@ public class TimeLetterService {
         // 미디어 저장
         List<TimeLetterMedia> savedMediaList = saveMediaList(savedTimeLetter, request.getMediaList());
 
-        return TimeLetterResponse.from(savedTimeLetter, savedMediaList);
+        // 수신자 등록 (receiverIds가 존재하는 경우에만)
+        if (request.getReceiverIds() != null && !request.getReceiverIds().isEmpty()) {
+            receivedService.createTimeLetterReceivers(
+                    savedTimeLetter, userId, request.getReceiverIds(), request.getDeliveredAt());
+        }
+
+        return TimeLetterResponse.from(savedTimeLetter, savedMediaList, s3Service::generateGetPresignedUrl);
     }
 
     /**
@@ -91,11 +106,13 @@ public class TimeLetterService {
         List<TimeLetter> timeLetters = timeLetterRepository
                 .findByUserIdAndStatusOrderByCreatedAtDesc(userId, TimeLetterStatus.DRAFT);
 
+        Map<Long, List<TimeLetterMedia>> mediaMap = fetchMediaMap(timeLetters);
+
         List<TimeLetterResponse> responses = timeLetters.stream()
-                .map(timeLetter -> {
-                    List<TimeLetterMedia> mediaList = timeLetterMediaRepository.findByTimeLetterId(timeLetter.getId());
-                    return TimeLetterResponse.from(timeLetter, mediaList);
-                })
+                .map(timeLetter -> TimeLetterResponse.from(
+                        timeLetter,
+                        mediaMap.getOrDefault(timeLetter.getId(), List.of()),
+                        s3Service::generateGetPresignedUrl))
                 .collect(Collectors.toList());
 
         return TimeLetterListResponse.from(responses);
@@ -178,7 +195,21 @@ public class TimeLetterService {
             updatedMediaList = timeLetterMediaRepository.findByTimeLetterId(timeLetterId);
         }
 
-        return TimeLetterResponse.from(timeLetter, updatedMediaList);
+        return TimeLetterResponse.from(timeLetter, updatedMediaList, s3Service::generateGetPresignedUrl);
+    }
+
+    /**
+     * 타임레터 목록에 대한 미디어 일괄 조회 (N+1 방지)
+     */
+    private Map<Long, List<TimeLetterMedia>> fetchMediaMap(List<TimeLetter> timeLetters) {
+        if (timeLetters.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        List<Long> timeLetterIds = timeLetters.stream()
+                .map(TimeLetter::getId)
+                .toList();
+        return timeLetterMediaRepository.findByTimeLetterIdIn(timeLetterIds).stream()
+                .collect(Collectors.groupingBy(media -> media.getTimeLetter().getId()));
     }
 
     /**

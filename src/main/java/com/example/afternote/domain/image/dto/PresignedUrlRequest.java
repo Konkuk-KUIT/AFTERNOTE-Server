@@ -12,11 +12,12 @@ import lombok.NoArgsConstructor;
 public class PresignedUrlRequest {
 
     @Schema(description = "업로드 디렉토리", example = "profiles",
-            allowableValues = {"profiles", "timeletters", "afternotes"})
+            allowableValues = {"profiles", "timeletters", "afternotes", "mindrecords", "documents"})
     @NotBlank(message = "디렉토리는 필수입니다.")
     private String directory;
 
-    @Schema(description = "파일 확장자 (점 없이)", example = "jpg")
+    @Schema(description = "파일 확장자 (점 없이)", example = "jpg",
+            allowableValues = {"jpg", "jpeg", "png", "gif", "webp", "heic", "mp4", "mov", "mp3", "m4a", "wav", "pdf"})
     @NotBlank(message = "파일 확장자는 필수입니다.")
     private String extension;
 }

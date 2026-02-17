@@ -1,5 +1,6 @@
 package com.example.afternote.domain.mindrecord.emotion.model;
 
+import com.example.afternote.domain.mindrecord.model.MindRecord;
 import com.example.afternote.domain.user.model.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -23,15 +24,12 @@ public class Emotion {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
     
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mind_record_id", nullable = false)
+    private MindRecord mindRecord;
+    
     @Column(length = 30, nullable = false)
     private String keyword;
-    
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private SourceType sourceType;
-    
-    @Column(nullable = false)
-    private Long sourceId;
     
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

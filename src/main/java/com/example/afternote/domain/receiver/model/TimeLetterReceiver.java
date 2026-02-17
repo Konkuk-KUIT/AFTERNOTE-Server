@@ -36,6 +36,9 @@ public class TimeLetterReceiver {
     @Column(name = "delivered_at", nullable = false)
     private LocalDateTime deliveredAt;
 
+    @Column(name = "read_at")
+    private LocalDateTime readAt;
+
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -45,5 +48,14 @@ public class TimeLetterReceiver {
         this.timeLetter = timeLetter;
         this.receiver = receiver;
         this.deliveredAt = deliveredAt;
+    }
+
+    /**
+     * 읽음 처리 (멱등성 보장: readAt이 null일 때만 설정)
+     */
+    public void markAsRead() {
+        if (this.readAt == null) {
+            this.readAt = LocalDateTime.now();
+        }
     }
 }
