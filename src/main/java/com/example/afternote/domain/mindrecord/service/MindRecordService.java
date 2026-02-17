@@ -15,9 +15,11 @@ import com.example.afternote.domain.mindrecord.thought.model.DeepThought;
 import com.example.afternote.domain.mindrecord.thought.repository.DeepThoughtRepository;
 import com.example.afternote.domain.user.model.User;
 import com.example.afternote.domain.user.repository.UserRepository;
+import com.example.afternote.domain.mindrecord.event.MindRecordCreatedEvent;
 import com.example.afternote.global.exception.CustomException;
 import com.example.afternote.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +37,7 @@ public class MindRecordService {
     private final DiaryRepository diaryRepository;
     private final DailyQuestionAnswerRepository dailyQuestionAnswerRepository;
     private final DeepThoughtRepository deepThoughtRepository;
+    private final ApplicationEventPublisher eventPublisher;
     private final MindRecordImageRepository mindRecordImageRepository;
     private final S3Service s3Service;
 
@@ -148,6 +151,7 @@ public class MindRecordService {
 
         saveImageList(record, request.getImageList());
 
+        eventPublisher.publishEvent(new MindRecordCreatedEvent(record.getId()));
         return record.getId();
     }
 
