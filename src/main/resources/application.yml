@@ -32,6 +32,17 @@ spring:
           auth: true
           starttls:
             enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+  ai:
+    google:
+      genai:
+        api-key: ${GEMINI_API_KEY}
+        chat:
+          options:
+            model: gemini-flash-latest
+            temperature: 0.7
 
 jwt:
   secret: ${JWT_SECRET}
@@ -69,3 +80,18 @@ springdoc:
   api-docs:
     path: /v3/api-docs
     enabled: true
+
+
+app:
+  auth-code:
+    email:
+      enabled: false
+
+cloud:
+  aws:
+    s3:
+      bucket: ${AWS_S3_BUCKET}
+      region: ${AWS_REGION:ap-northeast-2}
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
