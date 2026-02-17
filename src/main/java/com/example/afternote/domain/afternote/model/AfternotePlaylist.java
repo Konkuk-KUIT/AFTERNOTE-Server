@@ -60,10 +60,10 @@ public class AfternotePlaylist {
     @Builder
     public static class MemorialVideo {
         
-        @Column(name = "video_url", length = 500)
+        @Column(name = "video_url", length = 1000)
         private String videoUrl;
         
-        @Column(name = "thumbnail_url", length = 500)
+        @Column(name = "thumbnail_url", length = 1000)
         private String thumbnailUrl;
     }
 }

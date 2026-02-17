@@ -32,7 +32,7 @@ public class TimeLetterMedia {
     private MediaType mediaType;
 
     // 파일 경로 또는 URL
-    @Column(name = "media_url", nullable = false, length = 500)
+    @Column(name = "media_url", nullable = false, length = 1000)
     private String mediaUrl;
 
     @CreatedDate
