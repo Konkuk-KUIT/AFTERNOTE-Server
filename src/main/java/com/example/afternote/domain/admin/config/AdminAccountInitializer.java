@@ -22,10 +22,10 @@ public class AdminAccountInitializer implements ApplicationRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @Value("${ADMIN_EMAIL:}")
+    @Value("${ADMIN_EMAIL:admin@afternote.com}")
     private String adminEmail;
 
-    @Value("${ADMIN_PASSWORD:}")
+    @Value("${ADMIN_PASSWORD:admin1234}")
     private String adminPassword;
 
     @Override

@@ -63,6 +63,9 @@ dependencies {
     //email
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
+    // Thymeleaf (admin page)
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
     // WebClient
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
