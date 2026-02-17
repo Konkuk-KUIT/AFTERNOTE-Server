@@ -63,9 +63,8 @@ public class Afternote {
     @Builder.Default
     private List<String> actions = new ArrayList<>();
     
-    @OneToMany(mappedBy = "afternote", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private List<AfternotePlaylist> playlists = new ArrayList<>();
+    @OneToOne(mappedBy = "afternote", cascade = CascadeType.ALL, orphanRemoval = true)
+    private AfternotePlaylist playlist;
 
     // 업데이트 메서드
     public void update(String title, Integer sortOrder, String leaveMessage, ProcessMethod processMethod, List<String> actions) {
