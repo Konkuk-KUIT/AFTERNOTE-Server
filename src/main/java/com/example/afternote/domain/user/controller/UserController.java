@@ -62,6 +62,19 @@ public class UserController {
     }
 
     @Operation(
+            summary = "연결된 계정 조회 API",
+            description = "로그인한 사용자의 연결된 소셜/로컬 계정 정보를 조회합니다."
+    )
+    @GetMapping("/connected-accounts")
+    public ApiResponse<UserConnectedAccountResponse> getConnectedAccounts(
+            @Parameter(hidden = true) @UserId Long userId
+    ) {
+        return ApiResponse.success(
+                userService.getConnectedAccounts(userId)
+        );
+    }
+
+    @Operation(
             summary = "푸시 알림 설정 수정 API",
             description = "로그인한 사용자의 푸시 알림 수신 설정을 수정합니다."
     )
