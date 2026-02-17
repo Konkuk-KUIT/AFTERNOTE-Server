@@ -28,4 +28,8 @@ public interface TimeLetterReceiverRepository extends JpaRepository<TimeLetterRe
             WHERE tlr.id = :id AND tlr.receiver.id = :receiverId
             """)
     Optional<TimeLetterReceiver> findByIdAndReceiverIdWithTimeLetter(@Param("id") Long id, @Param("receiverId") Long receiverId);
+
+    List<TimeLetterReceiver> findByTimeLetterId(Long timeLetterId);
+
+    List<TimeLetterReceiver> findByTimeLetterIdIn(List<Long> timeLetterIds);
 }

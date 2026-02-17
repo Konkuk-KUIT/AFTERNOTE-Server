@@ -35,6 +35,9 @@ public class TimeLetterResponse {
     @Schema(description = "미디어 목록")
     private List<TimeLetterMediaResponse> mediaList;
 
+    @Schema(description = "수신자 ID 목록")
+    private List<Long> receiverIds;
+
     @Schema(description = "생성 시간")
     private LocalDateTime createdAt;
 
@@ -51,12 +54,18 @@ public class TimeLetterResponse {
                 .mediaList(mediaList == null ? List.of() : mediaList.stream()
                         .map(TimeLetterMediaResponse::from)
                         .collect(Collectors.toList()))
+                .receiverIds(List.of())
                 .createdAt(timeLetter.getCreatedAt())
                 .updatedAt(timeLetter.getUpdatedAt())
                 .build();
     }
 
     public static TimeLetterResponse from(TimeLetter timeLetter, List<TimeLetterMedia> mediaList, Function<String, String> urlResolver) {
+        return from(timeLetter, mediaList, urlResolver, List.of());
+    }
+
+    public static TimeLetterResponse from(TimeLetter timeLetter, List<TimeLetterMedia> mediaList,
+                                           Function<String, String> urlResolver, List<Long> receiverIds) {
         return TimeLetterResponse.builder()
                 .id(timeLetter.getId())
                 .title(timeLetter.getTitle())
@@ -66,6 +75,7 @@ public class TimeLetterResponse {
                 .mediaList(mediaList == null ? List.of() : mediaList.stream()
                         .map(m -> TimeLetterMediaResponse.from(m, urlResolver))
                         .collect(Collectors.toList()))
+                .receiverIds(receiverIds != null ? receiverIds : List.of())
                 .createdAt(timeLetter.getCreatedAt())
                 .updatedAt(timeLetter.getUpdatedAt())
                 .build();

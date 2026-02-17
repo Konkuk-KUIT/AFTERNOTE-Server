@@ -1,6 +1,8 @@
 package com.example.afternote.domain.timeletter.service;
 
 import com.example.afternote.domain.image.service.S3Service;
+import com.example.afternote.domain.receiver.model.TimeLetterReceiver;
+import com.example.afternote.domain.receiver.repository.TimeLetterReceiverRepository;
 import com.example.afternote.domain.receiver.service.ReceivedService;
 import com.example.afternote.domain.timeletter.dto.*;
 import com.example.afternote.domain.timeletter.model.TimeLetter;
@@ -29,6 +31,7 @@ public class TimeLetterService {
 
     private final TimeLetterRepository timeLetterRepository;
     private final TimeLetterMediaRepository timeLetterMediaRepository;
+    private final TimeLetterReceiverRepository timeLetterReceiverRepository;
     private final UserRepository userRepository;
     private final ReceivedService receivedService;
     private final S3Service s3Service;
@@ -42,12 +45,14 @@ public class TimeLetterService {
                 .findByUserIdAndStatusOrderByCreatedAtDesc(userId, TimeLetterStatus.SCHEDULED);
 
         Map<Long, List<TimeLetterMedia>> mediaMap = fetchMediaMap(timeLetters);
+        Map<Long, List<Long>> receiverIdsMap = fetchReceiverIdsMap(timeLetters);
 
         List<TimeLetterResponse> responses = timeLetters.stream()
                 .map(timeLetter -> TimeLetterResponse.from(
                         timeLetter,
                         mediaMap.getOrDefault(timeLetter.getId(), List.of()),
-                        s3Service::generateGetPresignedUrl))
+                        s3Service::generateGetPresignedUrl,
+                        receiverIdsMap.getOrDefault(timeLetter.getId(), List.of())))
                 .collect(Collectors.toList());
 
         return TimeLetterListResponse.from(responses);
@@ -60,7 +65,10 @@ public class TimeLetterService {
     public TimeLetterResponse getTimeLetter(Long userId, Long timeLetterId) {
         TimeLetter timeLetter = findTimeLetterWithOwnership(userId, timeLetterId);
         List<TimeLetterMedia> mediaList = timeLetterMediaRepository.findByTimeLetterId(timeLetterId);
-        return TimeLetterResponse.from(timeLetter, mediaList, s3Service::generateGetPresignedUrl);
+        List<Long> receiverIds = timeLetterReceiverRepository.findByTimeLetterId(timeLetterId).stream()
+                .map(tlr -> tlr.getReceiver().getId())
+                .collect(Collectors.toList());
+        return TimeLetterResponse.from(timeLetter, mediaList, s3Service::generateGetPresignedUrl, receiverIds);
     }
 
     /**
@@ -107,12 +115,14 @@ public class TimeLetterService {
                 .findByUserIdAndStatusOrderByCreatedAtDesc(userId, TimeLetterStatus.DRAFT);
 
         Map<Long, List<TimeLetterMedia>> mediaMap = fetchMediaMap(timeLetters);
+        Map<Long, List<Long>> receiverIdsMap = fetchReceiverIdsMap(timeLetters);
 
         List<TimeLetterResponse> responses = timeLetters.stream()
                 .map(timeLetter -> TimeLetterResponse.from(
                         timeLetter,
                         mediaMap.getOrDefault(timeLetter.getId(), List.of()),
-                        s3Service::generateGetPresignedUrl))
+                        s3Service::generateGetPresignedUrl,
+                        receiverIdsMap.getOrDefault(timeLetter.getId(), List.of())))
                 .collect(Collectors.toList());
 
         return TimeLetterListResponse.from(responses);
@@ -210,6 +220,23 @@ public class TimeLetterService {
                 .toList();
         return timeLetterMediaRepository.findByTimeLetterIdIn(timeLetterIds).stream()
                 .collect(Collectors.groupingBy(media -> media.getTimeLetter().getId()));
+    }
+
+    /**
+     * 타임레터 목록에 대한 수신자 ID 일괄 조회 (N+1 방지)
+     */
+    private Map<Long, List<Long>> fetchReceiverIdsMap(List<TimeLetter> timeLetters) {
+        if (timeLetters.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        List<Long> timeLetterIds = timeLetters.stream()
+                .map(TimeLetter::getId)
+                .toList();
+        return timeLetterReceiverRepository.findByTimeLetterIdIn(timeLetterIds).stream()
+                .collect(Collectors.groupingBy(
+                        tlr -> tlr.getTimeLetter().getId(),
+                        Collectors.mapping(tlr -> tlr.getReceiver().getId(), Collectors.toList())
+                ));
     }
 
     /**

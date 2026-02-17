@@ -1,6 +1,9 @@
 package com.example.afternote.domain.timeletter.service;
 
 import com.example.afternote.domain.image.service.S3Service;
+import com.example.afternote.domain.receiver.model.Receiver;
+import com.example.afternote.domain.receiver.model.TimeLetterReceiver;
+import com.example.afternote.domain.receiver.repository.TimeLetterReceiverRepository;
 import com.example.afternote.domain.receiver.service.ReceivedService;
 import com.example.afternote.domain.timeletter.dto.TimeLetterCreateRequest;
 import com.example.afternote.domain.timeletter.dto.TimeLetterDeleteRequest;
@@ -48,6 +51,9 @@ class TimeLetterServiceTest {
 
     @Mock
     private TimeLetterMediaRepository timeLetterMediaRepository;
+
+    @Mock
+    private TimeLetterReceiverRepository timeLetterReceiverRepository;
 
     @Mock
     private UserRepository userRepository;
