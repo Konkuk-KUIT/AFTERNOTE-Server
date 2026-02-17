@@ -68,11 +68,11 @@ public class S3Service {
         try {
             PresignedPutObjectRequest presignedRequest = s3Presigner.presignPutObject(presignRequest);
             String presignedUrl = presignedRequest.url().toString();
-            String imageUrl = String.format("https://%s.s3.%s.amazonaws.com/%s", bucket, region, key);
+            String fileUrl = String.format("https://%s.s3.%s.amazonaws.com/%s", bucket, region, key);
 
             return PresignedUrlResponse.builder()
                     .presignedUrl(presignedUrl)
-                    .imageUrl(imageUrl)
+                    .fileUrl(fileUrl)
                     .contentType(contentType)
                     .build();
         } catch (Exception e) {
