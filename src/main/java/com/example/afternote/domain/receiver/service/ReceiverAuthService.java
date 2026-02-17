@@ -1,11 +1,6 @@
 package com.example.afternote.domain.receiver.service;
 
-import com.example.afternote.domain.receiver.dto.ReceivedAfternoteListResponse;
-import com.example.afternote.domain.receiver.dto.DeliveryVerificationRequest;
-import com.example.afternote.domain.receiver.dto.DeliveryVerificationResponse;
-import com.example.afternote.domain.receiver.dto.ReceivedMindRecordListResponse;
-import com.example.afternote.domain.receiver.dto.ReceivedTimeLetterListResponse;
-import com.example.afternote.domain.receiver.dto.ReceiverAuthVerifyResponse;
+import com.example.afternote.domain.receiver.dto.*;
 import com.example.afternote.domain.receiver.model.Receiver;
 import com.example.afternote.domain.receiver.repository.ReceiverRepository;
 import com.example.afternote.domain.user.model.User;
@@ -57,6 +52,25 @@ public class ReceiverAuthService {
     }
 
     @Transactional
+    public ReceivedTimeLetterResponse getTimeLetterByAuthCode(String authCode, Long timeLetterReceiverId) {
+        Receiver receiver = findReceiverByAuthCode(authCode);
+        validateDeliveryCondition(receiver);
+        return receivedService.getTimeLetter(receiver.getId(), timeLetterReceiverId);
+    }
+
+    public ReceivedMindRecordDetailResponse getMindRecordByAuthCode(String authCode, Long mindRecordId) {
+        Receiver receiver = findReceiverByAuthCode(authCode);
+        validateDeliveryCondition(receiver);
+        return receivedService.getMindRecord(receiver.getId(), mindRecordId);
+    }
+
+    public ReceivedAfternoteDetailResponse getAfternoteByAuthCode(String authCode, Long afternoteId) {
+        Receiver receiver = findReceiverByAuthCode(authCode);
+        validateDeliveryCondition(receiver);
+        return receivedService.getAfternote(receiver.getId(), afternoteId);
+    }
+
+    @Transactional
     public DeliveryVerificationResponse submitDeliveryVerification(String authCode, DeliveryVerificationRequest request) {
         findReceiverByAuthCode(authCode);
         return DeliveryVerificationResponse.from(
@@ -66,6 +80,13 @@ public class ReceiverAuthService {
                         request.getFamilyRelationCertificateUrl()
                 )
         );
+    }
+
+    public ReceiverMessageResponse getMessageByAuthCode(String authCode) {
+        Receiver receiver = findReceiverByAuthCode(authCode);
+        User sender = userRepository.findById(receiver.getUserId())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        return new ReceiverMessageResponse(sender.getName(), receiver.getMessage());
     }
 
     public DeliveryVerificationResponse getDeliveryVerificationStatus(String authCode) {

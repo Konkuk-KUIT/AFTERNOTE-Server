@@ -1,11 +1,20 @@
 package com.example.afternote.domain.receiver.service;
 
+import com.example.afternote.domain.afternote.model.Afternote;
 import com.example.afternote.domain.afternote.model.AfternoteReceiver;
 import com.example.afternote.domain.image.service.S3Service;
+import com.example.afternote.domain.mindrecord.diary.model.Diary;
+import com.example.afternote.domain.mindrecord.diary.repository.DiaryRepository;
+import com.example.afternote.domain.mindrecord.image.model.MindRecordImage;
+import com.example.afternote.domain.mindrecord.image.repository.MindRecordImageRepository;
 import com.example.afternote.domain.mindrecord.model.MindRecord;
-import com.example.afternote.domain.mindrecord.repository.MindRecordRepository;
-import com.example.afternote.domain.receiver.dto.*;
 import com.example.afternote.domain.mindrecord.model.MindRecordReceiver;
+import com.example.afternote.domain.mindrecord.question.model.DailyQuestionAnswer;
+import com.example.afternote.domain.mindrecord.question.repository.DailyQuestionAnswerRepository;
+import com.example.afternote.domain.mindrecord.repository.MindRecordRepository;
+import com.example.afternote.domain.mindrecord.thought.model.DeepThought;
+import com.example.afternote.domain.mindrecord.thought.repository.DeepThoughtRepository;
+import com.example.afternote.domain.receiver.dto.*;
 import com.example.afternote.domain.receiver.model.Receiver;
 import com.example.afternote.domain.receiver.model.TimeLetterReceiver;
 import com.example.afternote.domain.receiver.repository.AfternoteReceiverRepository;
@@ -47,6 +56,10 @@ public class ReceivedService {
     private final TimeLetterRepository timeLetterRepository;
     private final TimeLetterMediaRepository timeLetterMediaRepository;
     private final MindRecordRepository mindRecordRepository;
+    private final DiaryRepository diaryRepository;
+    private final DailyQuestionAnswerRepository dailyQuestionAnswerRepository;
+    private final DeepThoughtRepository deepThoughtRepository;
+    private final MindRecordImageRepository mindRecordImageRepository;
     private final UserRepository userRepository;
     private final S3Service s3Service;
 
@@ -145,6 +158,59 @@ public class ReceivedService {
                 .toList();
 
         return ReceivedMindRecordListResponse.from(responses);
+    }
+
+    /**
+     * 수신한 마인드레코드 상세 조회
+     */
+    public ReceivedMindRecordDetailResponse getMindRecord(Long receiverId, Long mindRecordId) {
+        MindRecordReceiver mindRecordReceiver = mindRecordReceiverRepository
+                .findByMindRecordIdAndReceiverIdWithMindRecord(mindRecordId, receiverId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MIND_RECORD_NOT_FOUND));
+
+        MindRecord record = mindRecordReceiver.getMindRecord();
+
+        List<MindRecordImage> images = mindRecordImageRepository
+                .findByMindRecordIdOrderByIdAsc(record.getId());
+
+        return switch (record.getType()) {
+            case DIARY -> {
+                Diary diary = diaryRepository.findByMindRecord(record)
+                        .orElseThrow(() -> new CustomException(ErrorCode.MIND_RECORD_NOT_FOUND));
+                yield ReceivedMindRecordDetailResponse.from(record, diary, images, s3Service::generateGetPresignedUrl);
+            }
+            case DAILY_QUESTION -> {
+                DailyQuestionAnswer answer = dailyQuestionAnswerRepository.findByMindRecord(record)
+                        .orElseThrow(() -> new CustomException(ErrorCode.MIND_RECORD_NOT_FOUND));
+                yield ReceivedMindRecordDetailResponse.from(record, answer, images, s3Service::generateGetPresignedUrl);
+            }
+            case DEEP_THOUGHT -> {
+                DeepThought thought = deepThoughtRepository.findByMindRecord(record)
+                        .orElseThrow(() -> new CustomException(ErrorCode.MIND_RECORD_NOT_FOUND));
+                yield ReceivedMindRecordDetailResponse.from(record, thought, images, s3Service::generateGetPresignedUrl);
+            }
+        };
+    }
+
+    /**
+     * 수신한 애프터노트 상세 조회
+     */
+    public ReceivedAfternoteDetailResponse getAfternote(Long receiverId, Long afternoteId) {
+        AfternoteReceiver afternoteReceiver = afternoteReceiverRepository
+                .findByAfternoteIdAndReceiverIdWithAfternote(afternoteId, receiverId)
+                .orElseThrow(() -> new CustomException(ErrorCode.AFTERNOTE_NOT_FOUND));
+
+        Afternote afternote = afternoteReceiver.getAfternote();
+
+        User sender = userRepository.findById(afternote.getUserId())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        String senderName = sender.getName();
+
+        return switch (afternote.getCategoryType()) {
+            case SOCIAL -> ReceivedAfternoteDetailResponse.fromSocial(afternote, senderName);
+            case GALLERY -> ReceivedAfternoteDetailResponse.fromGallery(afternote, senderName);
+            case PLAYLIST -> ReceivedAfternoteDetailResponse.fromPlaylist(afternote, senderName);
+        };
     }
 
     /**

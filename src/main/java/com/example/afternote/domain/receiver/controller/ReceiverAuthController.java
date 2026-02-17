@@ -1,12 +1,6 @@
 package com.example.afternote.domain.receiver.controller;
 
-import com.example.afternote.domain.receiver.dto.ReceivedAfternoteListResponse;
-import com.example.afternote.domain.receiver.dto.DeliveryVerificationRequest;
-import com.example.afternote.domain.receiver.dto.DeliveryVerificationResponse;
-import com.example.afternote.domain.receiver.dto.ReceivedMindRecordListResponse;
-import com.example.afternote.domain.receiver.dto.ReceivedTimeLetterListResponse;
-import com.example.afternote.domain.receiver.dto.ReceiverAuthVerifyRequest;
-import com.example.afternote.domain.receiver.dto.ReceiverAuthVerifyResponse;
+import com.example.afternote.domain.receiver.dto.*;
 import com.example.afternote.domain.receiver.service.ReceiverAuthService;
 import com.example.afternote.global.common.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -69,6 +63,60 @@ public class ReceiverAuthController {
             @RequestHeader("X-Auth-Code") String authCode
     ) {
         return ApiResponse.success(receiverAuthService.getMindRecordsByAuthCode(authCode));
+    }
+
+    @Operation(
+            summary = "인증번호로 타임레터 상세 조회",
+            description = "인증번호를 통해 수신한 특정 타임레터를 상세 조회합니다. 읽음 처리도 함께 수행됩니다."
+    )
+    @GetMapping("/time-letters/{timeLetterReceiverId}")
+    public ApiResponse<ReceivedTimeLetterResponse> getTimeLetter(
+            @Parameter(description = "수신자 인증번호 (UUID)", required = true)
+            @RequestHeader("X-Auth-Code") String authCode,
+            @Parameter(description = "수신 타임레터 ID", required = true)
+            @PathVariable Long timeLetterReceiverId
+    ) {
+        return ApiResponse.success(receiverAuthService.getTimeLetterByAuthCode(authCode, timeLetterReceiverId));
+    }
+
+    @Operation(
+            summary = "인증번호로 마인드레코드 상세 조회",
+            description = "인증번호를 통해 수신한 특정 마인드레코드의 상세 내용을 조회합니다."
+    )
+    @GetMapping("/mind-records/{mindRecordId}")
+    public ApiResponse<ReceivedMindRecordDetailResponse> getMindRecord(
+            @Parameter(description = "수신자 인증번호 (UUID)", required = true)
+            @RequestHeader("X-Auth-Code") String authCode,
+            @Parameter(description = "마인드레코드 ID", required = true)
+            @PathVariable Long mindRecordId
+    ) {
+        return ApiResponse.success(receiverAuthService.getMindRecordByAuthCode(authCode, mindRecordId));
+    }
+
+    @Operation(
+            summary = "인증번호로 애프터노트 상세 조회",
+            description = "인증번호를 통해 수신한 특정 애프터노트의 상세 내용을 조회합니다."
+    )
+    @GetMapping("/after-notes/{afternoteId}")
+    public ApiResponse<ReceivedAfternoteDetailResponse> getAfternote(
+            @Parameter(description = "수신자 인증번호 (UUID)", required = true)
+            @RequestHeader("X-Auth-Code") String authCode,
+            @Parameter(description = "애프터노트 ID", required = true)
+            @PathVariable Long afternoteId
+    ) {
+        return ApiResponse.success(receiverAuthService.getAfternoteByAuthCode(authCode, afternoteId));
+    }
+
+    @Operation(
+            summary = "발신자 메시지 조회",
+            description = "인증번호를 통해 발신자가 남긴 메시지를 조회합니다."
+    )
+    @GetMapping("/message")
+    public ApiResponse<ReceiverMessageResponse> getMessage(
+            @Parameter(description = "수신자 인증번호 (UUID)", required = true)
+            @RequestHeader("X-Auth-Code") String authCode
+    ) {
+        return ApiResponse.success(receiverAuthService.getMessageByAuthCode(authCode));
     }
 
     @Operation(
