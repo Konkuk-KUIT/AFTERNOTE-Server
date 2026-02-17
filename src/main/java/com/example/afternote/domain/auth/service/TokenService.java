@@ -35,4 +35,18 @@ public class TokenService {
     public void deleteToken(String refreshToken) {
         redisTemplate.delete("RT:" + refreshToken);
     }
+    
+    // 회원탈퇴 시 해당 유저의 모든 Refresh Token 삭제
+    public void deleteAllUserTokens(Long userId) {
+        // RT:* 패턴의 모든 키를 조회
+        var keys = redisTemplate.keys("RT:*");
+        if (keys != null && !keys.isEmpty()) {
+            for (String key : keys) {
+                Long storedUserId = redisTemplate.opsForValue().get(key);
+                if (userId.equals(storedUserId)) {
+                    redisTemplate.delete(key);
+                }
+            }
+        }
+    }
 }
