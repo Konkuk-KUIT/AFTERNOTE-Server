@@ -147,15 +147,17 @@ public class ReceivedService {
     /**
      * 수신자가 받은 마인드레코드 목록 조회
      */
-    public List<ReceivedMindRecordResponse> getMindRecords(Long receiverId) {
+    public ReceivedMindRecordListResponse getMindRecords(Long receiverId) {
         validateReceiver(receiverId);
 
         List<MindRecordReceiver> mindRecordReceivers =
                 mindRecordReceiverRepository.findByReceiverIdWithMindRecord(receiverId);
 
-        return mindRecordReceivers.stream()
+        List<ReceivedMindRecordResponse> responses = mindRecordReceivers.stream()
                 .map(ReceivedMindRecordResponse::from)
                 .toList();
+
+        return ReceivedMindRecordListResponse.from(responses);
     }
 
     /**
