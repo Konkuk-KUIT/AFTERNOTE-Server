@@ -45,4 +45,7 @@ public class PostMindRecordRequest {
     @Valid
     @Size(max = 10, message = "미디어는 최대 10개까지 첨부할 수 있습니다.")
     private List<MindRecordImageRequest> imageList;
+
+    @Schema(description = "전달할 수신자 ID 목록", example = "[1,2,3]", nullable = true)
+    private List<Long> receiverIds;
 }
