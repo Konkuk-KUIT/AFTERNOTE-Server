@@ -85,7 +85,7 @@ springdoc:
 app:
   auth-code:
     email:
-      enabled: false
+      enabled: true
 
 cloud:
   aws:
