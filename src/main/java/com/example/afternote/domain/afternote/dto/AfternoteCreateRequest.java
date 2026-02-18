@@ -65,6 +65,9 @@ public class AfternoteCreateRequest {
         @Schema(description = "분위기 설명", example = "차분하고 조용하게 보내주세요.")
         private String atmosphere;
         
+        @Schema(description = "영정 사진 URL")
+        private String memorialPhotoUrl;
+        
         @Schema(description = "노래 목록")
         private List<SongRequest> songs;
         

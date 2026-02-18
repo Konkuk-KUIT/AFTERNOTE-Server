@@ -101,7 +101,8 @@ public class AfternoteService {
                         afternote.getLeaveMessage(),
                         credentials,
                         receivers,
-                        null
+                        null,
+                        afternote.getUpdatedAt()
                 );
                 break;
                 
@@ -114,7 +115,8 @@ public class AfternoteService {
                         afternote.getLeaveMessage(),
                         null,
                         receivers,
-                        null
+                        null,
+                        afternote.getUpdatedAt()
                 );
                 break;
                 
@@ -143,8 +145,15 @@ public class AfternoteService {
                         );
                     }
 
+                    // memorialPhotoUrl presigned GET 변환
+                    String memorialPhotoUrlPresigned = null;
+                    if (playlist.getMemorialPhotoUrl() != null) {
+                        memorialPhotoUrlPresigned = s3Service.generateGetPresignedUrl(playlist.getMemorialPhotoUrl());
+                    }
+
                     playlistRequest = new AfternoteCreateRequest.PlaylistRequest(
                             playlist.getAtmosphere(),
+                            memorialPhotoUrlPresigned,
                             songs,
                             memorialVideo
                     );
@@ -158,7 +167,8 @@ public class AfternoteService {
                         null,
                         null,
                         receivers,
-                        playlistRequest
+                        playlistRequest,
+                        afternote.getUpdatedAt()
                 );
                 break;
                 
@@ -171,7 +181,8 @@ public class AfternoteService {
                         afternote.getLeaveMessage(),
                         null,
                         receivers,
-                        null
+                        null,
+                        afternote.getUpdatedAt()
                 );
         }
         
