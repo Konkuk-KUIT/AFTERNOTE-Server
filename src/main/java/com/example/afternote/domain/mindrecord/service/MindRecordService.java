@@ -13,6 +13,10 @@ import com.example.afternote.domain.mindrecord.question.repository.DailyQuestion
 import com.example.afternote.domain.mindrecord.repository.MindRecordRepository;
 import com.example.afternote.domain.mindrecord.thought.model.DeepThought;
 import com.example.afternote.domain.mindrecord.thought.repository.DeepThoughtRepository;
+import com.example.afternote.domain.receiver.dto.CreateMindRecordReceiverRequest;
+import com.example.afternote.domain.receiver.repository.MindRecordReceiverRepository;
+import com.example.afternote.domain.receiver.repository.ReceiverRepository;
+import com.example.afternote.domain.receiver.service.ReceivedService;
 import com.example.afternote.domain.user.model.User;
 import com.example.afternote.domain.user.repository.UserRepository;
 import com.example.afternote.domain.mindrecord.event.MindRecordCreatedEvent;
@@ -44,6 +48,8 @@ public class MindRecordService {
     private final DiaryService diaryService;
     private final DailyQuestionAnswerService dailyQuestionAnswerService;
     private final DeepThoughtService deepThoughtService;
+    private final ReceivedService receivedService;
+
 
     /**
      * 마음의 기록 목록 조회 (LIST / CALENDAR 공통)
@@ -124,6 +130,7 @@ public class MindRecordService {
      */
     @Transactional
     public Long createMindRecord(Long userId, PostMindRecordRequest request) {
+        System.out.println("JWT userId = " + userId);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
@@ -150,6 +157,17 @@ public class MindRecordService {
         }
 
         saveImageList(record, request.getImageList());
+
+        if (request.getReceiverIds() != null && !request.getReceiverIds().isEmpty()) {
+            receivedService.createMindRecordReceivers(
+                    userId,
+                    new CreateMindRecordReceiverRequest(
+                            record.getId(),
+                            request.getReceiverIds()
+                    )
+            );
+        }
+
 
         eventPublisher.publishEvent(new MindRecordCreatedEvent(record.getId()));
         return record.getId();
