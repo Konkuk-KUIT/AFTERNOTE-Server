@@ -26,12 +26,17 @@ public class AfternoteRelationService {
      * 카테고리별 관계 데이터 저장
      */
     public void saveRelationsByCategory(Afternote afternote, AfternoteCreateRequest request) {
+        // 모든 카테고리에서 receiver 저장 (옵션)
+        if (request.getReceivers() != null && !request.getReceivers().isEmpty()) {
+            saveReceivers(afternote, request);
+        }
+        
         switch (request.getCategory()) {
             case SOCIAL:
                 saveSocialCredentials(afternote, request);
                 break;
             case GALLERY:
-                saveGalleryReceivers(afternote, request);
+                // receivers는 위에서 이미 처리됨
                 break;
             case PLAYLIST:
                 savePlaylist(afternote, request);
@@ -83,9 +88,9 @@ public class AfternoteRelationService {
     }
 
     /**
-     * GALLERY 카테고리: receivers 저장
+     * Receivers 저장 (모든 카테고리에서 사용 가능)
      */
-    private void saveGalleryReceivers(Afternote afternote, AfternoteCreateRequest request) {
+    private void saveReceivers(Afternote afternote, AfternoteCreateRequest request) {
         if (request.getReceivers() == null) return;
 
         for (AfternoteCreateRequest.ReceiverRequest receiverReq : request.getReceivers()) {
@@ -97,9 +102,17 @@ public class AfternoteRelationService {
     }
     
     /**
-     * GALLERY 카테고리: PATCH 업데이트 (제공된 필드만 업데이트)
+     * GALLERY 카테고리: receivers 저장 (deprecated - saveReceivers 사용)
      */
-    public void updateGalleryReceivers(Afternote afternote, AfternoteCreateRequest request) {
+    @Deprecated
+    private void saveGalleryReceivers(Afternote afternote, AfternoteCreateRequest request) {
+        saveReceivers(afternote, request);
+    }
+    
+    /**
+     * Receivers 업데이트 (모든 카테고리에서 사용 가능, 제공된 receivers가 있으면 전체 교체)
+     */
+    public void updateReceivers(Afternote afternote, AfternoteCreateRequest request) {
         if (request.getReceivers() == null) return;
         
         // receivers가 제공된 경우에만 전체 교체
@@ -110,6 +123,14 @@ public class AfternoteRelationService {
 
             afternote.getReceivers().add(createAfternoteReceiver(afternote, receiver));
         }
+    }
+    
+    /**
+     * GALLERY 카테고리: PATCH 업데이트 (deprecated - updateReceivers 사용)
+     */
+    @Deprecated
+    public void updateGalleryReceivers(Afternote afternote, AfternoteCreateRequest request) {
+        updateReceivers(afternote, request);
     }
 
     /**

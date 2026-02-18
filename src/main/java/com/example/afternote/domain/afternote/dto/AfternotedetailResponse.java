@@ -1,7 +1,6 @@
 package com.example.afternote.domain.afternote.dto;
 
 import com.example.afternote.domain.afternote.model.AfternoteCategoryType;
-import com.example.afternote.domain.afternote.model.ProcessMethod;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,8 +22,7 @@ public class AfternotedetailResponse {
     @Schema(description = "제목", example = "인스타그램")
     private String title;
 
-    @Schema(description = "처리 방식 (SOCIAL/GALLERY 전용)", example = "MEMORIAL")
-    private ProcessMethod processMethod;
+
 
     @Schema(description = "체크리스트 (SOCIAL/GALLERY 전용)")
     private List<String> actions;

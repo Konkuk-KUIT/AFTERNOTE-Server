@@ -29,10 +29,7 @@ public class Afternote {
     @Enumerated(EnumType.STRING)
     @Column(name = "category_type", length = 20)
     private AfternoteCategoryType categoryType;
-    
-    @Enumerated(EnumType.STRING)
-    @Column(name = "process_method", length = 20)
-    private ProcessMethod processMethod;
+
     
     @Column(nullable = false, length = 100)
     private String title;
@@ -69,11 +66,10 @@ public class Afternote {
     private AfternotePlaylist playlist;
 
     // 업데이트 메서드
-    public void update(String title, Integer sortOrder, String leaveMessage, ProcessMethod processMethod, List<String> actions) {
+    public void update(String title, Integer sortOrder, String leaveMessage,List<String> actions) {
         this.title = title;
         this.sortOrder = sortOrder;
         this.leaveMessage = leaveMessage;
-        this.processMethod = processMethod;
         this.actions.clear();
         if (actions != null) {
             this.actions.addAll(actions);
