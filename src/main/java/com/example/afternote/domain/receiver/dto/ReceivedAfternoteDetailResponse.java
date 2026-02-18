@@ -24,9 +24,6 @@ public class ReceivedAfternoteDetailResponse {
     @Schema(description = "제목", example = "내 아들에게")
     private String title;
 
-    @Schema(description = "처리 방식 (SOCIAL/GALLERY 전용)")
-    private ProcessMethod processMethod;
-
     @Schema(description = "체크리스트 (SOCIAL/GALLERY 전용)")
     private List<String> actions;
 
@@ -86,7 +83,6 @@ public class ReceivedAfternoteDetailResponse {
                 .id(afternote.getId())
                 .category(afternote.getCategoryType())
                 .title(afternote.getTitle())
-                .processMethod(afternote.getProcessMethod())
                 .actions(afternote.getActions())
                 .leaveMessage(afternote.getLeaveMessage())
                 .senderName(senderName)
@@ -99,7 +95,6 @@ public class ReceivedAfternoteDetailResponse {
                 .id(afternote.getId())
                 .category(afternote.getCategoryType())
                 .title(afternote.getTitle())
-                .processMethod(afternote.getProcessMethod())
                 .actions(afternote.getActions())
                 .leaveMessage(afternote.getLeaveMessage())
                 .senderName(senderName)

@@ -66,17 +66,11 @@ public class AfternoteValidator {
 
     private void validateSocialCreate(AfternoteCreateRequest request) {
         // 없어야 하는 필드
-        if (request.getReceivers() != null && !request.getReceivers().isEmpty()) {
-            throw new CustomException(ErrorCode.INVALID_FIELD_FOR_SOCIAL);
-        }
         if (request.getPlaylist() != null) {
             throw new CustomException(ErrorCode.INVALID_FIELD_FOR_SOCIAL);
         }
 
         // 있어야 하는 필드
-        if (request.getProcessMethod() == null) {
-            throw new CustomException(ErrorCode.PROCESS_METHOD_REQUIRED);
-        }
         if (request.getActions() == null || request.getActions().isEmpty()) {
             throw new CustomException(ErrorCode.ACTIONS_REQUIRED);
         }
@@ -88,6 +82,16 @@ public class AfternoteValidator {
         }
         if (request.getCredentials().getPassword() == null || request.getCredentials().getPassword().isBlank()) {
             throw new CustomException(ErrorCode.SOCIAL_ACCOUNT_PASSWORD_REQUIRED);
+        }
+        
+        // receivers 필수
+        if (request.getReceivers() == null || request.getReceivers().isEmpty()) {
+            throw new CustomException(ErrorCode.RECEIVERS_REQUIRED);
+        }
+        for (AfternoteCreateRequest.ReceiverRequest receiver : request.getReceivers()) {
+            if (receiver.getReceiverId() == null) {
+                throw new CustomException(ErrorCode.GALLERY_RECEIVER_ID_REQUIRED);
+            }
         }
     }
 
@@ -113,14 +117,13 @@ public class AfternoteValidator {
         }
 
         // 있어야 하는 필드
-        if (request.getProcessMethod() == null) {
-            throw new CustomException(ErrorCode.PROCESS_METHOD_REQUIRED);
-        }
         if (request.getActions() == null || request.getActions().isEmpty()) {
             throw new CustomException(ErrorCode.ACTIONS_REQUIRED);
         }
+        
+        // receivers 필수
         if (request.getReceivers() == null || request.getReceivers().isEmpty()) {
-            throw new CustomException(ErrorCode.GALLERY_RECEIVERS_REQUIRED);
+            throw new CustomException(ErrorCode.RECEIVERS_REQUIRED);
         }
         for (AfternoteCreateRequest.ReceiverRequest receiver : request.getReceivers()) {
             if (receiver.getReceiverId() == null) {
@@ -146,12 +149,6 @@ public class AfternoteValidator {
         if (request.getCredentials() != null) {
             throw new CustomException(ErrorCode.INVALID_FIELD_FOR_PLAYLIST);
         }
-        if (request.getReceivers() != null && !request.getReceivers().isEmpty()) {
-            throw new CustomException(ErrorCode.INVALID_FIELD_FOR_PLAYLIST);
-        }
-        if (request.getProcessMethod() != null) {
-            throw new CustomException(ErrorCode.INVALID_FIELD_FOR_PLAYLIST);
-        }
         if (request.getActions() != null) {
             throw new CustomException(ErrorCode.INVALID_FIELD_FOR_PLAYLIST);
         }
@@ -174,6 +171,16 @@ public class AfternoteValidator {
                 throw new CustomException(ErrorCode.PLAYLIST_SONG_ARTIST_REQUIRED);
             }
         }
+        
+        // receivers 필수
+        if (request.getReceivers() == null || request.getReceivers().isEmpty()) {
+            throw new CustomException(ErrorCode.RECEIVERS_REQUIRED);
+        }
+        for (AfternoteCreateRequest.ReceiverRequest receiver : request.getReceivers()) {
+            if (receiver.getReceiverId() == null) {
+                throw new CustomException(ErrorCode.GALLERY_RECEIVER_ID_REQUIRED);
+            }
+        }
     }
 
     private void validatePlaylistUpdate(AfternoteCreateRequest request) {
@@ -181,17 +188,20 @@ public class AfternoteValidator {
         if (request.getCredentials() != null) {
             throw new CustomException(ErrorCode.INVALID_FIELD_FOR_PLAYLIST);
         }
-        if (request.getReceivers() != null && !request.getReceivers().isEmpty()) {
-            throw new CustomException(ErrorCode.INVALID_FIELD_FOR_PLAYLIST);
-        }
-        if (request.getProcessMethod() != null) {
-            throw new CustomException(ErrorCode.INVALID_FIELD_FOR_PLAYLIST);
-        }
         if (request.getActions() != null) {
             throw new CustomException(ErrorCode.INVALID_FIELD_FOR_PLAYLIST);
         }
         if (request.getLeaveMessage() != null) {
             throw new CustomException(ErrorCode.INVALID_FIELD_FOR_PLAYLIST);
+        }
+        
+        // receivers 검증 (옵션)
+        if (request.getReceivers() != null && !request.getReceivers().isEmpty()) {
+            for (AfternoteCreateRequest.ReceiverRequest receiver : request.getReceivers()) {
+                if (receiver.getReceiverId() == null) {
+                    throw new CustomException(ErrorCode.GALLERY_RECEIVER_ID_REQUIRED);
+                }
+            }
         }
     }
 }

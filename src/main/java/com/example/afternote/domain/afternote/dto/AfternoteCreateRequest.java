@@ -1,7 +1,6 @@
 package com.example.afternote.domain.afternote.dto;
 
 import com.example.afternote.domain.afternote.model.AfternoteCategoryType;
-import com.example.afternote.domain.afternote.model.ProcessMethod;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -23,9 +22,7 @@ public class AfternoteCreateRequest {
     @NotBlank
     @Schema(description = "제목", example = "인스타그램")
     private String title;
-    
-    @Schema(description = "처리 방식 (SOCIAL/GALLERY 전용)", example = "MEMORIAL")
-    private ProcessMethod processMethod;
+
     
     @Schema(description = "체크리스트 (SOCIAL/GALLERY 전용)")
     private List<String> actions;
@@ -36,7 +33,7 @@ public class AfternoteCreateRequest {
     @Schema(description = "계정 정보 (SOCIAL 전용)")
     private CredentialsRequest credentials;
     
-    @Schema(description = "수신자 목록 (GALLERY 전용)")
+    @Schema(description = "수신자 목록 (선택사항, 모든 카테고리에서 가능)")
     private List<ReceiverRequest> receivers;
     
     @Schema(description = "플레이리스트 정보 (Playlist 전용)")
