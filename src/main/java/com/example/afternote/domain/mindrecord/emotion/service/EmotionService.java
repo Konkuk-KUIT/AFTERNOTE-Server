@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +31,9 @@ public class EmotionService {
      */
     public List<GetEmotionResponse.EmotionStat> getEmotionStatistics(Long userId) {
         // 1) 유저의 모든 감정 조회
-        List<Emotion> emotions = emotionRepository.findByUserId(userId);
+        LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);
+
+        List<Emotion> emotions = emotionRepository.findByUserIdAndCreatedAtAfter(userId, sevenDaysAgo);
 
         if (emotions.isEmpty()) {
             return List.of(); // 빈 리스트 반환

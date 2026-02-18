@@ -64,6 +64,11 @@ public class AfternoteService {
             throw new CustomException(ErrorCode.AFTERNOTE_NOT_FOUND);
         }
         
+        // 모든 카테고리에서 공통으로 필요한 receivers 매핑
+        List<AfternoteCreateRequest.ReceiverRequest> receivers = afternote.getReceivers().stream()
+                .map(ar -> new AfternoteCreateRequest.ReceiverRequest(ar.getReceiver().getId()))
+                .collect(Collectors.toList());
+        
         AfternotedetailResponse response;
         
         // 카테고리별 데이터 조회 및 응답 생성
@@ -95,17 +100,12 @@ public class AfternoteService {
                         afternote.getActions(),
                         afternote.getLeaveMessage(),
                         credentials,
-                        null,
+                        receivers,
                         null
                 );
                 break;
                 
             case GALLERY:
-                // receivers 매핑
-                List<AfternoteCreateRequest.ReceiverRequest> receivers = afternote.getReceivers().stream()
-                        .map(ar -> new AfternoteCreateRequest.ReceiverRequest(ar.getReceiver().getId()))
-                        .collect(Collectors.toList());
-                
                 response = new AfternotedetailResponse(
                         afternote.getId(),
                         afternote.getCategoryType(),
@@ -157,7 +157,7 @@ public class AfternoteService {
                         null,
                         null,
                         null,
-                        null,
+                        receivers,
                         playlistRequest
                 );
                 break;
@@ -170,7 +170,7 @@ public class AfternoteService {
                         afternote.getActions(),
                         afternote.getLeaveMessage(),
                         null,
-                        null,
+                        receivers,
                         null
                 );
         }
