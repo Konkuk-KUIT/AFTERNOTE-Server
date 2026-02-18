@@ -140,7 +140,7 @@ public class AfternoteRelationService {
         if (request.getPlaylist() == null) return;
 
         AfternotePlaylist.MemorialVideo memorialVideo = createMemorialVideo(request.getPlaylist().getMemorialVideo());
-        AfternotePlaylist playlist = createPlaylist(afternote, request.getPlaylist().getAtmosphere(), memorialVideo);
+        AfternotePlaylist playlist = createPlaylist(afternote, request.getPlaylist().getAtmosphere(), request.getPlaylist().getMemorialPhotoUrl(), memorialVideo);
         
         // playlist를 먼저 저장 (ID 생성)
         playlist = playlistRepository.save(playlist);
@@ -169,6 +169,7 @@ public class AfternoteRelationService {
             AfternotePlaylist newPlaylist = createPlaylist(
                     afternote,
                     request.getPlaylist().getAtmosphere(),
+                    request.getPlaylist().getMemorialPhotoUrl(),
                     request.getPlaylist().getMemorialVideo() != null
                             ? createMemorialVideo(request.getPlaylist().getMemorialVideo())
                             : null
@@ -188,11 +189,11 @@ public class AfternoteRelationService {
             return;
         }
         
-        // atmosphere와 memorialVideo 업데이트
+        // atmosphere, memorialPhotoUrl, memorialVideo 업데이트
         AfternotePlaylist.MemorialVideo memorialVideo = request.getPlaylist().getMemorialVideo() != null
             ? createMemorialVideo(request.getPlaylist().getMemorialVideo())
             : null;
-        playlist.update(request.getPlaylist().getAtmosphere(), memorialVideo);
+        playlist.update(request.getPlaylist().getAtmosphere(), request.getPlaylist().getMemorialPhotoUrl(), memorialVideo);
         
         // songs가 제공된 경우에만 곡 목록 업데이트
         if (request.getPlaylist().getSongs() != null) {
@@ -233,11 +234,12 @@ public class AfternoteRelationService {
                 .build();
     }
 
-    private AfternotePlaylist createPlaylist(Afternote afternote, String atmosphere, AfternotePlaylist.MemorialVideo memorialVideo) {
+    private AfternotePlaylist createPlaylist(Afternote afternote, String atmosphere, String memorialPhotoUrl, AfternotePlaylist.MemorialVideo memorialVideo) {
         return AfternotePlaylist.builder()
                 .afternote(afternote)
                 .title(atmosphere != null ? atmosphere : "추모 플레이리스트")
                 .atmosphere(atmosphere)
+                .memorialPhotoUrl(memorialPhotoUrl)
                 .memorialVideo(memorialVideo)
                 .build();
     }

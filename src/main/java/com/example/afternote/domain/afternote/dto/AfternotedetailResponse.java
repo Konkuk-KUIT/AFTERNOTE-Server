@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -22,8 +23,6 @@ public class AfternotedetailResponse {
     @Schema(description = "제목", example = "인스타그램")
     private String title;
 
-
-
     @Schema(description = "체크리스트 (SOCIAL/GALLERY 전용)")
     private List<String> actions;
 
@@ -33,13 +32,12 @@ public class AfternotedetailResponse {
     @Schema(description = "계정 정보 (SOCIAL 전용)")
     private AfternoteCreateRequest.CredentialsRequest credentials;
 
-    @Schema(description = "수신자 목록 (GALLERY 전용)")
+    @Schema(description = "수신자 목록")
     private List<AfternoteCreateRequest.ReceiverRequest> receivers;
 
     @Schema(description = "플레이리스트 정보 (Playlist 전용)")
     private AfternoteCreateRequest.PlaylistRequest playlist;
 
-
-
-
+    @Schema(description = "최종 수정일")
+    private LocalDateTime updatedAt;
 }
