@@ -125,9 +125,9 @@ public class ReceivedService {
         List<AfternoteReceiver> afternoteReceivers =
                 afternoteReceiverRepository.findByReceiverIdWithAfternote(receiverId);
 
-        // Afternote는 userId만 가지고 있으므로 User 정보를 별도로 조회
+        // Afternote은 User 객체를 가지고 있으므로 User 정보를 직접 조회
         Set<Long> userIds = afternoteReceivers.stream()
-                .map(ar -> ar.getAfternote().getUserId())
+                .map(ar -> ar.getAfternote().getUser().getId())
                 .collect(Collectors.toSet());
 
         Map<Long, User> userMap = userRepository.findAllById(userIds).stream()
@@ -135,7 +135,7 @@ public class ReceivedService {
 
         List<ReceivedAfternoteResponse> responses = afternoteReceivers.stream()
                 .map(ar -> {
-                    User sender = userMap.get(ar.getAfternote().getUserId());
+                    User sender = userMap.get(ar.getAfternote().getUser().getId());
                     String senderName = sender != null ? sender.getName() : "알 수 없음";
                     return ReceivedAfternoteResponse.from(ar, senderName);
                 })
@@ -202,7 +202,7 @@ public class ReceivedService {
 
         Afternote afternote = afternoteReceiver.getAfternote();
 
-        User sender = userRepository.findById(afternote.getUserId())
+        User sender = userRepository.findById(afternote.getUser().getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         String senderName = sender.getName();
 

@@ -44,7 +44,7 @@ public class ReceivedAfternoteResponse {
                 .title(afternote.getTitle())
                 .category(afternote.getCategoryType())
                 .leaveMessage(afternote.getLeaveMessage())
-                .senderId(afternote.getUserId())
+                .senderId(afternote.getUser().getId())
                 .senderName(senderName)
                 .createdAt(afternote.getCreatedAt())
                 .build();

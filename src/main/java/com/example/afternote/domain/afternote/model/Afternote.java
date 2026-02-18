@@ -21,8 +21,10 @@ public class Afternote {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+    // 작성자 (User FK)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private com.example.afternote.domain.user.model.User user;
     
     @Enumerated(EnumType.STRING)
     @Column(name = "category_type", length = 20)

@@ -49,6 +49,24 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UserProvider> providers = new HashSet<>(); // 연결된 소셜 로그인 제공자 목록
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<com.example.afternote.domain.receiver.model.UserReceiver> userReceivers = new java.util.ArrayList<>(); // 사용자가 등록한 수신자 목록
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<com.example.afternote.domain.timeletter.model.TimeLetter> timeLetters = new java.util.ArrayList<>(); // 작성한 타임레터 목록
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<com.example.afternote.domain.mindrecord.model.MindRecord> mindRecords = new java.util.ArrayList<>(); // 작성한 마음의 기록 목록
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<com.example.afternote.domain.mindrecord.question.model.DailyQuestionAnswer> dailyQuestionAnswers = new java.util.ArrayList<>(); // 작성한 일일 질문 답변 목록
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<com.example.afternote.domain.afternote.model.Afternote> afternotes = new java.util.ArrayList<>(); // 작성한 애프터노트 목록
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<com.example.afternote.domain.mindrecord.question.model.UserDailyQuestion> userDailyQuestions = new java.util.ArrayList<>(); // 매일의 질문 목록
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserRole role;
