@@ -60,7 +60,7 @@ public class ReceivedMindRecordDetailResponse {
             MindRecord record, Diary diary,
             List<MindRecordImage> images, Function<String, String> urlResolver) {
         return base(record)
-                .content(diary.getContent())
+                .content(record.getContent())
                 .imageList(toImageResponses(images, urlResolver))
                 .build();
     }
@@ -69,7 +69,7 @@ public class ReceivedMindRecordDetailResponse {
             MindRecord record, DailyQuestionAnswer answer,
             List<MindRecordImage> images, Function<String, String> urlResolver) {
         return base(record)
-                .content(answer.getContent())
+                .content(record.getContent())
                 .questionId(answer.getDailyQuestion().getId())
                 .questionContent(answer.getDailyQuestion().getContent())
                 .imageList(toImageResponses(images, urlResolver))
@@ -80,7 +80,7 @@ public class ReceivedMindRecordDetailResponse {
             MindRecord record, DeepThought thought,
             List<MindRecordImage> images, Function<String, String> urlResolver) {
         return base(record)
-                .content(thought.getContent())
+                .content(record.getContent())
                 .category(thought.getCategory())
                 .imageList(toImageResponses(images, urlResolver))
                 .build();

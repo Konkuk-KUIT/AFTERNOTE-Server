@@ -33,25 +33,16 @@ public class DailyQuestionAnswer {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private String content;
-
     public static DailyQuestionAnswer create(
             MindRecord mindRecord,
             User user,
-            DailyQuestion dailyQuestion,
-            String content
+            DailyQuestion dailyQuestion
     ) {
         DailyQuestionAnswer answer = new DailyQuestionAnswer();
         answer.mindRecord = mindRecord;
         answer.user = user;
         answer.dailyQuestion = dailyQuestion;
-        answer.content = content;
         return answer;
-    }
-
-    public void updateContent(String content) {
-        this.content = content;
     }
 
 }

@@ -23,7 +23,7 @@ public class DeepThoughtService {
             throw new CustomException(ErrorCode.DEEP_THOUGHT_CATEGORY_REQUIRED);
         }
         DeepThought thought =
-                DeepThought.create(record, request.getCategory(), request.getContent());
+                DeepThought.create(record, request.getCategory());
         deepThoughtRepository.save(thought);
     }
 
@@ -38,8 +38,6 @@ public class DeepThoughtService {
             thought.updateCategory(request.getCategory());
         }
 
-        if (request.getContent() != null) {
-            thought.updateContent(request.getContent());
-        }
+
     }
 }

@@ -22,21 +22,10 @@ public class Diary {
     @JoinColumn(name = "mind_record_id", nullable = false, unique = true)
     private MindRecord mindRecord;
 
-    // 일기 본문
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private String content;
-
-    public static Diary create(MindRecord mindRecord, String content) {
+    public static Diary create(MindRecord mindRecord) {
         Diary record = new Diary();
         record.mindRecord = mindRecord;
-        record.content = content;
         return record;
     }
 
-    public void updateContent(String content) {
-        if (content == null) {
-            throw new CustomException(ErrorCode.MIND_RECORD_CONTENT_REQUIRED);
-        }
-        this.content = content;
-    }
 }

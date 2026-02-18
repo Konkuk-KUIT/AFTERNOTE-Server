@@ -26,19 +26,13 @@ public class DeepThought {
     @Column(length = 50, nullable = false)
     private String category;
 
-    // 본문
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private String content;
-
     public static DeepThought create(
             MindRecord mindRecord,
-            String category,
-            String content
+            String category
     ) {
         DeepThought record = new DeepThought();
         record.mindRecord = mindRecord;
         record.category = category;
-        record.content = content;
         return record;
     }
 
@@ -47,12 +41,5 @@ public class DeepThought {
             throw new CustomException(ErrorCode.DEEP_THOUGHT_CATEGORY_REQUIRED);
         }
         this.category = category;
-    }
-
-    public void updateContent(String content) {
-        if (content == null) {
-            throw new CustomException(ErrorCode.MIND_RECORD_CONTENT_REQUIRED);
-        }
-        this.content = content;
     }
 }

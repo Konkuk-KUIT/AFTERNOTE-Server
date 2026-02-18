@@ -19,14 +19,12 @@ public class DiaryService {
     private final DiaryRepository diaryRepository;
 
     public void create(MindRecord record, PostMindRecordRequest request) {
-        Diary diary = Diary.create(record, request.getContent());
+        Diary diary = Diary.create(record);
         diaryRepository.save(diary);
     }
 
     public void update(MindRecord record, PatchMindRecordRequest request) {
         Diary diary = diaryRepository.findByMindRecord(record)
                 .orElseThrow(() -> new CustomException(ErrorCode.MIND_RECORD_NOT_FOUND));
-
-        diary.updateContent(request.getContent());
     }
 }

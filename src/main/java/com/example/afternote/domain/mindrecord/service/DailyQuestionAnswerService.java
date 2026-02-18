@@ -30,7 +30,7 @@ public class DailyQuestionAnswerService {
                 .orElseThrow(() -> new CustomException(ErrorCode.DAILY_QUESTION_NOT_FOUND));
 
         DailyQuestionAnswer answer =
-                DailyQuestionAnswer.create(record, record.getUser(),question, request.getContent());
+                DailyQuestionAnswer.create(record, record.getUser(),question);
 
         dailyQuestionAnswerRepository.save(answer);
     }
@@ -39,8 +39,5 @@ public class DailyQuestionAnswerService {
         DailyQuestionAnswer answer = dailyQuestionAnswerRepository.findByMindRecord(record)
                 .orElseThrow(() -> new CustomException(ErrorCode.MIND_RECORD_NOT_FOUND));
 
-        if (request.getContent() != null) {
-            answer.updateContent(request.getContent());
-        }
     }
 }

@@ -48,14 +48,14 @@ public class GetMindRecordDetailResponse {
 
     public static GetMindRecordDetailResponse from(MindRecord record, Diary diary, List<MindRecordImage> images) {
         return base(record)
-                .content(diary.getContent())
+                .content(record.getContent())
                 .imageList(images.stream().map(MindRecordImageResponse::from).toList())
                 .build();
     }
 
     public static GetMindRecordDetailResponse from(MindRecord record, DailyQuestionAnswer answer, List<MindRecordImage> images) {
         return base(record)
-                .content(answer.getContent())
+                .content(record.getContent())
                 .questionId(answer.getDailyQuestion().getId())
                 .imageList(images.stream().map(MindRecordImageResponse::from).toList())
                 .build();
@@ -63,7 +63,7 @@ public class GetMindRecordDetailResponse {
 
     public static GetMindRecordDetailResponse from(MindRecord record, DeepThought thought, List<MindRecordImage> images) {
         return base(record)
-                .content(thought.getContent())
+                .content(record.getContent())
                 .category(thought.getCategory())
                 .imageList(images.stream().map(MindRecordImageResponse::from).toList())
                 .build();
@@ -71,14 +71,14 @@ public class GetMindRecordDetailResponse {
 
     public static GetMindRecordDetailResponse from(MindRecord record, Diary diary, List<MindRecordImage> images, Function<String, String> urlResolver) {
         return base(record)
-                .content(diary.getContent())
+                .content(record.getContent())
                 .imageList(images.stream().map(img -> MindRecordImageResponse.from(img, urlResolver)).toList())
                 .build();
     }
 
     public static GetMindRecordDetailResponse from(MindRecord record, DailyQuestionAnswer answer, List<MindRecordImage> images, Function<String, String> urlResolver) {
         return base(record)
-                .content(answer.getContent())
+                .content(record.getContent())
                 .questionId(answer.getDailyQuestion().getId())
                 .imageList(images.stream().map(img -> MindRecordImageResponse.from(img, urlResolver)).toList())
                 .build();
@@ -86,7 +86,7 @@ public class GetMindRecordDetailResponse {
 
     public static GetMindRecordDetailResponse from(MindRecord record, DeepThought thought, List<MindRecordImage> images, Function<String, String> urlResolver) {
         return base(record)
-                .content(thought.getContent())
+                .content(record.getContent())
                 .category(thought.getCategory())
                 .imageList(images.stream().map(img -> MindRecordImageResponse.from(img, urlResolver)).toList())
                 .build();

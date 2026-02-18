@@ -89,26 +89,9 @@ public class GeminiService {
      * MindRecord 타입에 따라 실제 content를 추출합니다.
      */
     private String extractContentFromMindRecord(MindRecord mindRecord) {
-        MindRecordType type = mindRecord.getType();
-        
-        return switch (type) {
-            case DIARY -> {
-                Diary diary = diaryRepository.findByMindRecord(mindRecord)
-                        .orElseThrow(() -> new CustomException(ErrorCode.MIND_RECORD_NOT_FOUND));
-                yield diary.getContent();
-            }
-            case DEEP_THOUGHT -> {
-                DeepThought deepThought = deepThoughtRepository.findByMindRecord(mindRecord)
-                        .orElseThrow(() -> new CustomException(ErrorCode.MIND_RECORD_NOT_FOUND));
-                yield deepThought.getContent();
-            }
-            case DAILY_QUESTION -> {
-                DailyQuestionAnswer answer = dailyQuestionAnswerRepository.findByMindRecord(mindRecord)
-                        .orElseThrow(() -> new CustomException(ErrorCode.MIND_RECORD_NOT_FOUND));
-                yield answer.getContent();
-            }
-        };
+        return mindRecord.getContent();
     }
+
 
     private void saveEmotion(MindRecord mindRecord, String keyword) {
         Long userId = mindRecord.getUser().getId();
