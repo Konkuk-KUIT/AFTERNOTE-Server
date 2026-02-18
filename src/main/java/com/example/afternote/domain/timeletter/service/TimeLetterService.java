@@ -82,6 +82,9 @@ public class TimeLetterService {
         // SCHEDULED 상태면 필수값 검증
         if (request.getStatus() == TimeLetterStatus.SCHEDULED) {
             validateForScheduled(request.getTitle(), request.getContent(), request.getSendAt());
+            if (request.getReceiverIds() == null || request.getReceiverIds().isEmpty()) {
+                throw new CustomException(ErrorCode.RECEIVERS_REQUIRED);
+            }
         }
 
         TimeLetter timeLetter = TimeLetter.builder()
