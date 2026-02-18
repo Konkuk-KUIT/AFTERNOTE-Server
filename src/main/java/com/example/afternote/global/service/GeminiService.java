@@ -27,6 +27,7 @@ import org.springframework.transaction.event.TransactionPhase;
 import com.example.afternote.domain.mindrecord.emotion.service.EmotionCacheService;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -118,7 +119,9 @@ public class GeminiService {
         }
         
         // 2) Redis에 없으면 LLM으로 생성
-        String keywordsString = emotionRepository.findByUserId(userId).stream()
+        LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);
+
+        String keywordsString = emotionRepository.findByUserIdAndCreatedAtAfter(userId,sevenDaysAgo).stream()
                 .map(Emotion::getKeyword)
                 .filter(Objects::nonNull)
                 .collect(Collectors.joining(" "));
