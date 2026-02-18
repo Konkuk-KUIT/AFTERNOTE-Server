@@ -2,6 +2,8 @@ package com.example.afternote.domain.receiver.service;
 
 import com.example.afternote.domain.image.dto.PresignedUrlResponse;
 import com.example.afternote.domain.image.service.S3Service;
+import com.example.afternote.domain.mindrecord.emotion.dto.GetEmotionResponse;
+import com.example.afternote.domain.mindrecord.emotion.service.EmotionService;
 import com.example.afternote.domain.receiver.dto.*;
 import com.example.afternote.domain.receiver.model.Receiver;
 import com.example.afternote.domain.receiver.repository.ReceiverRepository;
@@ -9,10 +11,12 @@ import com.example.afternote.domain.user.model.User;
 import com.example.afternote.domain.user.repository.UserRepository;
 import com.example.afternote.global.exception.CustomException;
 import com.example.afternote.global.exception.ErrorCode;
+import com.example.afternote.global.service.GeminiService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
 @Service
@@ -26,6 +30,8 @@ public class ReceiverAuthService {
     private final ReceiverRepository receiverRepository;
     private final UserRepository userRepository;
     private final ReceivedService receivedService;
+    private final EmotionService emotionService;
+    private final GeminiService geminiService;
     private final DeliveryVerificationService deliveryVerificationService;
     private final S3Service s3Service;
 
@@ -51,7 +57,13 @@ public class ReceiverAuthService {
     public ReceivedMindRecordListResponse getMindRecordsByAuthCode(String authCode) {
         Receiver receiver = findReceiverByAuthCode(authCode);
         validateDeliveryCondition(receiver);
-        return receivedService.getMindRecords(receiver.getId());
+
+        Long senderId = receiver.getUserId();
+        List<ReceivedMindRecordResponse> mindRecords = receivedService.getMindRecords(receiver.getId());
+        List<GetEmotionResponse.EmotionStat> emotions = emotionService.getEmotionStatistics(senderId);
+        String emotionSummary = geminiService.summaryEmotion(senderId);
+
+        return ReceivedMindRecordListResponse.from(mindRecords, emotions, emotionSummary);
     }
 
     @Transactional
