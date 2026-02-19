@@ -69,7 +69,7 @@ AfterNote 프로젝트의 백엔드 서버입니다.
 
 ![img_1.png](img_1.png)
 
-```mermaid
+
 
 ### 📋 엔티티 상세 정보
 
@@ -116,8 +116,7 @@ N:N 관계 (중간 테이블 사용)
 - AFTERNOON_NOTE_PLAYLIST ↔ SONG (via AFTERNOON_PLAYLIST_ITEM)
 
 ---
-```
-```
+
 ### 💾 데이터 흐름
 
 1️⃣ 사용자 가입
@@ -139,7 +138,7 @@ TIMELETTER 생성
 MIND_RECORD 생성
 ├─ EMOTION 감정 키워드 저장
 └─ SONG 참조 (선택사항)
-```
+
 
 
 
@@ -192,7 +191,7 @@ afternote/service/
 Repository Pattern (데이터 접근)
 - Spring Data JPA를 사용한 자동 쿼리 생성
 - JpaRepository 상속으로 기본 CRUD 제공
-````
+
 ## 🚀 시작하기
 
 ### 환경 설정
