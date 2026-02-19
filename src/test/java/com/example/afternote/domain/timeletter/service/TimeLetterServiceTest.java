@@ -98,6 +98,7 @@ class TimeLetterServiceTest {
         given(request.getContent()).willReturn(null);
         given(request.getSendAt()).willReturn(null);
         given(request.getMediaList()).willReturn(null);
+        given(request.getReceiverIds()).willReturn(List.of(1L));
 
         TimeLetter draftTimeLetter = TimeLetter.builder()
                 .user(testUser)
@@ -133,6 +134,8 @@ class TimeLetterServiceTest {
         given(request.getContent()).willReturn("정식 등록 내용");
         given(request.getSendAt()).willReturn(futureDate);
         given(request.getMediaList()).willReturn(null);
+        given(request.getReceiverIds()).willReturn(List.of(1L));
+
 
         TimeLetter scheduledTimeLetter = TimeLetter.builder()
                 .user(testUser)
@@ -167,8 +170,9 @@ class TimeLetterServiceTest {
         given(request.getTitle()).willReturn(null);
         given(request.getContent()).willReturn("내용만 있음");
         given(request.getSendAt()).willReturn(LocalDateTime.now().plusDays(1));
+        lenient().when(request.getReceiverIds()).thenReturn(List.of(1L));
 
-        given(userRepository.findById(1L)).willReturn(Optional.of(testUser));
+        lenient().when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
 
         // when & then
         assertThatThrownBy(() -> timeLetterService.createTimeLetter(1L, request))
@@ -188,8 +192,9 @@ class TimeLetterServiceTest {
         given(request.getTitle()).willReturn("제목");
         given(request.getContent()).willReturn("내용");
         given(request.getSendAt()).willReturn(LocalDateTime.now().minusDays(1));
+        lenient().when(request.getReceiverIds()).thenReturn(List.of(1L));
 
-        given(userRepository.findById(1L)).willReturn(Optional.of(testUser));
+        lenient().when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
 
         // when & then
         assertThatThrownBy(() -> timeLetterService.createTimeLetter(1L, request))
